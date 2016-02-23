@@ -1,0 +1,12 @@
+{
+  "name": "jn-npp-emmet",
+  "version": "0.1.0",
+  "devDependencies": {
+    "eslint": "^1.6.0",
+    "grunt": "^0.4.5",
+    "grunt-bump": "0.0.16",
+    "grunt-contrib-copy": "^0.8.2",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-eslint": "^18.0.0"
+  }
+}
