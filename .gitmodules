@@ -1,3 +1,3 @@
 [submodule "src/emmet"]
-	path = src/emmet
+	path = lib/emmet
 	url = https://github.com/emmetio/emmet.git
