@@ -317,8 +317,7 @@
 				}
 
 				if (!syntax) {
-					filename = context.files[context.file];
-					syntax = path.ext(filename);
+					syntax = path.ext(this.getFilePath());
 				}
 
 				return syntax;
