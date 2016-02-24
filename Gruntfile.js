@@ -26,20 +26,29 @@ module.exports = function(grunt) {
 			target: ["src/*.js"]
 		},
 		copy: {
-			main: {
-				files: {
-					expand: true,
-					cwd: "src",
-					src: ["*.js"],
-					dest: "dist"
-				}
+			src: {
+				expand: true,
+				cwd: "src",
+				src: ["**"],
+				dest: "dist"
 			},
-			lib: {
+			assets: {
+				expand: true,
+				cwd: "lib/emmet/lib",
+				src: ["*.json"],
+				dest: "dist/emmet"
+			},
+			npp: {
+				expand: true,
+				cwd: "dist",
+				src: ["**"],
+				dest: "C:\\Program Files (x86)\\Notepad++\\plugins\\jN\\includes"
+			}
+		},
+		browserify: {
+			emmet: {
 				files: {
-					expand: true,
-					cwd: "lib/emmet/lib",
-					src: ["**"],
-					dest: "dist/emmet"
+					"dist/emmet/emmet.js": ["lib/emmet/lib/emmet.js"]
 				}
 			}
 		}
@@ -50,8 +59,9 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-contrib-copy");
 	grunt.loadNpmTasks("grunt-eslint");
+	grunt.loadNpmTasks('grunt-browserify');
 
 	// Default task(s).
-	grunt.registerTask("default", ["eslint", "copy"]);
+	grunt.registerTask("default", ["eslint", "browserify", "copy"]);
 
 };
