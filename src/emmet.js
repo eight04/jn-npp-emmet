@@ -26,6 +26,9 @@
 			},
 			copy: function(src, dest){
 				fso.CopyFile(src, dest);
+			},
+			ext: function(filename) {
+				return fso.GetExtensionName(filename);
 			}
 		};
 	}();
@@ -311,6 +314,11 @@
 							syntax = "css";
 						}
 					}
+				}
+
+				if (!syntax) {
+					filename = context.files[context.file];
+					syntax = path.ext(filename);
 				}
 
 				return syntax;
