@@ -1,486 +1,586 @@
-require("lib/Scintilla.js");
+(function(){
 
-var emmet = require("./emmet/emmet");
-// var utils = require('./emmet/lib/utils/common');
-// var editorUtils = require('./emmet/lib/utils/editor');
-// var tabStops = require('emmet/assets/tabStops');
+	require("lib/Scintilla.js");
+	require("lib/ECMA262.js");
+	require("includes/emmet/emmet.js");
 
-emmet.loadSystemSnippets();
-emmet.loadCIU();
-
-// User settings
-var settings = new Settings(Editor.pluginConfigDir + "/emmet.settings.js");
-var preference = readFile(Editor.pluginConfigDir + "/emmet.preference.json");
-var snippets = readFile(Editor.pluginConfigDir + "/emmet.snippets.json");
-var keyMap = readFile(Editor.pluginConfigDir + "/emmet.keymap.json");
-
-if (preference) {
-	emmet.loadPreferences(preference);
-}
-
-if (snippets) {
-	emmet.loadSnippets(snippets);
-}
-
-try {
-	keyMap = JSON.parse(keyMap);
-} catch (err) {
-	alert("Invalid keymap!");
-	keyMap = {};
-}
-
-var zen_editor = (function(){
-	var context = null;
-
-	// Returns true if using tab character
-	function useTabChar() {
-		return (new Scintilla(context.handle)).Call("SCI_GETUSETABS", 0, 0);
+	function absPath(path) {
+		var fso = new ActiveXObject("Scripting.FileSystemObject");
+		return fso.GetAbsolutePathName(path);
 	}
 
-	// Returns tab width (or space length)
-	function tabWidth() {
-		return (new Scintilla(context.handle)).Call("SCI_GETTABWIDTH", 0, 0);
+	function writeFile(path, value, charset) {
+		var stream = new ActiveXObject("ADODB.Stream");
+
+		stream.Charset = charset;
+		stream.Open();
+		// stream.LoadFromFile(path);
+		stream.WriteText(value);
+
+		stream.SaveToFile(path);
+		// var result = stream.ReadText();
+		stream.close();
+
+		// return result;
 	}
 
-	/**
-	 * Normalizes text before it goes to editor: replaces indentation
-	 * and newlines with ones used in editor
-	 * @param  {String} text   Text to normalize
-	 * @param  {Editor} editor Brackets editor instance
-	 * @return {String}
-	 */
-	function normalize(text) {
-		var indentation = '\t';
-		if (!useTabChar()) {
-			indentation = '';
-			var units = tabWidth();
-			while (units--) {
-				indentation += ' ';
-			}
-		}
+	function readBin(path, size) {
+		var stream = new ActiveXObject("ADODB.Stream");
 
-		return emmet.utils.editor.normalize(text, {
-			indentation: indentation,
-			newline: '\n'
-		});
+		stream.Open();
+		stream.LoadFromFile(path);
+
+		var result = stream.Read(size);
+		stream.close();
+
+		return result;
 	}
 
-	/**
-	 * Returns whitrespace padding of string
-	 * @param {String} str String line
-	 * @return {String}
-	 */
-	function getStringPadding(str) {
-		return (str.match(/^(\s+)/) || [''])[0];
+	function fileExists(path) {
+		var fso = new ActiveXObject("Scripting.FileSystemObject");
+		return fso.FileExists(path);
 	}
 
-	// Replace document text with value between start and end.
-	function replaceRange(value, start, end) {
-		var anchor = context.anchor,
-			pos = context.pos;
+	function readJSON(name, getDefault) {
+		var text = "",
+			path = Editor.pluginConfigDir + "/emmet." + name + ".json";
 
-		context.anchor = start;
-		context.pos = end;
-		context.selection = value;
-		context.anchor = anchor;
-		context.pos = pos;
-	}
-
-	/**
-	 * Handle tab-stops (like $1 or ${1:label}) inside text: find first tab-stop,
-	 * marks it as selection, remove the rest. If tab-stop wasn't found, search
-	 * for caret placeholder and use it as selection
-	 * @param {String} text
-	 * @return {Array} Array with new text and selection indexes (['...', -1,-1]
-	 * if there's no selection)
-	 */
-	 /*
-	function handleTabStops(text) {
-		var selection_len = 0,
-			caret_placeholder = zen_coding.getCaretPlaceholder(),
-			caret_pos = text.indexOf(caret_placeholder),
-			placeholders = {};
-
-		// find caret position
-		if (caret_pos != -1) {
-			text = text.split(caret_placeholder).join('');
-		} else {
-			caret_pos = text.length;
-		}
-
-		text = zen_coding.processTextBeforePaste(text,
-			function(ch){ return ch; },
-			function(i, num, val) {
-				if (val) placeholders[num] = val;
-
-				if (i < caret_pos) {
-					caret_pos = i;
-					if (val)
-						selection_len = val.length;
+		if (!fileExists(path)) {
+			if (getDefault) {
+				text = getDefault();
+				if (typeof text != "string") {
+					text = JSON.stringify(text, null, "\t");
 				}
-
-				return placeholders[num] || '';
-			});
-
-		return [text, caret_pos, caret_pos + selection_len];
+				writeFile(path, text, "UTF-8");
+			}
+		} else {
+			text = readFile(path, "UTF-8");
+		}
+		return text;
 	}
-*/
 
-	return {
-		/**
-		 * Setup underlying editor context. You should call this method
-		 * <code>before</code> using any Zen Coding action.
-		 * @param {Object} context
-		 */
-		setContext: function(ctx) {
-			context = ctx;
-		},
+	function defaultKeyMap () {
+		return {
+			"encode_decode_data_url": "Ctrl+Shift+I",
+			"prev_edit_point": "Ctrl+Alt+Left",
+			"next_edit_point": "Ctrl+Alt+Right",
+			"evaluate_math_expression": "Ctrl+Shift+Y",
+			"expand_abbreviation_with_tab": "Tab",
+			"expand_abbreviation": "Ctrl+E",
+			"insert_formatted_line_break_only": null,
+			"insert_formatted_line_break": null,
+			"balance_inward": "Ctrl+Shift+D",
+			"balance_outward": "Ctrl+D",
+			"matching_pair": "Ctrl+T",
+			"merge_lines": "Ctrl+Shift+M",
+			"reflect_css_value": "Ctrl+Shift+B",
+			"remove_tag": "Ctrl+K",
+			"select_next_item": "Ctrl+Shift+.",
+			"select_previous_item": "Ctrl+Shift+,",
+			"split_join_tag": "Ctrl+Shift+J",
+			"toggle_comment": "Ctrl+/",
+			"update_image_size": "Ctrl+Shift+U",
+			"wrap_with_abbreviation": "Ctrl+Shift+A",
+			"update_tag": "Ctrl+Shift+E",
+			"increment_number_by_1": "Ctrl+Up",
+			"decrement_number_by_1": "Ctrl+Down",
+			"increment_number_by_10": "Ctrl+Shift+Up",
+			"decrement_number_by_10": "Ctrl+Shift+Down",
+			"increment_number_by_01": "Ctrl+Alt+Up",
+			"decrement_number_by_01": "Ctrl+Alt+Down"
+		}
+	}
+
+	// User settings
+	var preference = readJSON("preferences");
+	var snippets = readJSON("snippets");
+	var keyMap = readJSON("keymap", defaultKeyMap);
+
+	if (preference) {
+		emmet.loadPreferences(preference);
+	}
+
+	if (snippets) {
+		emmet.loadSnippets(snippets);
+	}
+
+	try {
+		keyMap = JSON.parse(keyMap);
+	} catch (err) {
+		keyMap = {};
+	}
+
+	// Create emmet editor
+	var emmetEditor = (function(){
+		var context = null;
+
+		// Returns true if using tab character
+		function useTabChar() {
+			return (new Scintilla(context.handle)).Call("SCI_GETUSETABS", 0, 0);
+		}
+
+		// Returns tab width (or space length)
+		function tabWidth() {
+			return (new Scintilla(context.handle)).Call("SCI_GETTABWIDTH", 0, 0);
+		}
 
 		/**
-		 * Returns character indexes of selected text: object with <code>start</code>
-		 * and <code>end</code> properties. If there's no selection, should return
-		 * object with <code>start</code> and <code>end</code> properties referring
-		 * to current caret position
-		 * @return {Object}
-		 * @example
-		 * var selection = zen_editor.getSelectionRange();
-		 * alert(selection.start + ', ' + selection.end);
+		 * Normalizes text before it goes to editor: replaces indentation
+		 * and newlines with ones used in editor
+		 * @param  {String} text   Text to normalize
+		 * @param  {Editor} editor Brackets editor instance
+		 * @return {String}
 		 */
-		getSelectionRange: function() {
-			var cachePos = context.pos;
-			var cacheAnchor = context.anchor;
-			return {
-				start: Math.min(cacheAnchor, cachePos),
-				end: Math.max(cacheAnchor, cachePos)
-			};
-		},
+		function normalize(text) {
+			var indentation = '\t';
+			if (!useTabChar()) {
+				indentation = '';
+				var units = tabWidth();
+				while (units--) {
+					indentation += ' ';
+				}
+			}
 
-		/**
-		 * Creates selection from <code>start</code> to <code>end</code> character
-		 * indexes. If <code>end</code> is ommited, this method should place caret
-		 * and <code>start</code> index
-		 * @param {Number} start
-		 * @param {Number} [end]
-		 * @example
-		 * zen_editor.createSelection(10, 40);
-		 *
-		 * //move caret to 15th character
-		 * zen_editor.createSelection(15);
-		 */
-		createSelection: function(start, end) {
+			return emmet.utils.editor.normalize(text, {
+				indentation: indentation,
+				newline: '\n'
+			});
+		}
+
+		// Replace document text with value between start and end.
+		function replaceRange(value, start, end) {
+			var anchor = context.anchor,
+				pos = context.pos;
+
 			context.anchor = start;
 			context.pos = end;
-		},
+			context.selection = value;
+			context.anchor = anchor;
+			context.pos = pos;
+		}
 
-		/**
-		 * Returns current line's start and end indexes as object with <code>start</code>
-		 * and <code>end</code> properties
-		 * @return {Object}
-		 * @example
-		 * var range = zen_editor.getCurrentLineRange();
-		 * alert(range.start + ', ' + range.end);
-		 */
-		getCurrentLineRange: function() {
-			var line = context.lines.get(context.lines.current);
-			return {start: line.start, end: line.end};
-		},
+		return {
+			/**
+			 * Setup underlying editor context. You should call this method
+			 * <code>before</code> using any Zen Coding action.
+			 * @param {Object} context
+			 */
+			setContext: function(ctx) {
+				context = ctx;
+			},
 
-		/**
-		 * Returns current caret position
-		 * @return {Number|null}
-		 */
-		getCaretPos: function(){
-			return context.pos;
-		},
+			/**
+			 * Returns character indexes of selected text: object with <code>start</code>
+			 * and <code>end</code> properties. If there's no selection, should return
+			 * object with <code>start</code> and <code>end</code> properties referring
+			 * to current caret position
+			 * @return {Object}
+			 * @example
+			 * var selection = zen_editor.getSelectionRange();
+			 * alert(selection.start + ', ' + selection.end);
+			 */
+			getSelectionRange: function() {
+				var cachePos = context.pos;
+				var cacheAnchor = context.anchor;
+				return {
+					start: Math.min(cacheAnchor, cachePos),
+					end: Math.max(cacheAnchor, cachePos)
+				};
+			},
 
-		/**
-		 * Set new caret position
-		 * @param {Number} pos Caret position
-		 */
-		setCaretPos: function(pos) {
-			context.anchor = context.pos = pos;
-		},
+			/**
+			 * Creates selection from <code>start</code> to <code>end</code> character
+			 * indexes. If <code>end</code> is ommited, this method should place caret
+			 * and <code>start</code> index
+			 * @param {Number} start
+			 * @param {Number} [end]
+			 * @example
+			 * zen_editor.createSelection(10, 40);
+			 *
+			 * //move caret to 15th character
+			 * zen_editor.createSelection(15);
+			 */
+			createSelection: function(start, end) {
+				context.anchor = start;
+				context.pos = end;
+			},
 
-		/**
-		 * Returns content of current line
-		 * @return {String}
-		 */
-		getCurrentLine: function() {
-			var range = this.getCurrentLineRange();
-			return this.getContent().substring(range.start, range.end);
-		},
+			/**
+			 * Returns current line's start and end indexes as object with <code>start</code>
+			 * and <code>end</code> properties
+			 * @return {Object}
+			 * @example
+			 * var range = zen_editor.getCurrentLineRange();
+			 * alert(range.start + ', ' + range.end);
+			 */
+			getCurrentLineRange: function() {
+				var line = context.lines.get(context.lines.current);
+				return {start: line.start, end: line.end};
+			},
 
-		/**
-		 * Replace editor's content or it's part (from <code>start</code> to
-		 * <code>end</code> index). If <code>value</code> contains
-		 * <code>caret_placeholder</code>, the editor will put caret into
-		 * this position. If you skip <code>start</code> and <code>end</code>
-		 * arguments, the whole target's content will be replaced with
-		 * <code>value</code>.
-		 *
-		 * If you pass <code>start</code> argument only,
-		 * the <code>value</code> will be placed at <code>start</code> string
-		 * index of current content.
-		 *
-		 * If you pass <code>start</code> and <code>end</code> arguments,
-		 * the corresponding substring of current target's content will be
-		 * replaced with <code>value</code>.
-		 * @param {String} value Content you want to paste
-		 * @param {Number} [start] Start index of editor's content
-		 * @param {Number} [end] End index of editor's content
-		 */
-		replaceContent: function(value, start, end, noIndent) {
-			// https://github.com/emmetio/brackets-emmet/blob/master/editor.js
-			if (typeof end == 'undefined') {
-				end = (typeof start == 'undefined') ? this.getContent().length : start;
-			}
-			if (typeof start == 'undefined') {
-				start = 0;
-			}
+			/**
+			 * Returns current caret position
+			 * @return {Number|null}
+			 */
+			getCaretPos: function(){
+				return context.pos;
+			},
 
-			value = normalize(value);
+			/**
+			 * Set new caret position
+			 * @param {Number} pos Caret position
+			 */
+			setCaretPos: function(pos) {
+				context.anchor = context.pos = pos;
+			},
 
-			// indent new value
-			if (!noIndent) {
-				var pad = emmet.utils.common.getLinePaddingFromPosition(this.getContent(), start);
-				value = emmet.utils.common.padString(value, pad);
-			}
+			/**
+			 * Returns content of current line
+			 * @return {String}
+			 */
+			getCurrentLine: function() {
+				var range = this.getCurrentLineRange();
+				return this.getContent().substring(range.start, range.end);
+			},
 
-			// find new caret position
-			var tabstopData = emmet.tabStops.extract(value, {
-				escape: function(ch) {
-					return ch;
+			/**
+			 * Replace editor's content or it's part (from <code>start</code> to
+			 * <code>end</code> index). If <code>value</code> contains
+			 * <code>caret_placeholder</code>, the editor will put caret into
+			 * this position. If you skip <code>start</code> and <code>end</code>
+			 * arguments, the whole target's content will be replaced with
+			 * <code>value</code>.
+			 *
+			 * If you pass <code>start</code> argument only,
+			 * the <code>value</code> will be placed at <code>start</code> string
+			 * index of current content.
+			 *
+			 * If you pass <code>start</code> and <code>end</code> arguments,
+			 * the corresponding substring of current target's content will be
+			 * replaced with <code>value</code>.
+			 * @param {String} value Content you want to paste
+			 * @param {Number} [start] Start index of editor's content
+			 * @param {Number} [end] End index of editor's content
+			 */
+			replaceContent: function(value, start, end, noIndent) {
+				// https://github.com/emmetio/brackets-emmet/blob/master/editor.js
+				if (typeof end == 'undefined') {
+					end = (typeof start == 'undefined') ? this.getContent().length : start;
 				}
-			});
-			value = tabstopData.text;
+				if (typeof start == 'undefined') {
+					start = 0;
+				}
 
-			var firstTabStop = tabstopData.tabstops[0] || {start: value.length, end: value.length};
-			firstTabStop.start += start;
-			firstTabStop.end += start;
+				value = normalize(value);
 
-			// var doc = this.editor.document;
-			// start = this._posFromIndex(start);
-			// end = this._posFromIndex(end);
+				// indent new value
+				if (!noIndent) {
+					var pad = emmet.utils.common.getLinePaddingFromPosition(this.getContent(), start);
+					value = emmet.utils.common.padString(value, pad);
+				}
 
-			// var oldValue = doc.getRange(start, end);
+				// find new caret position
+				var tabstopData = emmet.tabStops.extract(value, {
+					escape: function(ch) {
+						return ch;
+					}
+				});
+				value = tabstopData.text;
 
-			replaceRange(value, start, end);
+				var firstTabStop = tabstopData.tabstops[0] || {start: value.length, end: value.length};
+				firstTabStop.start += start;
+				firstTabStop.end += start;
 
-			this.createSelection(firstTabStop.start, firstTabStop.end);
-			// this._saveSelection(utils.splitByLines(value).length - utils.splitByLines(oldValue).length);
-			// return value;
+				replaceRange(value, start, end);
 
+				this.createSelection(firstTabStop.start, firstTabStop.end);
+			},
 
-			/*
-			var content = this.getContent(),
-				caret_pos = this.getCaretPos(),
-				caret_placeholder = zen_coding.getCaretPlaceholder(),
-				has_start = typeof(start) !== 'undefined',
-				has_end = typeof(end) !== 'undefined';
+			/**
+			 * Returns editor's content
+			 * @return {String}
+			 */
+			getContent: function(){
+				return context.text || '';
+			},
 
-			// indent new value
-			if (!no_indent)
-				value = zen_coding.padString(value, getStringPadding(this.getCurrentLine()));
+			/**
+			 * Returns current editor's syntax mode
+			 * @return {String}
+			 */
+			getSyntax: function() {
+				var syntax = (Editor.langs[context.lang] || '').toLowerCase(),
+					caret_pos = this.getCaretPos();
 
-			// find new caret position
-			var tabstop_res = handleTabStops(value);
-			value = tabstop_res[0];
-
-			start = start || 0;
-			if (tabstop_res[1] !== -1) {
-				tabstop_res[1] += start;
-				tabstop_res[2] += start;
-			} else {
-				tabstop_res[1] = tabstop_res[2] = value.length + start;
-			}
-
-			try {
-				if (!has_start && !has_end) {
-	                start = 0;
-	                end = content.length;
-	            } else if (!has_end) {
-	                end = start;
-	            }
-
-	            this.createSelection(start, end);
-	            context.selection = value;
-				this.createSelection(tabstop_res[1], tabstop_res[2]);
-			} catch(e){}
-			*/
-		},
-
-		/**
-		 * Returns editor's content
-		 * @return {String}
-		 */
-		getContent: function(){
-			return context.text || '';
-		},
-
-		/**
-		 * Returns current editor's syntax mode
-		 * @return {String}
-		 */
-		getSyntax: function() {
-			var syntax = (Editor.langs[context.lang] || '').toLowerCase(),
-				caret_pos = this.getCaretPos();
-
-			// if (!zen_coding.getResourceManager().hasSyntax(syntax))
-				// syntax = 'html';
-
-			if (syntax == 'html') {
-				// get the context tag
-				var result = emmet.htmlMatcher.tag(this.getContent(), caret_pos);
-				if (result && result.open.name == "style") {
-					if (result.open.range.end <= caret_pos && result.close.range.start >= caret_pos) {
-						syntax = "css";
+				if (syntax == 'html') {
+					// get the context tag
+					var result = emmet.htmlMatcher.tag(this.getContent(), caret_pos);
+					if (result && result.open.name == "style") {
+						if (result.open.range.end <= caret_pos && result.close.range.start >= caret_pos) {
+							syntax = "css";
+						}
 					}
 				}
-				/*
-				if (pair && pair[0] && pair[0].type == 'tag' && pair[0].name.toLowerCase() == 'style') {
-					// check that we're actually inside the tag
-					if (pair[0].end <= caret_pos && pair[1].start >= caret_pos)
-						syntax = 'css';
+
+				return syntax;
+			},
+
+			/**
+			 * Returns current output profile name (see profile module).
+			 * In most cases, this method should return <code>null</code> and let
+			 * Emmet guess best profile name for current syntax and user data.
+			 * In case you’re using advanced editor with access to syntax scopes
+			 * (like Sublime Text 2), you can return syntax name for current scope.
+			 * For example, you may return `line` profile when editor caret is inside
+			 * string of programming language.
+			 *
+			 * @return {String}
+			 */
+			getProfileName: function() {
+				return null;
+			},
+
+			/**
+			 * Ask user to enter something
+			 * @param {String} title Dialog title
+			 * @return {String} Entered data
+			 * @since 0.65
+			 */
+			// FIXME: WTF a synchronized api in javascript?
+			prompt: function(title) {
+				return '';
+			},
+
+			/**
+			 * Returns current selection
+			 * @return {String}
+			 * @since 0.65
+			 */
+			getSelection: function() {
+				var sel = this.getSelectionRange();
+				if (sel) {
+					try {
+						return this.getContent().substring(sel.start, sel.end);
+					} catch(e) {}
 				}
-				*/
+
+				return '';
+			},
+
+			/**
+			 * Returns current editor's file path
+			 * @return {String}
+			 * @since 0.65
+			 */
+			getFilePath: function() {
+				return context.files[context.file];
 			}
+		};
+	})();
 
-			return syntax;
-		},
+	var emmetFile = (function(){
+		return {
+			/**
+			 * Read file content and return it
+			 * @param {String} path File's relative or absolute path
+			 * @param {Number} size Number of bytes to read, optional. If not specified,
+			 * reads full file
+			 * @param {Function} callback Callback function invoked when reading is
+			 * completed
+			 * @return {String}
+			 */
+			read: function(path, size, callback) {
+				var bin = readBin(path, size);
+				if (callback) {
+					callback(bin);
+				} else {
+					return bin;
+				}
+			},
 
-		/**
-		 * Returns current output profile name (see profile module).
-		 * In most cases, this method should return <code>null</code> and let
-		 * Emmet guess best profile name for current syntax and user data.
-		 * In case you’re using advanced editor with access to syntax scopes
-		 * (like Sublime Text 2), you can return syntax name for current scope.
-		 * For example, you may return `line` profile when editor caret is inside
-		 * string of programming language.
-		 *
-		 * @return {String}
-		 */
-		getProfileName: function() {
-			// return zen_coding.getVariable('profile') || 'xhtml';
-			return null;
-		},
+			/**
+			 * Locate <code>file_name</code> file that relates to <code>editor_file</code>.
+			 * File name may be absolute or relative path
+			 *
+			 * <b>Dealing with absolute path.</b>
+			 * Many modern editors have a "project" support as information unit, but you
+			 * should not rely on project path to find file with absolute path. First,
+			 * it requires user to create a project before using this method (and this
+			 * is not very convenient). Second, project path doesn't always points to
+			 * to website's document root folder: it may point, for example, to an
+			 * upper folder which contains server-side scripts.
+			 *
+			 * For better result, you should use the following algorithm in locating
+			 * absolute resources:
+			 * 1) Get parent folder for <code>editorFile</code> as a start point
+			 * 2) Append required <code>fileName</code> to start point and test if
+			 * file exists
+			 * 3) If it doesn't exists, move start point one level up (to parent folder)
+			 * and repeat step 2.
+			 *
+			 * @param {String} editorFile
+			 * @param {String} fileName
+			 * @return {String} Returns null if <code>fileName</code> cannot be located
+			 */
+			locateFile: function(editorFile, fileName) {
+				var t = editorFile.split(":\\"),
+					drive = t[0],
+					path = t[1].replace("/", "\\");
 
-		/**
-		 * Ask user to enter something
-		 * @param {String} title Dialog title
-		 * @return {String} Entered data
-		 * @since 0.65
-		 */
-		// FIXME: WTF a synchronized api in javascript?
-		prompt: function(title) {
-			return '';
-		},
+				var folders = path.split("\\");
+				folders.pop();	// Remove filename
 
-		/**
-		 * Returns current selection
-		 * @return {String}
-		 * @since 0.65
-		 */
-		getSelection: function() {
-			var sel = this.getSelectionRange();
-			if (sel) {
-				try {
-					return this.getContent().substring(sel.start, sel.end);
-				} catch(e) {}
+				var result;
+				while (folders.length) {
+					result = drive + ":\\" + folders.join("\\") + "\\" + fileName;
+					if (fileExists(result)) {
+						return result;
+					}
+					folders.pop();
+				}
+
+				return '';
+			},
+
+			/**
+			 * Creates absolute path by concatenating <code>parent</code> and <code>file_name</code>.
+			 * If <code>parent</code> points to file, its parent directory is used
+			 * @param {String} parent
+			 * @param {String} file_name
+			 * @return {String}
+			 */
+			createPath: function(parent, fileName) {
+				if (fileExists(parent)) {
+					parent = parent.replace(/[^\\/]+$/, "");
+				}
+				return absPath(parent + fileName);
+			},
+
+			/**
+			 * Saves <code>content</code> as <code>file</code>
+			 * @param {String} file File's absolute path
+			 * @param {String} content File content
+			 */
+			save: function(file, content) {
+				writeFile(file, content, "UTF-8");
+			},
+
+			/**
+			 * Returns file extension in lower case
+			 * @param {String} file
+			 * @return {String}
+			 */
+			getExt: function(file) {
+				var m = (file || '').match(/\.([\w\-]+)$/);
+				return m ? m[1].toLowerCase() : '';
 			}
+		};
+	})();
 
-			return '';
-		},
+	emmet.file(emmetFile);
 
-		/**
-		 * Returns current editor's file path
-		 * @return {String}
-		 * @since 0.65
-		 */
-		getFilePath: function() {
-			return context.files[context.file];
-		}
-	};
-})();
-/**
- * Zen Coding manager that runs actions
- * @param {String} action_name Action to call
- * @return {Boolean} Returns 'true' if action ran successfully
- */
-function runAction(action_name) {
-	zen_editor.setContext(Editor.currentView);
-	if (action_name == 'wrap_with_abbreviation') {
-		Dialog.prompt('Enter Abbreviation',"", function(abbr){
-			if (abbr)
-				emmet.run(action_name, zen_editor, abbr);
-		});
-	} else {
-		return emmet.run(action_name, zen_editor);
-	}
-}
-
-var zc_menu = Editor.addMenu("Emmet");
-
-/**
- * Adds new Zen Coding menu item
- * @param {String} name Menu item name
- * @param {String} action Zen Coding action to call
- * @param {String} keystroke Keyboard shorcut for this item
- */
- /*
-function addMenuItem(name, action, keystroke) {
-	var menu_obj = {
-		text: name + (keystroke ? '\t' + keystroke : ''),
-		cmd: function() {
-			zc_manager(action);
-		},
-		ctrl: false,
-		alt: false,
-		shift: false
-	};
-
-	if (keystroke) {
-		var keys = keystroke.split('+');
-		for (var i = 0, il = keys.length; i < il; i++) {
-			var key = keys[i].toLowerCase();
-			switch (key) {
-				case 'shift':
-				case 'alt':
-				case 'ctrl':
-					menu_obj[key] = true;
-					break;
-				default:
-					menu_obj.key = key;
-			}
-		}
-
-		addHotKey(menu_obj);
-	}
-
-	zc_menu.addItem(menu_obj);
-}
-*/
-
-function constructMenu(menu, list) {
-	list.forEach(function(item){
-		if (item.type == "submenu") {
-			var subMenu = menu.addMenu({
-				text: item.name
+	/**
+	 * Zen Coding manager that runs actions
+	 * @param {String} action_name Action to call
+	 * @return {Boolean} Returns 'true' if action ran successfully
+	 */
+	function runAction(action_name) {
+		emmetEditor.setContext(Editor.currentView);
+		if (action_name == 'wrap_with_abbreviation' || action_name == "update_tag") {
+			Dialog.prompt('Enter Abbreviation',"", function(abbr){
+				if (abbr)
+					emmet.run(action_name, emmetEditor, abbr);
 			});
-			constructMenu(subMenu, item.items);
 		} else {
-			menu.addItem({
-				text: item.label + (keyMap[item.name] ? "\t" + keyMap[item.name] : ""),
-				cmd: function(){
-					runAction(item.name);
-				}
-			});
+			return emmet.run(action_name, emmetEditor);
 		}
-	});
-}
+	}
 
-constructMenu(zc_menu, emmet.actions.getMenu());
+	// Construct menu helper
+	function constructMenu(menu, list) {
+		list.forEach(function(item){
+			if (item.type == "submenu") {
+				var subMenu = menu.addMenu({
+					text: item.name
+				});
+				constructMenu(subMenu, item.items);
+			} else {
+				menu.addItem({
+					text: item.label + (keyMap[item.name] ? "\t" + keyMap[item.name] : ""),
+					cmd: function(){
+						runAction(item.name);
+					}
+				});
+			}
+		});
+	}
 
-function registHotkey() {
+	constructMenu(Editor.addMenu("Emmet"), emmet.actions.getMenu());
+
+	// Map key name to key code.
+	// https://msdn.microsoft.com/en-us/library/dd375731%28v=VS.85%29.aspx
+	var keycodeMap = {
+		backspace: 0x8,
+		tab: 0x9,
+		enter: 0xD,
+		pause: 0x13,
+		caps: 0x14,
+		esc: 0x1b,
+		space: 0x20,
+		pageup: 0x21,
+		pgup: 0x21,
+		pagedown: 0x22,
+		pgdn: 0x22,
+		end: 0x23,
+		home: 0x24,
+		left: 0x25,
+		up: 0x26,
+		right: 0x27,
+		down: 0x28,
+		printscreen: 0x2c,
+		printscr: 0x2c,
+		insert: 0x2d,
+		ins: 0x2d,
+		"delete": 0x2e,
+		del: 0x2e,
+		numpad0: 0x60,
+		num0: 0x60,
+		numpad1: 0x61,
+		num1: 0x61,
+		numpad2: 0x62,
+		num2: 0x62,
+		numpad3: 0x63,
+		num3: 0x63,
+		numpad4: 0x64,
+		num4: 0x64,
+		numpad5: 0x65,
+		num5: 0x65,
+		numpad6: 0x66,
+		num6: 0x66,
+		numpad7: 0x67,
+		num7: 0x67,
+		numpad8: 0x68,
+		num8: 0x68,
+		numpad9: 0x69,
+		num9: 0x69,
+		multiply: 0x6a,
+		f1: 0x70,
+		f2: 0x71,
+		f3: 0x72,
+		f4: 0x73,
+		f5: 0x74,
+		f6: 0x75,
+		f7: 0x76,
+		f8: 0x77,
+		f9: 0x78,
+		f10: 0x79,
+		f11: 0x7a,
+		f12: 0x7b,
+		numlock: 0x90,
+		scrolllock: 0x91
+	};
+
+	// Regist hotkeys.
 	emmet.actions.getList().forEach(function(action){
 		var userHotkey = keyMap[action.name];
 		if (!userHotkey) {
@@ -490,11 +590,14 @@ function registHotkey() {
 		var cfg = {
 			cmd: function() {
 				runAction(action.name);
-			};
-		}
+			}
+		};
 		var i;
 		for (i = 0; i < keys.length; i++) {
-			var token = keys[i].toLowerCase();
+			var token = keys[i].toLowerCase().split(" ").join("");
+
+			token = keycodeMap[token] || token;
+
 			switch (token) {
 				case "ctrl":
 				case "shift":
@@ -510,35 +613,5 @@ function registHotkey() {
 
 		Editor.addHotKey(cfg);
 	});
-}
 
-registHotkey();
-
-/*
-// init engine
-addMenuItem('Expand Abbreviation', 'expand_abbreviation', '\t');
-addMenuItem('Wrap with Abbreviation', 'wrap_with_abbreviation', 'Ctrl+Shift+A');
-addMenuItem('Balance Tag', 'match_pair_outward', 'Ctrl+Shift+D');
-addMenuItem('Next Edit Point', 'next_edit_point', 'Ctrl+Alt+]');
-addMenuItem('Previous Edit Point', 'prev_edit_point', 'Ctrl+Alt+[');
-addMenuItem('Go to Matching Pair', 'matching_pair', 'Ctrl+Alt+L');
-addMenuItem('Merge Lines', 'merge_lines', 'Ctrl+Alt+M');
-addMenuItem('Toggle Comment', 'toggle_comment', 'Alt+/');
-addMenuItem('Split/Join Tag', 'split_join_tag', 'Ctrl+\'');
-addMenuItem('Remove Tag', 'remove_tag', 'Ctrl+Shift+\'');
-
-// v0.7
-addMenuItem('Evaluate Math Expression', 'evaluate_math_expression', 'Ctrl+Y');
-
-// don't know how up & down key codes should be written so I commented out this section
-//addMenuItem('Increment number by 1', 'increment_number_by_1', 'Ctrl+Up');
-//addMenuItem('Decrement number by 1', 'decrement_number_by_1', 'Ctrl+down');
-//addMenuItem('Increment number by 0.1', 'increment_number_by_01', 'Alt+UP');
-//addMenuItem('Decrement number by 0.1', 'decrement_number_by_01', 'Alt+DOWN');
-//addMenuItem('Increment number by 10', 'increment_number_by_10', 'Ctrl+Alt+UP');
-//addMenuItem('Decrement number by 10', 'decrement_number_by_10', 'Ctrl+Alt+DOWN');
-
-addMenuItem('Select Next Item', 'select_next_item', 'Ctrl+.');
-addMenuItem('Select Previous Item', 'select_previous_item', 'Ctrl+,');
-addMenuItem('Reflect CSS Value', 'reflect_css_value', 'Ctrl+Shift+B');
-*/
+})();
