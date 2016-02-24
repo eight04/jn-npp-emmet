@@ -16,7 +16,7 @@ module.exports = function(grunt) {
 		watch: {
 			js: {
 				files: ["src/*.js"],
-				tasks: ["default"]
+				tasks: ["eslint", "copy"]
 			},
 			grunt: {
 				files: ["Gruntfile.js"]
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
 			src: {
 				expand: true,
 				cwd: "src",
-				src: ["**"],
+				src: ["**", "!emmet/emmet.js"],
 				dest: "dist"
 			},
 			assets: {
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
 		browserify: {
 			emmet: {
 				files: {
-					"dist/emmet/emmet.js": ["lib/emmet/lib/emmet.js"]
+					"dist/emmet/emmet.js": ["src/emmet/emmet.js"]
 				}
 			}
 		}

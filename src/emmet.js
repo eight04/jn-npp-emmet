@@ -4,97 +4,78 @@
 	require("lib/ECMA262.js");
 	require("includes/emmet/emmet.js");
 
-	function absPath(path) {
+	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
-		return fso.GetAbsolutePathName(path);
-	}
 
-	function writeFile(path, value, charset) {
-		var stream = new ActiveXObject("ADODB.Stream");
-
-		stream.Charset = charset;
-		stream.Open();
-		// stream.LoadFromFile(path);
-		stream.WriteText(value);
-
-		stream.SaveToFile(path);
-		// var result = stream.ReadText();
-		stream.close();
-
-		// return result;
-	}
-
-	function readBin(path, size) {
-		var stream = new ActiveXObject("ADODB.Stream");
-
-		stream.Open();
-		stream.LoadFromFile(path);
-
-		var result = stream.Read(size);
-		stream.close();
-
-		return result;
-	}
-
-	function fileExists(path) {
-		var fso = new ActiveXObject("Scripting.FileSystemObject");
-		return fso.FileExists(path);
-	}
-
-	function readJSON(name, getDefault) {
-		var text = "",
-			path = Editor.pluginConfigDir + "/emmet." + name + ".json";
-
-		if (!fileExists(path)) {
-			if (getDefault) {
-				text = getDefault();
-				if (typeof text != "string") {
-					text = JSON.stringify(text, null, "\t");
-				}
-				writeFile(path, text, "UTF-8");
-			}
-		} else {
-			text = readFile(path, "UTF-8");
-		}
-		return text;
-	}
-
-	function defaultKeyMap () {
 		return {
-			"encode_decode_data_url": "Ctrl+Shift+I",
-			"prev_edit_point": "Ctrl+Alt+Left",
-			"next_edit_point": "Ctrl+Alt+Right",
-			"evaluate_math_expression": "Ctrl+Shift+Y",
-			"expand_abbreviation_with_tab": "Tab",
-			"expand_abbreviation": "Ctrl+E",
-			"insert_formatted_line_break_only": null,
-			"insert_formatted_line_break": null,
-			"balance_inward": "Ctrl+Shift+D",
-			"balance_outward": "Ctrl+D",
-			"matching_pair": "Ctrl+T",
-			"merge_lines": "Ctrl+Shift+M",
-			"reflect_css_value": "Ctrl+Shift+B",
-			"remove_tag": "Ctrl+K",
-			"select_next_item": "Ctrl+Shift+.",
-			"select_previous_item": "Ctrl+Shift+,",
-			"split_join_tag": "Ctrl+Shift+J",
-			"toggle_comment": "Ctrl+/",
-			"update_image_size": "Ctrl+Shift+U",
-			"wrap_with_abbreviation": "Ctrl+Shift+A",
-			"update_tag": "Ctrl+Shift+E",
-			"increment_number_by_1": "Ctrl+Up",
-			"decrement_number_by_1": "Ctrl+Down",
-			"increment_number_by_10": "Ctrl+Shift+Up",
-			"decrement_number_by_10": "Ctrl+Shift+Down",
-			"increment_number_by_01": "Ctrl+Alt+Up",
-			"decrement_number_by_01": "Ctrl+Alt+Down"
-		}
+			join: function(base) {
+				if (this.exists(base)) {
+					base = this.parent(base);
+				}
+				var path = Array.prototype.join.call(arguments, "\\");
+				return this.abs(path);
+			},
+			abs: function(path) {
+				return fso.GetAbsolutePathName(path);
+			},
+			parent: function(path) {
+				return fso.GetParentFolderName(path);
+			},
+			exists: function(path) {
+				return fso.FileExists(path);
+			},
+			copy: function(src, dest){
+				fso.CopyFile(src, dest);
+			}
+		};
+	}();
+
+	var io = function() {
+		var stream = new ActiveXObject("ADODB.Stream");
+		stream.Charset = "UTF-8";
+
+		return {
+			read: function(filename) {
+				stream.Open();
+				stream.LoadFromFile(path);
+				var result = stream.ReadText();
+				stream.Close();
+				return result;
+			},
+			write: function(filename, value) {
+				stream.Open();
+				stream.WriteText(value),
+				stream.SaveToFile(filename),
+				stream.Close();
+			},
+			readBin: function(filename, size) {
+				stream.Open();
+				stream.LoadFromFile(filename);
+				var result = stream.Read(size);
+				stream.Close();
+				return result;
+			}
+		};
+	}
+
+	var PLUGIN_DIR = path.parent(scriptFullName);
+
+	// Default snippets and caniuse
+	emmet.loadSystemSnippets(io.read(PLUGIN_DIR + "/includes/emmet/snippets.json"));
+	emmet.loadCIU(io.read(PLUGIN_DIR + "/includes/emmet/caniuse.json"));
+
+	// Default keymap
+	var userKeymap = Editor.pluginConfigDir + "/emmet.keymap.json",
+		defaultKeymap = PLUGIN_DIR + "/includes/emmet/keymap.json";
+
+	if (!path.exists(userKeymap)) {
+		path.copy(defaultKeymap, userKeymap);
 	}
 
 	// User settings
-	var preference = readJSON("preferences");
-	var snippets = readJSON("snippets");
-	var keyMap = readJSON("keymap", defaultKeyMap);
+	var preference = io.read(Editor.pluginConfigDir + "/emmet.preferences.json");
+	var snippets = io.read(Editor.pluginConfigDir + "/emmet.snippets.json");
+	var keyMap = io.read(Editor.pluginConfigDir + "/emmet.keymap.json");
 
 	if (preference) {
 		emmet.loadPreferences(preference);
@@ -390,7 +371,7 @@
 			 * @return {String}
 			 */
 			read: function(path, size, callback) {
-				var bin = readBin(path, size);
+				var bin = io.readBin(path, size);
 				if (callback) {
 					callback(bin);
 				} else {
@@ -423,22 +404,15 @@
 			 * @return {String} Returns null if <code>fileName</code> cannot be located
 			 */
 			locateFile: function(editorFile, fileName) {
-				var t = editorFile.split(":\\"),
-					drive = t[0],
-					path = t[1].replace("/", "\\");
-
-				var folders = path.split("\\");
-				folders.pop();	// Remove filename
-
-				var result;
-				while (folders.length) {
-					result = drive + ":\\" + folders.join("\\") + "\\" + fileName;
-					if (fileExists(result)) {
+				var folder = path.parent(editorFile),
+					result;
+				while (folder) {
+					result = path.join(folder, fileName);
+					if (path.exists(result)) {
 						return result;
 					}
-					folders.pop();
+					folder = path.parent(folder);
 				}
-
 				return '';
 			},
 
@@ -450,10 +424,7 @@
 			 * @return {String}
 			 */
 			createPath: function(parent, fileName) {
-				if (fileExists(parent)) {
-					parent = parent.replace(/[^\\/]+$/, "");
-				}
-				return absPath(parent + fileName);
+				return path.join(parent, fileName);
 			},
 
 			/**
@@ -462,7 +433,7 @@
 			 * @param {String} content File content
 			 */
 			save: function(file, content) {
-				writeFile(file, content, "UTF-8");
+				io.write(file, content);
 			},
 
 			/**
@@ -613,5 +584,4 @@
 
 		Editor.addHotKey(cfg);
 	});
-
 })();
