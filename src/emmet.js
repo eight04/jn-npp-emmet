@@ -149,6 +149,7 @@
 			context.anchor = start;
 			context.pos = end;
 			context.selection = value;
+
 			context.anchor = anchor;
 			context.pos = pos;
 		}
@@ -195,6 +196,9 @@
 			 * zen_editor.createSelection(15);
 			 */
 			createSelection: function(start, end) {
+				if (!end) {
+					end = start;
+				}
 				context.anchor = start;
 				context.pos = end;
 			},
@@ -217,7 +221,7 @@
 			 * @return {Number|null}
 			 */
 			getCaretPos: function(){
-				return context.pos;
+				return Math.min(context.anchor, context.pos);
 			},
 
 			/**
@@ -233,8 +237,9 @@
 			 * @return {String}
 			 */
 			getCurrentLine: function() {
-				var range = this.getCurrentLineRange();
-				return this.getContent().substring(range.start, range.end);
+				// var range = this.getCurrentLineRange();
+				// return this.getContent().substring(range.start, range.end);
+				return context.lines.get(context.line).text;
 			},
 
 			/**
