@@ -356,8 +356,9 @@
 			 * @since 0.65
 			 */
 			getSelection: function() {
-				var sel = this.getSelectionRange();
-				return this.getContent().substring(sel.start, sel.end);
+				// var sel = this.getSelectionRange();
+				// return this.getContent().substring(sel.start, sel.end);
+				return context.selection;
 			},
 
 			/**
