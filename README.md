@@ -2,7 +2,7 @@ jN-npp-emmet
 ============
 Add emmet to notepad++.
 
-Apparently, current Emmet plugin for Notepad++ is extreme slow on big file (emmetio/npp#2). This version is much faster although I don't know where is the problem :|
+Apparently, current Emmet plugin for Notepad++ is extreme slow on big file ([emmetio/npp#2](https://github.com/emmetio/npp/issues/2)). This version is much faster although I don't know where is the problem :|
 
 Install
 -------
@@ -17,7 +17,7 @@ Todos
 
 Fix start.js
 ------------
-There is something wrong in `plugins\jN\start.js` (sieukrem/jn-npp-plugin#22)
+There is something wrong in `plugins\jN\start.js` ([sieukrem/jn-npp-plugin#22](https://github.com/sieukrem/jn-npp-plugin/issues/22))
 
 You can fix it by replacing (line 146)
 ```
