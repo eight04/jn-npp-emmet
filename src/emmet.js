@@ -36,9 +36,14 @@
 
 		return {
 			read: function(filename) {
+				var result;
 				stream.Open();
-				stream.LoadFromFile(path);
-				var result = stream.ReadText();
+				try {
+					stream.LoadFromFile(filename);
+					result = stream.ReadText();
+				} catch (err) {
+					result = "";
+				}
 				stream.Close();
 				return result;
 			},
@@ -49,16 +54,21 @@
 				stream.Close();
 			},
 			readBin: function(filename, size) {
+				var result;
 				stream.Open();
-				stream.LoadFromFile(filename);
-				var result = stream.Read(size);
+				try {
+					stream.LoadFromFile(filename);
+					result = stream.Read(size);
+				} catch (err) {
+					result = "";
+				}
 				stream.Close();
 				return result;
 			}
 		};
-	}
+	}();
 
-	var PLUGIN_DIR = path.parent(scriptFullName);
+	var PLUGIN_DIR = path.parent(System.scriptFullName);
 
 	// Default snippets and caniuse
 	emmet.loadSystemSnippets(io.read(PLUGIN_DIR + "/includes/emmet/snippets.json"));
@@ -328,7 +338,7 @@
 			 * @since 0.65
 			 */
 			// FIXME: WTF a synchronized api in javascript?
-			prompt: function(title) {
+			prompt: function(title) {	// eslint-disable-line
 				return '';
 			},
 
@@ -339,13 +349,7 @@
 			 */
 			getSelection: function() {
 				var sel = this.getSelectionRange();
-				if (sel) {
-					try {
-						return this.getContent().substring(sel.start, sel.end);
-					} catch(e) {}
-				}
-
-				return '';
+				return this.getContent().substring(sel.start, sel.end);
 			},
 
 			/**
