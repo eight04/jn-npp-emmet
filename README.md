@@ -7,7 +7,7 @@ Apparently, current Emmet plugin for Notepad++ is extreme slow on big file ([emm
 Install
 -------
 1. Install [jn-npp-plugin](https://github.com/sieukrem/jn-npp-plugin).
-2. Currently there is a bug in jN, you can simply [patch it](#fix-startjs).
+2. Currently there is a bug in jN (prior to 2.1.181), you can simply [patch it](#fix-startjs).
 3. Put everything in `dist` into `plugins\jN\includes`.
 4. Keymap is located at `C:\Users\*\AppData\Roaming\Notepad++\plugins\config\emmet.keymap.json`
 
