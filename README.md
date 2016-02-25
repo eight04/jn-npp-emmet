@@ -14,3 +14,13 @@ Install
 Todos
 -----
 * Make license compatible with jN's zen_coding script.
+
+Changelog
+=========
+* 0.2.0 (Feb 26, 2016)
+	- Add readBinary feature.
+	- Temporary fix with read file API. `Update image size` should work now.
+	- Add User defined menu. Lacated at `%appdata%\Notepad++\plugins\config\emmet.menu.json`
+	- Rewrite the dialog module, which can remember the last position and size.
+* 0.1.0
+	- Initial release.
