@@ -548,6 +548,11 @@
 			 */
 			read: function(path, size, callback) {
 				var bin = io.readBin(path, size);
+
+				if (typeof size == "function") {
+					callback = size;
+				}
+
 				if (callback) {
 					callback(bin);
 				} else {
