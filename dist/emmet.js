@@ -373,6 +373,11 @@
 			 */
 			getFilePath: function() {
 				return context.files[context.file];
+			},
+
+			// Check if the selection is collapsed
+			isCollapsed: function() {
+				return context.pos == context.anchor;
 			}
 		};
 	})();
@@ -482,7 +487,7 @@
 			});
 		} else if (action_name == "expand_abbreviation_with_tab") {
 			// Emmet's indentation style doesn't match notepad++'s.
-			if (emmetEditor.isCollapse()) {
+			if (emmetEditor.isCollapsed()) {
 				emmet.run(action_name, emmetEditor);
 			} else {
 				MenuCmds.EDIT_INS_TAB();
