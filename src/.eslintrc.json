@@ -17,6 +17,7 @@
 		"Scintilla": false,
 		"ActiveXObject": false,
 		"System": false,
-		"emmet": false
+		"emmet": false,
+		"MenuCmds": false
 	}
 }
