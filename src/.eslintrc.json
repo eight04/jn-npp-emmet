@@ -19,6 +19,8 @@
 		"System": false,
 		"emmet": false,
 		"MenuCmds": false,
-		"GlobalSettings": false
+		"GlobalSettings": false,
+		"debug": false,
+		"FileStream": false
 	}
 }

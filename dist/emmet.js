@@ -4,7 +4,7 @@
 	require("lib/ECMA262.js");
 	require("includes/emmet/emmet.js");
 	require("includes/MenuCmds.js");
-	// require("includes/Dialog.js");
+	require("includes/FileStream/FileStream.js");
 
 	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -31,6 +31,9 @@
 			},
 			ext: function(filename) {
 				return fso.GetExtensionName(filename);
+			},
+			get: function(filename) {
+				return fso.GetFile(filename);
 			}
 		};
 	}();
@@ -42,6 +45,7 @@
 		return {
 			read: function(filename) {
 				var result;
+				stream.type = 2;
 				stream.Open();
 				try {
 					stream.LoadFromFile(filename);
@@ -59,16 +63,9 @@
 				stream.Close();
 			},
 			readBin: function(filename, size) {
-				var result;
-				stream.Open();
-				try {
-					stream.LoadFromFile(filename);
-					result = stream.Read(size);
-				} catch (err) {
-					result = "";
-				}
-				stream.Close();
-				return result;
+				var fs = new FileStream(filename);
+				fs.loadFromFile(filename);
+				return fs.readToArray(size).map(String.fromCharCode).join("");
 			}
 		};
 	}();
@@ -547,12 +544,11 @@
 			 * @return {String}
 			 */
 			read: function(path, size, callback) {
-				var bin = io.readBin(path, size);
-
 				if (typeof size == "function") {
 					callback = size;
+					size = null;
 				}
-
+				var bin = io.readBin(path, size);
 				if (callback) {
 					callback(bin);
 				} else {
