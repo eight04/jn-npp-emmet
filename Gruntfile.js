@@ -37,6 +37,12 @@ module.exports = function(grunt) {
 				cwd: "lib/emmet/lib",
 				src: ["*.json"],
 				dest: "dist/emmet"
+			},
+			lib: {
+				expand: true,
+				cwd: "lib",
+				src: ["**", "!emmet/**"],
+				dest: "dist"
 			}
 		},
 		browserify: {
