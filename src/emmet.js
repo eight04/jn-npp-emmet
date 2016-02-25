@@ -4,6 +4,7 @@
 	require("lib/ECMA262.js");
 	require("includes/emmet/emmet.js");
 	require("includes/MenuCmds.js");
+	require("includes/Dialog.js");
 
 	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -90,6 +91,7 @@
 	var preference = io.read(Editor.pluginConfigDir + "/emmet.preferences.json");
 	var snippets = io.read(Editor.pluginConfigDir + "/emmet.snippets.json");
 	var keyMap = io.read(Editor.pluginConfigDir + "/emmet.keymap.json");
+	var settings = new Settings(Editor.pluginConfigDir + "/emmet.settings.json");
 
 	if (preference) {
 		emmet.loadPreferences(preference);
@@ -473,6 +475,61 @@
 
 	emmet.file(emmetFile);
 
+	var dialog = function(createDialog, settings){
+		var pool = {};
+
+		return function (o) {
+			// Re-use old dialog
+			if (o.id && o.pool[o.id]) {
+				o.pool[o.id].show();
+			} else {
+				var dialog = createDialog();
+				if (o.id) {
+					pool[o.id] = dialog;
+					dialog.clientHeight = settings.get("dialog." + o.id + ".height") || o.height || 100;
+					dialog.clientWidth = settings.get("dialog." + o.id + ".width") || o.width || 300;
+					dialog.handle.onresize = function() {
+						alert("resize");
+					};
+				}
+
+				dialog.client
+			}
+		};
+	}(System.createDialog, GlobalSettings);
+
+	function abbrPrompt(callback) {
+		dialog({
+			id: "emmet",
+			type: "prompt",
+			height: 100,
+			width: 300,
+			cmd: callback
+		});
+	}
+
+	var abbrPrompt = function(Dialog){
+		var dialog;
+		Dialog.prompt('Enter Abbreviation',"", function(abbr){
+			if (abbr)
+				emmet.run(action_name, emmetEditor, abbr);
+		});
+
+		function init() {
+			var handle = ;
+		}
+
+		function open(callback) {
+			if (!dialog) {
+				init();
+			}
+			dialog.callback = callback;
+			dialog.show();
+		}
+
+		return open;
+	}(Dialog);
+
 	/**
 	 * Zen Coding manager that runs actions
 	 * @param {String} action_name Action to call
@@ -481,9 +538,10 @@
 	function runAction(action_name) {
 		emmetEditor.setContext(Editor.currentView);
 		if (action_name == 'wrap_with_abbreviation' || action_name == "update_tag") {
-			Dialog.prompt('Enter Abbreviation',"", function(abbr){
-				if (abbr)
+			abbrPrompt(function(value){
+				if (value) {
 					emmet.run(action_name, emmetEditor, abbr);
+				}
 			});
 		} else if (action_name == "expand_abbreviation_with_tab") {
 			// Emmet's indentation style doesn't match notepad++'s.
