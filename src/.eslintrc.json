@@ -18,6 +18,7 @@
 		"ActiveXObject": false,
 		"System": false,
 		"emmet": false,
-		"MenuCmds": false
+		"MenuCmds": false,
+		"GlobalSettings": false
 	}
 }
