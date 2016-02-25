@@ -1,7 +1,7 @@
 (function(){
 
 	// Fake WScript env
-	if (typeof WScript == undefined) {
+	if (typeof WScript == "undefined") {
 		WScript = {
 			CreateObject: function(name) {
 				return new ActiveXObject(name);
