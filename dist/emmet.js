@@ -3,6 +3,7 @@
 	require("lib/Scintilla.js");
 	require("lib/ECMA262.js");
 	require("includes/emmet/emmet.js");
+	require("menuCmds.js");
 
 	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -26,6 +27,9 @@
 			},
 			copy: function(src, dest){
 				fso.CopyFile(src, dest);
+			},
+			ext: function(filename) {
+				return fso.GetExtensionName(filename);
 			}
 		};
 	}();
@@ -146,6 +150,7 @@
 			context.anchor = start;
 			context.pos = end;
 			context.selection = value;
+
 			context.anchor = anchor;
 			context.pos = pos;
 		}
@@ -192,6 +197,9 @@
 			 * zen_editor.createSelection(15);
 			 */
 			createSelection: function(start, end) {
+				if (!end) {
+					end = start;
+				}
 				context.anchor = start;
 				context.pos = end;
 			},
@@ -214,7 +222,7 @@
 			 * @return {Number|null}
 			 */
 			getCaretPos: function(){
-				return context.pos;
+				return Math.min(context.anchor, context.pos);
 			},
 
 			/**
@@ -230,8 +238,9 @@
 			 * @return {String}
 			 */
 			getCurrentLine: function() {
-				var range = this.getCurrentLineRange();
-				return this.getContent().substring(range.start, range.end);
+				// var range = this.getCurrentLineRange();
+				// return this.getContent().substring(range.start, range.end);
+				return context.lines.get(context.line).text;
 			},
 
 			/**
@@ -313,6 +322,10 @@
 					}
 				}
 
+				if (!syntax) {
+					syntax = path.ext(this.getFilePath());
+				}
+
 				return syntax;
 			},
 
@@ -348,8 +361,9 @@
 			 * @since 0.65
 			 */
 			getSelection: function() {
-				var sel = this.getSelectionRange();
-				return this.getContent().substring(sel.start, sel.end);
+				// var sel = this.getSelectionRange();
+				// return this.getContent().substring(sel.start, sel.end);
+				return context.selection;
 			},
 
 			/**
@@ -466,6 +480,13 @@
 				if (abbr)
 					emmet.run(action_name, emmetEditor, abbr);
 			});
+		} else if (action_name == "expand_abbreviation_with_tab") {
+			// Emmet's indentation style doesn't match notepad++'s.
+			if (emmetEditor.isCollapse()) {
+				emmet.run(action_name, emmetEditor);
+			} else {
+				MenuCmds.EDIT_INS_TAB();
+			}
 		} else {
 			return emmet.run(action_name, emmetEditor);
 		}
