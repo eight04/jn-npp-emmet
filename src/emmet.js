@@ -485,7 +485,7 @@
 			if (emmetEditor.isCollapse()) {
 				emmet.run(action_name, emmetEditor);
 			} else {
-				menuCmds.EDIT_INS_TAB();
+				MenuCmds.EDIT_INS_TAB();
 			}
 		} else {
 			return emmet.run(action_name, emmetEditor);
