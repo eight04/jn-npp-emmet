@@ -4,6 +4,7 @@
 	require("lib/ECMA262.js");
 	require("includes/emmet/emmet.js");
 	require("includes/MenuCmds.js");
+	require("includes/Dialog.js");
 
 	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -72,7 +73,116 @@
 		};
 	}();
 
-	var PLUGIN_DIR = path.parent(System.scriptFullName);
+	var PLUGIN_DIR = (function(path){
+		return path.parent(System.scriptFullName);
+	})(path);
+
+	var dialog = (function(settings, io, PLUGIN_DIR){
+		var pool = {}, htmlCache = {},
+			prof = {
+				prompt: {
+					init: function(o) {
+						var document = o.dialog.document;
+
+						document.getElementById("form").onsubmit = function() {
+							o.result = document.getElementById("entry").value;
+							o.dialog.close();
+						};
+
+						document.getElementById("cancel").onclick = function() {
+							o.dialog.close();
+						};
+
+						document.onkeydown = function() {
+							var e = document.parentWindow.event;
+							if (e.keyCode == 27) {
+								o.dialog.close();
+							}
+						};
+					},
+					show: function(o) {
+						var entry = o.dialog.document.getElementById("entry");
+						entry.value = o.value || "";
+						entry.focus();
+					}
+				}
+			};
+
+		function html(type) {
+			if (!htmlCache[type]) {
+				htmlCache[type] = io.read(PLUGIN_DIR + "/includes/dialog/" + type + ".html");
+			}
+			return htmlCache[type];
+		}
+
+		function create(o) {
+			var dialog = o.dialog = System.createDialog({
+				onbeforeclose: function(){
+					if (o.result && o.cmd) {
+						o.cmd(o.result);
+					}
+					if (o.id) {
+						settings.set("dialog." + o.id + ".width", dialog.width);
+						settings.set("dialog." + o.id + ".height", dialog.height);
+						settings.set("dialog." + o.id + ".left", dialog.left);
+						settings.set("dialog." + o.id + ".top", dialog.top);
+						dialog.visible = false;
+						return true;
+					}
+				}
+			});
+
+			dialog.title = o.title;
+
+			if (o.id) {
+				pool[o.id] = o;
+
+				o.width = settings.get("dialog." + o.id + ".width") || o.width;
+				o.height = settings.get("dialog." + o.id + ".height") || o.width;
+				o.left = settings.get("dialog." + o.id + ".left") || o.left;
+				o.top = settings.get("dialog." + o.id + ".top") || o.top;
+			}
+
+			dialog.width = o.width || 409;
+			dialog.height = o.height || 112;
+			dialog.left = o.left || dialog.left;
+			dialog.top = o.top || dialog.top;
+
+			// Build interface
+			var document = dialog.document;
+
+			document.write(html(o.type));
+			document.close();
+
+			if (prof[o.type] && prof[o.type].init) {
+				prof[o.type].init(o);
+			}
+
+			return o;
+		}
+
+		function show(o) {
+			o.dialog.visible = true;
+
+			if (prof[o.type] && prof[o.type].show) {
+				prof[o.type].show(o);
+			}
+		}
+
+		function open(o) {
+			var dialog;
+			if (!o.id || !pool[o.id]) {
+				dialog = create(o);
+			} else {
+				dialog = pool[o.id];
+			}
+			show(dialog);
+		}
+
+		return open;
+
+	})(GlobalSettings, io, PLUGIN_DIR);
+
 
 	// Default snippets and caniuse
 	emmet.loadSystemSnippets(io.read(PLUGIN_DIR + "/includes/emmet/snippets.json"));
@@ -481,9 +591,15 @@
 	function runAction(action_name) {
 		emmetEditor.setContext(Editor.currentView);
 		if (action_name == 'wrap_with_abbreviation' || action_name == "update_tag") {
-			Dialog.prompt('Enter Abbreviation',"", function(abbr){
-				if (abbr)
-					emmet.run(action_name, emmetEditor, abbr);
+			dialog({
+				id: "emmet",
+				type: "prompt",
+				title: "Enter Abbreviation",
+				cmd: function(abbr) {
+					if (abbr) {
+						emmet.run(action_name, emmetEditor, abbr);
+					}
+				}
 			});
 		} else if (action_name == "expand_abbreviation_with_tab") {
 			// Emmet's indentation style doesn't match notepad++'s.
