@@ -1,5 +1,14 @@
 (function(){
 
+	// Fake WScript env
+	if (typeof WScript == undefined) {
+		WScript = {
+			CreateObject: function(name) {
+				return new ActiveXObject(name);
+			}
+		};
+	}
+
 	require("lib/Scintilla.js");
 	require("lib/ECMA262.js");
 	require("includes/emmet/emmet.js");
