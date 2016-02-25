@@ -14,8 +14,8 @@ module.exports = function(grunt) {
 			}
 		},
 		watch: {
-			js: {
-				files: ["src/*.js"],
+			src: {
+				files: ["src/**/*"],
 				tasks: ["eslint", "copy"]
 			},
 			grunt: {
