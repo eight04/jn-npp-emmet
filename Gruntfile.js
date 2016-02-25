@@ -37,12 +37,6 @@ module.exports = function(grunt) {
 				cwd: "lib/emmet/lib",
 				src: ["*.json"],
 				dest: "dist/emmet"
-			},
-			npp: {
-				expand: true,
-				cwd: "dist",
-				src: ["**"],
-				dest: "C:\\Program Files (x86)\\Notepad++\\plugins\\jN\\includes"
 			}
 		},
 		browserify: {
