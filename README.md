@@ -11,6 +11,67 @@ Install
 3. Copy everything in `dist` into `plugins\jN\includes`.
 4. Keymap is located at `%appdata%\Notepad++\plugins\config\emmet.keymap.json`
 
+Config
+------
+All config files are placed in the config directory: `%appdata%\Notepad++\plugins\config`.
+
+### emmet.keymap.json
+
+```
+{
+	// The order of key combination doesn't matter
+	"encode_decode_data_url": "Ctrl+Shift+I",
+	"prev_edit_point": "Ctrl+Alt+Left",
+	"next_edit_point": "Ctrl+Alt+Right",
+	...
+	// Disable the action with `null`. You can still execute it with emmet menu.
+	"insert_formatted_line_break_only": null,
+	"insert_formatted_line_break": null,
+	"balance_inward": "Ctrl+Shift+D",
+	...
+}
+```
+
+### emmet.menu.json
+
+```
+[
+	{
+		"type": "action",	// action, submenu, separator
+		"name": "expand_abbreviation",	// the name of the action
+		"label": "Expand Abbreviation"	// if the item is lack of .label, it will use .name as fallback.
+	},
+	{
+		"type": "separator"
+	},
+	{
+		"type": "action",
+		"name": "encode_decode_data_url",
+		"label": "Encode\\Decode data:URL image"
+	},
+	...
+	{
+		"name": "Numbers",
+		"type": "submenu",
+		"items": [	// the items in the submenu.
+			{
+				"type": "action",
+				"name": "evaluate_math_expression",
+				"label": "Evaluate Math Expression"
+			},
+			{
+				"type": "action",
+				"name": "increment_number_by_1",
+				"label": "Increment number by 1"
+			},
+			...
+		]
+	},
+	...
+]
+```
+
+
 Todos
 -----
 * Make license compatible with jN's zen_coding script.
