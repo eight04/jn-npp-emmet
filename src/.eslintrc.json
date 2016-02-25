@@ -21,6 +21,7 @@
 		"MenuCmds": false,
 		"GlobalSettings": false,
 		"debug": false,
-		"FileStream": false
+		"FileStream": false,
+		"WScript": true
 	}
 }
