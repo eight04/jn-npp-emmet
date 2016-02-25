@@ -225,10 +225,18 @@
 		path.copy(defaultKeymap, userKeymap);
 	}
 
+	// Default menu
+	var userMenu = Editor.pluginConfigDir + "/emmet.menu.json";
+
+	if (!path.exists(userMenu)) {
+		io.write(userMenu, JSON.stringify(emmet.actions.getMenu()));
+	}
+
 	// User settings
 	var preference = io.read(Editor.pluginConfigDir + "/emmet.preferences.json");
 	var snippets = io.read(Editor.pluginConfigDir + "/emmet.snippets.json");
 	var keyMap = io.read(Editor.pluginConfigDir + "/emmet.keymap.json");
+	var menu = io.read(Editor.pluginConfigDir + "/emmet.menu.json");
 
 	if (preference) {
 		emmet.loadPreferences(preference);
@@ -242,6 +250,12 @@
 		keyMap = JSON.parse(keyMap);
 	} catch (err) {
 		keyMap = {};
+	}
+
+	try {
+		menu = JSON.parse(menu);
+	} catch (err) {
+		menu = [];
 	}
 
 	// Create emmet editor
@@ -645,23 +659,26 @@
 	// Construct menu helper
 	function constructMenu(menu, list) {
 		list.forEach(function(item){
+			var label = item.label || item.name;
 			if (item.type == "submenu") {
 				var subMenu = menu.addMenu({
-					text: item.name
+					text: label
 				});
 				constructMenu(subMenu, item.items);
-			} else {
+			} else if (item.type == "item") {
 				menu.addItem({
-					text: item.label + (keyMap[item.name] ? "\t" + keyMap[item.name] : ""),
+					text: label + (keyMap[item.name] ? "\t" + keyMap[item.name] : ""),
 					cmd: function(){
 						runAction(item.name);
 					}
 				});
+			} else {
+				menu.addSeparator();
 			}
 		});
 	}
 
-	constructMenu(Editor.addMenu("Emmet"), emmet.actions.getMenu());
+	constructMenu(Editor.addMenu("Emmet"), menu);
 
 	// Map key name to key code.
 	// https://msdn.microsoft.com/en-us/library/dd375731%28v=VS.85%29.aspx
