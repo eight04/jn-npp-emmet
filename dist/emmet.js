@@ -3,7 +3,7 @@
 	require("lib/Scintilla.js");
 	require("lib/ECMA262.js");
 	require("includes/emmet/emmet.js");
-	require("menuCmds.js");
+	require("includes/MenuCmds.js");
 
 	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
