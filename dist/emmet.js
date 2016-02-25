@@ -73,7 +73,9 @@
 			},
 			readBin: function(filename, size) {
 				var fs = new FileStream(filename),
-					result;
+					buff,
+					result = "",
+					i;
 
 				if (size == null) {
 					size = -1;
@@ -81,8 +83,13 @@
 
 				fs.open();
 				fs.loadFromFile(filename);
-				result = fs.readToArray(size).map(String.fromCharCode).join("");
+				buff = fs.readToString(size);
 				fs.close();
+
+				for (i = 0; i < buff.length; i += 2) {
+					result += String.fromCharCode(parseInt(buff.substr(i, 2), 16));
+				}
+
 				return result;
 			}
 		};
@@ -568,7 +575,7 @@
 				}
 				var bin = io.readBin(path, size);
 				if (callback) {
-					callback(bin);
+					callback(bin == "", bin);
 				} else {
 					return bin;
 				}
