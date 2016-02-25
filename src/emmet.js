@@ -229,7 +229,7 @@
 	var userMenu = Editor.pluginConfigDir + "/emmet.menu.json";
 
 	if (!path.exists(userMenu)) {
-		io.write(userMenu, JSON.stringify(emmet.actions.getMenu()));
+		io.write(userMenu, JSON.stringify(emmet.actions.getMenu(), "\t"));
 	}
 
 	// User settings
