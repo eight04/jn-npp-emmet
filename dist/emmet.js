@@ -78,32 +78,42 @@
 	})(path);
 
 	var dialog = (function(settings, io, PLUGIN_DIR){
-		var pool = {}, htmlCache = {},
+		var pool = {},
+			htmlCache = {},
 			prof = {
 				prompt: {
-					init: function(o) {
-						var document = o.dialog.document;
+					oncreate: function(dialog) {
+						var d = dialog.handle,
+							document = d.document;
 
 						document.getElementById("form").onsubmit = function() {
-							o.result = document.getElementById("entry").value;
-							o.dialog.close();
+							var e = document.parentWindow.event;
+							e.returnValue = false;
+							dialog.result = document.getElementById("entry").value;
+							d.close();
 						};
 
 						document.getElementById("cancel").onclick = function() {
-							o.dialog.close();
+							d.close();
 						};
 
 						document.onkeydown = function() {
 							var e = document.parentWindow.event;
 							if (e.keyCode == 27) {
-								o.dialog.close();
+								d.close();
 							}
 						};
 					},
-					show: function(o) {
-						var entry = o.dialog.document.getElementById("entry");
-						entry.value = o.value || "";
+					onshow: function(dialog) {
+						var entry = dialog.handle.document.getElementById("entry");
+						entry.value = dialog.options.value || "";
 						entry.focus();
+						dialog.result = null;
+					},
+					onclose: function(dialog) {
+						if (dialog.result && dialog.options.cmd) {
+							dialog.options.cmd(dialog.result);
+						}
 					}
 				}
 			};
@@ -115,68 +125,87 @@
 			return htmlCache[type];
 		}
 
-		function create(o) {
-			var dialog = o.dialog = System.createDialog({
-				onbeforeclose: function(){
-					if (o.result && o.cmd) {
-						o.cmd(o.result);
-					}
-					if (o.id) {
-						settings.set("dialog." + o.id + ".width", dialog.width);
-						settings.set("dialog." + o.id + ".height", dialog.height);
-						settings.set("dialog." + o.id + ".left", dialog.left);
-						settings.set("dialog." + o.id + ".top", dialog.top);
-						dialog.visible = false;
-						return true;
-					}
-				}
-			});
+		function create(options) {
+			var dialog = {
+				options: options,
+				handle: System.createDialog({
+					onbeforeclose: function(){
+						var d = dialog.handle,
+							o = dialog.options;
 
-			dialog.title = o.title;
+						if (prof[o.type].onclose) {
+							prof[o.type].onclose(dialog);
+						}
+
+						if (o.id) {
+							settings.set("dialog." + o.id + ".width", d.width);
+							settings.set("dialog." + o.id + ".height", d.height);
+							settings.set("dialog." + o.id + ".left", d.left);
+							settings.set("dialog." + o.id + ".top", d.top);
+							d.visible = false;
+							return true;
+						}
+					}
+				}),
+				show: function(){
+					var d = dialog.handle,
+						o = dialog.options;
+
+					d.visible = true;
+
+					if (prof[o.type].onshow) {
+						prof[o.type].onshow(dialog);
+					}
+				},
+				useOptions: function(options){
+					dialog.options = options;
+				}
+			};
+
+			var d = dialog.handle,
+				o = dialog.options;
+
+			d.title = o.title;
 
 			if (o.id) {
-				pool[o.id] = o;
-
 				o.width = settings.get("dialog." + o.id + ".width") || o.width;
 				o.height = settings.get("dialog." + o.id + ".height") || o.width;
 				o.left = settings.get("dialog." + o.id + ".left") || o.left;
 				o.top = settings.get("dialog." + o.id + ".top") || o.top;
 			}
 
-			dialog.width = o.width || 409;
-			dialog.height = o.height || 112;
-			dialog.left = o.left || dialog.left;
-			dialog.top = o.top || dialog.top;
+			d.width = o.width || 409;
+			d.height = o.height || 112;
+			d.left = o.left || d.left;
+			d.top = o.top || d.top;
 
 			// Build interface
-			var document = dialog.document;
+			var document = d.document;
 
 			document.write(html(o.type));
 			document.close();
 
-			if (prof[o.type] && prof[o.type].init) {
-				prof[o.type].init(o);
+			if (prof[o.type] && prof[o.type].oncreate) {
+				prof[o.type].oncreate(dialog);
 			}
 
-			return o;
-		}
-
-		function show(o) {
-			o.dialog.visible = true;
-
-			if (prof[o.type] && prof[o.type].show) {
-				prof[o.type].show(o);
-			}
+			return dialog;
 		}
 
 		function open(o) {
 			var dialog;
-			if (!o.id || !pool[o.id]) {
-				dialog = create(o);
-			} else {
+
+			if (pool[o.id]) {
 				dialog = pool[o.id];
+				dialog.useOptions(o);
+			} else {
+				dialog = create(o);
+				if (o.id) {
+					pool[o.id] = dialog;
+				}
 			}
-			show(dialog);
+
+			dialog.show();
 		}
 
 		return open;
