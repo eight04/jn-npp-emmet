@@ -7,7 +7,7 @@ module.exports = function(grunt) {
 		pkg: grunt.file.readJSON("package.json"),
 		bump: {
 			options: {
-				files: ["package.json", "bower.json"],
+				files: ["package.json"],
 				updateConfigs: ["pkg"],
 				commitFiles: ["package.json", "bower.json"],
 				pushTo: "origin"
