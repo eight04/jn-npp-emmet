@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+			text-align: center;
+			overflow: hidden;
+			background: #f0f0f0;
+			font-size: 12px;
+			font-family: sans-serif;
+		}
+
+		.container {
+			padding: 0.6em;
+		}
+
+		#ok, #cancel {
+			padding: 0.3em 0.6em;
+			width: 6em;
+			font: inherit;
+		}
+
+		.entry-wrap {
+			background: white;
+			border: 1px inset;
+			font: inherit;
+			padding: 0.4em;
+		}
+
+		.button-wrap {
+			margin-top: 0.6em;
+		}
+
+		#entry {
+			text-align: left;
+			display: block;
+			width: 100%;
+			border-width: 0;
+			padding: 0;
+			margin: 0;
+		}
+
+	</style>
+</head>
+<body>
+	<form action="" id="form" class="container">
+		<div class="entry-wrap">
+			<input type="text" id="entry">
+		</div>
+		<div class="button-wrap">
+			<input type="submit" id="ok" value="OK">
+			<input type="button" id="cancel" value="Cancel">
+		</div>
+	</form>
+</body>
+</html>

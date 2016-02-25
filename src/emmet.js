@@ -73,7 +73,116 @@
 		};
 	}();
 
-	var PLUGIN_DIR = path.parent(System.scriptFullName);
+	var PLUGIN_DIR = (function(path){
+		return path.parent(System.scriptFullName);
+	})(path);
+
+	var dialog = (function(settings, io, PLUGIN_DIR){
+		var pool = {}, htmlCache = {},
+			prof = {
+				prompt: {
+					init: function(o) {
+						var document = o.dialog.document;
+
+						document.getElementById("form").onsubmit = function() {
+							o.result = document.getElementById("entry").value;
+							o.dialog.close();
+						};
+
+						document.getElementById("cancel").onclick = function() {
+							o.dialog.close();
+						};
+
+						document.onkeydown = function() {
+							var e = document.parentWindow.event;
+							if (e.keyCode == 27) {
+								o.dialog.close();
+							}
+						};
+					},
+					show: function(o) {
+						var entry = o.dialog.document.getElementById("entry");
+						entry.value = o.value || "";
+						entry.focus();
+					}
+				}
+			};
+
+		function html(type) {
+			if (!htmlCache[type]) {
+				htmlCache[type] = io.read(PLUGIN_DIR + "/includes/dialog/" + type + ".html");
+			}
+			return htmlCache[type];
+		}
+
+		function create(o) {
+			var dialog = o.dialog = System.createDialog({
+				onbeforeclose: function(){
+					if (o.result && o.cmd) {
+						o.cmd(o.result);
+					}
+					if (o.id) {
+						settings.set("dialog." + o.id + ".width", dialog.width);
+						settings.set("dialog." + o.id + ".height", dialog.height);
+						settings.set("dialog." + o.id + ".left", dialog.left);
+						settings.set("dialog." + o.id + ".top", dialog.top);
+						dialog.visible = false;
+						return true;
+					}
+				}
+			});
+
+			dialog.title = o.title;
+
+			if (o.id) {
+				pool[o.id] = o;
+
+				o.width = settings.get("dialog." + o.id + ".width") || o.width;
+				o.height = settings.get("dialog." + o.id + ".height") || o.width;
+				o.left = settings.get("dialog." + o.id + ".left") || o.left;
+				o.top = settings.get("dialog." + o.id + ".top") || o.top;
+			}
+
+			dialog.width = o.width || 409;
+			dialog.height = o.height || 112;
+			dialog.left = o.left || dialog.left;
+			dialog.top = o.top || dialog.top;
+
+			// Build interface
+			var document = dialog.document;
+
+			document.write(html(o.type));
+			document.close();
+
+			if (prof[o.type] && prof[o.type].init) {
+				prof[o.type].init(o);
+			}
+
+			return o;
+		}
+
+		function show(o) {
+			o.dialog.visible = true;
+
+			if (prof[o.type] && prof[o.type].show) {
+				prof[o.type].show(o);
+			}
+		}
+
+		function open(o) {
+			var dialog;
+			if (!o.id || !pool[o.id]) {
+				dialog = create(o);
+			} else {
+				dialog = pool[o.id];
+			}
+			show(dialog);
+		}
+
+		return open;
+
+	})(GlobalSettings, io, PLUGIN_DIR);
+
 
 	// Default snippets and caniuse
 	emmet.loadSystemSnippets(io.read(PLUGIN_DIR + "/includes/emmet/snippets.json"));
@@ -91,7 +200,6 @@
 	var preference = io.read(Editor.pluginConfigDir + "/emmet.preferences.json");
 	var snippets = io.read(Editor.pluginConfigDir + "/emmet.snippets.json");
 	var keyMap = io.read(Editor.pluginConfigDir + "/emmet.keymap.json");
-	var settings = new Settings(Editor.pluginConfigDir + "/emmet.settings.json");
 
 	if (preference) {
 		emmet.loadPreferences(preference);
@@ -475,61 +583,6 @@
 
 	emmet.file(emmetFile);
 
-	var dialog = function(createDialog, settings){
-		var pool = {};
-
-		return function (o) {
-			// Re-use old dialog
-			if (o.id && o.pool[o.id]) {
-				o.pool[o.id].show();
-			} else {
-				var dialog = createDialog();
-				if (o.id) {
-					pool[o.id] = dialog;
-					dialog.clientHeight = settings.get("dialog." + o.id + ".height") || o.height || 100;
-					dialog.clientWidth = settings.get("dialog." + o.id + ".width") || o.width || 300;
-					dialog.handle.onresize = function() {
-						alert("resize");
-					};
-				}
-
-				dialog.client
-			}
-		};
-	}(System.createDialog, GlobalSettings);
-
-	function abbrPrompt(callback) {
-		dialog({
-			id: "emmet",
-			type: "prompt",
-			height: 100,
-			width: 300,
-			cmd: callback
-		});
-	}
-
-	var abbrPrompt = function(Dialog){
-		var dialog;
-		Dialog.prompt('Enter Abbreviation',"", function(abbr){
-			if (abbr)
-				emmet.run(action_name, emmetEditor, abbr);
-		});
-
-		function init() {
-			var handle = ;
-		}
-
-		function open(callback) {
-			if (!dialog) {
-				init();
-			}
-			dialog.callback = callback;
-			dialog.show();
-		}
-
-		return open;
-	}(Dialog);
-
 	/**
 	 * Zen Coding manager that runs actions
 	 * @param {String} action_name Action to call
@@ -538,9 +591,14 @@
 	function runAction(action_name) {
 		emmetEditor.setContext(Editor.currentView);
 		if (action_name == 'wrap_with_abbreviation' || action_name == "update_tag") {
-			abbrPrompt(function(value){
-				if (value) {
-					emmet.run(action_name, emmetEditor, abbr);
+			dialog({
+				id: "emmet",
+				type: "prompt",
+				title: "Enter Abbreviation",
+				cmd: function(abbr) {
+					if (abbr) {
+						emmet.run(action_name, emmetEditor, abbr);
+					}
 				}
 			});
 		} else if (action_name == "expand_abbreviation_with_tab") {
