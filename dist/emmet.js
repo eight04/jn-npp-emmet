@@ -1,5 +1,14 @@
 (function(){
 
+	// Fake WScript env
+	if (typeof WScript == "undefined") {
+		WScript = {
+			CreateObject: function(name) {
+				return new ActiveXObject(name);
+			}
+		};
+	}
+
 	require("lib/Scintilla.js");
 	require("lib/ECMA262.js");
 	require("includes/emmet/emmet.js");
@@ -63,9 +72,18 @@
 				stream.Close();
 			},
 			readBin: function(filename, size) {
-				var fs = new FileStream(filename);
+				var fs = new FileStream(filename),
+					result;
+
+				if (size == null) {
+					size = -1;
+				}
+
+				fs.open();
 				fs.loadFromFile(filename);
-				return fs.readToArray(size).map(String.fromCharCode).join("");
+				result = fs.readToArray(size).map(String.fromCharCode).join("");
+				fs.close();
+				return result;
 			}
 		};
 	}();
