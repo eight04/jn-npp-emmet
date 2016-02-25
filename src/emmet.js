@@ -3,6 +3,7 @@
 	require("lib/Scintilla.js");
 	require("lib/ECMA262.js");
 	require("includes/emmet/emmet.js");
+	require("menuCmds.js");
 
 	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -479,6 +480,13 @@
 				if (abbr)
 					emmet.run(action_name, emmetEditor, abbr);
 			});
+		} else if (action_name == "expand_abbreviation_with_tab") {
+			// Emmet's indentation style doesn't match notepad++'s.
+			if (emmetEditor.isCollapse()) {
+				emmet.run(action_name, emmetEditor);
+			} else {
+				menuCmds.EDIT_INS_TAB();
+			}
 		} else {
 			return emmet.run(action_name, emmetEditor);
 		}
