@@ -4,7 +4,7 @@
 	require("lib/ECMA262.js");
 	require("includes/emmet/emmet.js");
 	require("includes/MenuCmds.js");
-	require("includes/Dialog.js");
+	// require("includes/Dialog.js");
 
 	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
