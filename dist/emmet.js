@@ -229,7 +229,7 @@
 	var userMenu = Editor.pluginConfigDir + "/emmet.menu.json";
 
 	if (!path.exists(userMenu)) {
-		io.write(userMenu, JSON.stringify(emmet.actions.getMenu(), "\t"));
+		io.write(userMenu, JSON.stringify(emmet.actions.getMenu(), null, "\t"));
 	}
 
 	// User settings
@@ -665,15 +665,15 @@
 					text: label
 				});
 				constructMenu(subMenu, item.items);
-			} else if (item.type == "item") {
+			} else if (item.type == "separator") {
+				menu.addSeparator();
+			} else {
 				menu.addItem({
 					text: label + (keyMap[item.name] ? "\t" + keyMap[item.name] : ""),
 					cmd: function(){
 						runAction(item.name);
 					}
 				});
-			} else {
-				menu.addSeparator();
 			}
 		});
 	}
