@@ -1,0 +1,383 @@
+<html>
+<head>
+<title>FileStream.js - binary file manipulation for WSH</title>
+<meta name="description" content="FileStream.js - binary file manipulation for WSH" />
+<style type="text/css">
+body {
+  margin: 0;
+  padding: 0;
+}
+.wrap {
+  padding: 10%;
+  font-family: sans-serif;
+}
+.title {
+  font-size: 160%;
+}
+.author {
+  padding: 0 1%;
+  text-align: right;
+  font-size: 80%;
+}
+.comment {
+  padding: 2% 3%;
+  line-height: 120%;
+}
+.contents {
+  padding: 3% 10%;
+  line-height: 120%;
+}
+.list {
+  padding-top: 1%;
+}
+.entry {
+  margin : 3% 0;
+  padding: 3%;
+  border-left: 1px solid #000;
+  border-top: 1px solid #000000;
+  border-right: 3px solid #000;
+  border-bottom: 3px solid #000000;
+}
+.subject {
+  font-size: 120%;
+  font-weight: bold;
+}
+.keyword {
+  padding: 0 1%;
+  text-align: right;
+  font-size: 80%;
+  font-weight: normal;
+}
+.modified {
+  padding: 0 1%;
+  text-align: right;
+  font-size: 80%;
+  font-weight: normal;
+}
+.text p {
+  line-height: 140%;
+  font-size: 90%;
+}
+.text pre {
+  padding: 1%;
+  background-color: #E0E0E0;
+  line-height: 140%;
+  font-size: 90%;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!--DocumentHeaderStart-->
+<h1 class="title">FileStream.js - binary file manipulation for WSH</h1>
+<p class="comment">
+WSHには通常、ファイルへのバイナリでのRead/Writeを
+行う仕組みがありません。しかし、ADODB.Streamを利用すると、
+思ったより簡単に実現できます。
+この機能をまとめたFileStream.jsスクリプトはJScriptで100行前後です。
+</p>
+
+<p class="author">
+by <a href="mailto:k e i. n a z a k i (a) g m a i l . c o m">kei.nazaki</a> 2008
+</p>
+<!--DocumentHeaderEnd-->
+
+
+
+<!--EntryStart-->
+<div class="entry">
+<h3 class="subject">FileStream.js (update 1.081221)</h3>
+<h5 class="modified">2008/12/21</h5>
+<div class="text">
+<p>
+OSというよりはMDACによって正しく動作するか分かれるはず。
+それでもWindows2000-SP4,WindowsXP-SP2,SP3の通常な？複数の環境で
+チェックする限りは、期待通り動作してます。
+</p>
+<p>
+以下、FileStreamのプロパティとメソッド
+</p>
+<dl>
+<dt class="list">position</dt>
+<dd>[property] 読み書きを始める位置</dd>
+<dt class="list">isLittleEndian</dt>
+<dd>[property] readToArrayでoptionを指定する時のendianess。falseならBigEndian</dd>
+<dt class="list">open()</dt>
+<dd>[method] streamをopenする</dd>
+<dt class="list">close()</dt>
+<dd>[method] streamをcloseする</dd>
+<dt class="list">eos()</dt>
+<dd>[method] ストリームの終端ならtrue</dd>
+<dt class="list">size()</dt>
+<dd>[method] openしているストリームのサイズ(byte)</dd>
+<dt class="list">loadFromFile(filename)</dt>
+<dd>[method] filenameをstreamに読み込む</dd>
+<dt class="list">saveFromFile(filename)</dt>
+<dd>[method] streamの内容をfilenameに書き出す</dd>
+<dt class="list">readToString(size)</dt>
+<dd>[method] 現在のpositionからsize分読み込み、Stringを返す。
+Stringはデータ1byteにつき2文字の16進数表現[0-9a-f]。
+1,2,256,255 というデータなら'0102fffe'が返る</dd>
+<dt class="list">readToArray(size,option)</dt>
+<dd>[method] 現在のpositionからsize分読み込み、Arrayを返す。
+optionを指定しない場合、
+Arrayにはデータが1byteにつき1要素として格納される。
+1,2,256,255 というデータなら[1,2,0xff,0xfe]が返る。
+optionには、Arrayで各配列要素に読み込みたいサイズを指定します。例えば、
+{DWORD,WORD,WORD,DWORD}という構造を読み込む場合は、
+readToArray(12,[4,2,2,4])と指定します</dd>
+<dt class="list">writeFromString(string)</dt>
+<dd>[method] 現在のpositionからstringをバイト列として書き出す。
+stringに格納するデータはreadToStringの真逆で、
+1byteにつき2文字の16進数表現[0-9a-f]。
+1,2,256,255 というデータなら、
+stream.writeFromString('0102fffe') とする</dd>
+<dt class="list">writeFromArray(array)</dt>
+<dd>[method] 現在のpositionからarrayをバイト列として書き出す。
+arrayに格納するデータはreadToArrayの真逆で、
+1byteにつき1要素で格納した配列。
+1,2,256,255 というデータなら、
+stream.writeFromArray([1,2,0xff,0xfe]) とする。</dd>
+</dl>
+<p>
+以下同梱サンプル。
+</p>
+<pre>
+dump.js ------- cscript dump.js &lt;filename&gt; [/o:n] [/w:n] [/r:n] [/all]
+・オプションは /offset(/o) /width(/w) /radix(/r)でも指定可。
+・例えば、cscript dump.js bin /width:3 /radix:2
+・q で終了、Enterで次
+
+wave.js ------- cscript wave.js
+・sample.wav という8KBの音声ファイルを作成
+・できるのはパルス音が一秒鳴るwaveファイル
+
+barcode.js ---- cscript barcode.js
+・JAN13のバーコードシンボルをwmfで作成。
+</pre>
+<p>
+以下コード。
+</p>
+<pre>
+// FileStream.js 1.081221
+// coded by keisuke inazaki
+//----------------------------
+function FileStream(){
+  var stream = WScript.CreateObject('ADODB.Stream');
+  this.position = 0;
+  this.isLittleEndian = true;
+  this.open = function(){
+    stream.Type = 2; //adTypeText
+    stream.Charset = 'iso-8859-1';
+    stream.Open();
+  }
+  this.close = function(){
+    stream.Close();
+    this.position = 0;
+  }
+  this.eos = function(){
+    return stream.EOS;
+  }
+  this.size = function(){
+    return stream.Size;
+  }
+  this.loadFromFile = function(filename){
+    stream.LoadFromFile(filename);
+  }
+  this.saveToFile = function(filename,option){
+    var option = option || 2; //adSaveCreateOverWrite
+    stream.SaveToFile(filename,option);
+  }
+  this.readToString = function(size){
+    var result='';
+    stream.Position = 0;
+    stream.Charset = 'ascii';
+    stream.Position = this.position;
+    var s1 = stream.ReadText(size);
+    stream.Position = 0;
+    stream.Charset = 'iso-8859-1';
+    stream.Position = this.position;
+    var s2 = stream.ReadText(size);
+    this.position = stream.Position;
+    for(var i=0; i&lt;s1.length; i++){
+      result += ('0'+(s1.charCodeAt(i)|(s2.charCodeAt(i)&lt;0x80?0:0x80))
+        .toString(16)).slice(-2);
+    }
+    s1 = s2 = null;
+    return result;
+  }
+  this.readToArray = function(size,option){
+    var result = [];
+    var option = option || [];
+    var s = this.readToString(size);
+    for(var i=0; i&lt;s.length;){
+      var sz = (option.length &gt; 0) ? option.shift() * 2 : 2 ;
+      var st = s.substr(i,sz).match(/(\w{2})/g);
+      if(this.isLittleEndian) st = st.reverse();
+      result.push(parseInt(st.join(''),16));
+      i+=sz;
+    }
+    s = null;
+    return result;
+  }
+  this.writeFromString = function(str){
+    stream.Position = 0;
+    stream.Charset = 'iso-8859-1';
+    stream.Position = this.position;
+    for(var i=0; i&lt;str.length; i+=2){
+      stream.WriteText(String.fromCharCode(
+        parseInt(str.substr(i,2),16)));
+    }
+    this.position = stream.Position;
+  }
+  this.writeFromArray = function(arr){
+    stream.Position = 0;
+    stream.Charset = 'iso-8859-1';
+    stream.Position = this.position;
+    for(var i=0; i&lt;arr.length; i++){
+      stream.WriteText(String.fromCharCode(arr[i]&amp;0xFF));
+    }
+    this.position = stream.Position;
+  }
+}
+</pre>
+</div>
+<h4 class="keyword">[javascript][WSH]</h4>
+</div>
+<!--EntryEnd-->
+
+<!--EntryStart-->
+<div class="entry">
+<h3 class="subject">ADODB.Streamでバイナリファイルを読み込み</h3>
+<h5 class="modified">2008/12/21</h5>
+<div class="text">
+<p>
+読み込みは単に'iso-8859-1'を指定するだけでは、成功しない。'iso-8859-1'で1byteずつ
+読んでいくと、何箇所か正しい値を返さない。以下は、前述の
+http://www.isla-plata.org/wiki/に既出の、0-255の
+値を格納したファイルを'iso-8859-1'で読んだ例。
+</p>
+<pre>
+00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
+10 11 12 13 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f
+20 21 22 23 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f
+30 31 32 33 34 35 36 37 38 39 3a 3b 3c 3d 3e 3f
+40 41 42 43 44 45 46 47 48 49 4a 4b 4c 4d 4e 4f
+50 51 52 53 54 55 56 57 58 59 5a 5b 5c 5d 5e 5f
+60 61 62 63 64 65 66 67 68 69 6a 6b 6c 6d 6e 6f
+70 71 72 73 74 75 76 77 78 79 7a 7b 7c 7d 7e 7f
+20ac 81 201a 192 201e 2026 2020 2021 2c6 2030 160 2039 152 8d 17d 8f
+90 2018 2019 201c 201d 2022 2013 2014 2dc 2122 161 203a 153 9d 17e 178
+a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 aa ab ac ad ae af
+b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 ba bb bc bd be bf
+c0 c1 c2 c3 c4 c5 c6 c7 c8 c9 ca cb cc cd ce cf
+d0 d1 d2 d3 d4 d5 d6 d7 d8 d9 da db dc dd de df
+e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 ea eb ec ed ee ef
+f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 fa fb fc fd fe ff
+</pre>
+<p>
+回避する方法。一度Charsetを
+'ascii'にして、7bitだけをまず取り出し、s1に格納する。次に0x80以降を識別するために、
+一度Positionを戻して、'iso-8859-1'を指定し
+（0x80以降はでたらめでも0x80以上を返すことが分かっているので）同じ1byteをs2に読み込む。
+結果、s2が0x80以上であれば、s1の0x80にビットを立てる。
+</p>
+<p>
+注意すべきなのは、s2の0x80が立っているかのチェックでは駄目だということ。'iso-8859-1'は
+0x0160など平気で返す。それからADODB.StreamのOpen前に、'iso-8859-1'を
+指定する。でないとStringにBOMがセットされてしまう。
+</p>
+<pre>
+function readBinaryFile(filename){
+  var result = '';
+  var stream = WScript.CreateObject('ADODB.Stream');
+  stream.Type = 2; //adTypeText
+  stream.Charset = 'iso-8859-1'; //eliminate BOM
+  stream.Open();
+  stream.LoadFromFile(filename);
+  stream.Position = 0;
+  stream.Charset = 'ascii';
+  var s1 = stream.ReadText(-1); //ReadAll
+  stream.Position = 0;
+  stream.Charset = 'iso-8859-1';
+  var s2 = stream.ReadText(-1); //ReadAll
+  for(var i=0; i&lt;s1.length; i++){
+    result += ('0'+(s1.charCodeAt(i)|(s2.charCodeAt(i)&lt;0x80?0:0x80))
+      .toString(16)).slice(-2);
+  }
+  s1 = s2 = null;
+  return result;
+}
+//test
+WScript.Echo(readBinaryFile("bin")
+  .replace(/(.{32})/g,"$1\n").replace(/(\w{2})/g," $1"));
+</pre>
+<pre>
+C:\temp&gt;cscript /nologo readBinaryFile.js
+ 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f
+ 10 11 12 13 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f
+ 20 21 22 23 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f
+ 30 31 32 33 34 35 36 37 38 39 3a 3b 3c 3d 3e 3f
+ 40 41 42 43 44 45 46 47 48 49 4a 4b 4c 4d 4e 4f
+ 50 51 52 53 54 55 56 57 58 59 5a 5b 5c 5d 5e 5f
+ 60 61 62 63 64 65 66 67 68 69 6a 6b 6c 6d 6e 6f
+ 70 71 72 73 74 75 76 77 78 79 7a 7b 7c 7d 7e 7f
+ 80 81 82 83 84 85 86 87 88 89 8a 8b 8c 8d 8e 8f
+ 90 91 92 93 94 95 96 97 98 99 9a 9b 9c 9d 9e 9f
+ a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 aa ab ac ad ae af
+ b0 b1 b2 b3 b4 b5 b6 b7 b8 b9 ba bb bc bd be bf
+ c0 c1 c2 c3 c4 c5 c6 c7 c8 c9 ca cb cc cd ce cf
+ d0 d1 d2 d3 d4 d5 d6 d7 d8 d9 da db dc dd de df
+ e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 ea eb ec ed ee ef
+ f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 fa fb fc fd fe ff
+</pre>
+</div>
+<h4 class="keyword">[javascript][WSH]</h4>
+</div>
+<!--EntryEnd-->
+
+<!--EntryStart-->
+<div class="entry">
+<h3 class="subject">ADODB.Streamでバイナリファイルを書き出し</h3>
+<h5 class="modified">2008/12/21</h5>
+<div class="text">
+<p>
+http://www.isla-plata.org/wiki/が非常に参考なる。というか、
+ここの「ADODB.Streamによるファイルのバイナリアクセス（調査編）」が全て。
+仕組みはADODB.StreamのCharsetに'iso-8859-1'をセットして、adTypeTextで
+書き出すだけ。Arrayに1byteずつデータを格納し、書き出す関数のサンプル。
+</p>
+<pre>
+function arrayToFile(filename, array){
+  var stream = WScript.CreateObject('ADODB.Stream');
+  stream.Charset = 'iso-8859-1';
+  stream.Open();
+  for (var i=0; i &lt; array.length; i++)
+    stream.WriteText(String.fromCharCode(array[i]));
+  stream.SaveToFile(filename, 2);
+  stream.Close();
+}
+//test
+arrayToFile("bin",[0,1,2,3]);
+</pre>
+<pre>
+C:\temp&gt;cscript /nologo arrayToFile.js
+
+C:\temp&gt;dump bin
+
+00000000 : 00 01 02 03                 ....
+</pre>
+</div>
+<h4 class="keyword">[javascript][WSH]</h4>
+</div>
+<!--EntryEnd-->
+
+
+<p class="comment">
+<a href="./index.html">(RFYL - topic of WSH, javascript, and some experiment)</a>
+</p>
+
+</div>
+</body>
+</html>
