@@ -108,9 +108,13 @@
 						var d = dialog.handle,
 							document = d.document;
 
-						document.getElementById("form").onsubmit = function() {
-							var e = document.parentWindow.event;
-							e.returnValue = false;
+						document.getElementById("form").onsubmit = function(e) {
+							e = e || document.parentWindow.event;
+							if (e.preventDefault) {
+								e.preventDefault();
+							} else {
+								e.returnValue = false;
+							}
 							dialog.result = document.getElementById("entry").value;
 							d.close();
 						};
@@ -119,8 +123,8 @@
 							d.close();
 						};
 
-						document.onkeydown = function() {
-							var e = document.parentWindow.event;
+						document.onkeydown = function(e) {
+							e = e || document.parentWindow.event;
 							if (e.keyCode == 27) {
 								d.close();
 							}
