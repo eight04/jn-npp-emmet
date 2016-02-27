@@ -108,15 +108,10 @@
 						var d = dialog.handle,
 							document = d.document;
 
-						document.getElementById("form").onsubmit = function(e) {
-							e = e || document.parentWindow.event;
-							if (e.preventDefault) {
-								e.preventDefault();
-							} else {
-								e.returnValue = false;
-							}
+						document.getElementById("form").onsubmit = function() {
 							dialog.result = document.getElementById("entry").value;
 							d.close();
+							return false;
 						};
 
 						document.getElementById("cancel").onclick = function() {
