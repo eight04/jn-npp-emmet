@@ -110,9 +110,9 @@
 
 						document.getElementById("form").onsubmit = function() {
 							var e = document.parentWindow.event;
-							e.returnValue = false;
 							dialog.result = document.getElementById("entry").value;
 							d.close();
+							return false;
 						};
 
 						document.getElementById("cancel").onclick = function() {
