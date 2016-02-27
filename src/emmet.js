@@ -109,7 +109,6 @@
 							document = d.document;
 
 						document.getElementById("form").onsubmit = function() {
-							var e = document.parentWindow.event;
 							dialog.result = document.getElementById("entry").value;
 							d.close();
 							return false;
