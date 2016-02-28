@@ -1,3 +1,7 @@
 [submodule "src/emmet"]
 	path = lib/emmet
 	url = https://github.com/emmetio/emmet.git
+[submodule "lib/emmet-matcher-zen-coding"]
+	path = lib/emmet-matcher-zen-coding
+	url = https://github.com/eight04/emmet.git
+	branch = dev-matcher-zen-coding
