@@ -3476,7 +3476,7 @@ define(function(require, exports, module) {
 					pair = createMatcher(html, start_ix).search();
 					this._cache[hash] = makeRange(pair[0], pair[1], start_ix, html);
 				}
-				return this.cache[hash];
+				return this._cache[hash];
 			} else {
 				pair = createMatcher(html, start_ix).search();
 				return makeRange(pair[0], pair[1], start_ix, html);
