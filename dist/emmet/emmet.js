@@ -3467,16 +3467,35 @@ define(function(require, exports, module) {
 	}
 
 	return {
+		_cache: {},
 		find: function(html, start_ix) {
-			var pair = createMatcher(html, start_ix).search();
-			return makeRange(pair[0], pair[1], start_ix, html);
+			var pair, hash;
+			if (this.useCache) {
+				hash = "l" + html.length + "p" + start_ix;
+				if (this._cache[hash] === undefined) {
+					pair = createMatcher(html, start_ix).search();
+					this._cache[hash] = makeRange(pair[0], pair[1], start_ix, html);
+				}
+				return this.cache[hash];
+			} else {
+				pair = createMatcher(html, start_ix).search();
+				return makeRange(pair[0], pair[1], start_ix, html);
+			}
 		},
 		tag: function(html, start_ix) {
 			var result = this.find(html, start_ix);
 			if (result && result.type == 'tag') {
 				return result;
 			}
-		}
+		},
+		cache: function(useCache) {
+			this.useCache = useCache;
+			if (!useCache) {
+				this._cache = {};
+			}
+		},
+		// Get context. You only have to search closing tag for parent node.
+		ctx: function(){}
 	};
 });
 },{"./range":26}],23:[function(require,module,exports){
