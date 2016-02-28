@@ -41,7 +41,7 @@ module.exports = function(grunt) {
 			lib: {
 				expand: true,
 				cwd: "lib",
-				src: ["**", "!emmet/**"],
+				src: ["**", "!emmet*/**"],
 				dest: "dist"
 			}
 		},

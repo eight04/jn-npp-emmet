@@ -1,1 +1,1 @@
-emmet = require("../../lib/emmet/lib/emmet.js");
+emmet = require("../../lib/emmet-matcher-zen-coding/lib/emmet.js");
