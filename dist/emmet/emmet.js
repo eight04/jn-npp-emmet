@@ -3389,9 +3389,12 @@ define(function(require, exports, module) {
 						open = "<" + match[1];
 						close = "</" + match[1];
 
+						// Mark current match
+						searchBack(close, match.index);
+
 						// look for open tag
-						matchOpen = match.index - 1;
-						matchClose = match.index - 1;
+						matchOpen = match.index;
+						matchClose = match.index;
 						while (true) {
 							matchOpen = searchBack(open, matchOpen);
 							matchClose = searchBack(close, matchClose);
@@ -3404,11 +3407,8 @@ define(function(require, exports, module) {
 							}
 							if (matchOpen >= pos) {
 								// <div><div></div>|<div></div></div>
-								if (!mark[close]) {
-									mark[close] = {};
-								}
-								mark[close][match.index] = matchClose >= 0 ? mark[close][matchClose] : -1;
-								delete mark[close][matchClose];
+								mark[close][match.index]++;
+								mark[close][matchClose] = undefined;
 								break;
 							}
 							foundF = matchTag(match.index);
