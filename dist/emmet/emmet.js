@@ -2926,7 +2926,7 @@ define(function(require, exports, module) {
 		}
 	};
 });
-}).call(this,"/lib\\emmet-better-matcher\\lib\\assets")
+}).call(this,"/lib\\emmet-quick-match\\lib\\assets")
 },{"../utils/common":67,"./preferences":24}],20:[function(require,module,exports){
 /**
  * Module that contains factories for element types used by Emmet
@@ -3185,17 +3185,19 @@ if (typeof module === 'object' && typeof define !== 'function') {
 define(function(require, exports, module) {
 	var range = require('./range');
 	// Regular Expressions for parsing tags and attributes
-	// 1=name, 2=attributes, 3=closeSelf
-	var start_tag = /^<([\w\:\-]+)((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/,
-		// 1=name
-		end_tag = /^<\/([\w\:\-]+)[^>]*>/;
+	// 1=id, 2=name, 3=attributes, 4=closeSelf
+	var start_tag = /^(<([\w\:\-]+))((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/,
+		// 1=id, 2=name
+		end_tag = /^(<\/([\w\:\-]+))[^>]*>/,
+		end_tag_g = /<\/([\w\:\-]+)[^>]*>/g;
 
 	function tag(match, ix, type) {
-		var name = match[1].toLowerCase();
 		return  {
-			name: name,
+			full: match[0],
+			id: match[1],
+			name: match[2].toLowerCase(),
 			type: type,
-			selfClose: !!match[3],
+			selfClose: !!match[4],
 			range: range(ix, match[0])
 		};
 	}
@@ -3262,10 +3264,7 @@ define(function(require, exports, module) {
 	}
 
 	function createMatcher(text, pos) {
-		var iB = pos - 1, iF = pos,
-			stackB = [], stackF = [],
-			foundB, foundF,
-			endB, endF,
+		var foundB, foundF,
 			hit;
 
 		function matchTag(pos) {
@@ -3288,93 +3287,27 @@ define(function(require, exports, module) {
 			}
 		}
 
-		var handleF = {
-			"open": function(tag){
-				if (!tag.selfClose) {
-					stackF.push(tag);
-				}
-			},
-			"close": function(tag) {
-				while (stackF.length) {
-					if (stackF.pop().name == tag.name) {
-						return;
-					}
-				}
-				foundF = tag;
-				if (foundB && foundB.name != foundF.name) {
-					if (!hit) {
-						foundB = null;
-					}
-				}
+		var mark = {};
+		function searchBack(token, pos) {
+			if (pos < 0) {
+				return -1;
 			}
-		};
-
-		var handleB = {
-			"close": function(tag) {
-				stackB.push(tag);
-			},
-			"open": function(tag) {
-				if (tag.selfClose) {
-					return;
-				}
-				if (stackB.length) {
-					if (stackB[stackB.length - 1].name == tag.name) {
-						stackB.pop();
-					}
-					return;
-				}
-				if (!foundF || foundF.name == tag.name) {
-					foundB = tag;
-				}
-			},
-			"comment": function(tag) {
-				// Since comment may contain tags, it might be hit after first try
-				if (tag.range.end > pos) {
-					foundB = tag;
-					hit = true;
+			var match = text.lastIndexOf(token, pos);
+			if (match < 0) {
+				return -1;
+			}
+			if (!mark[token]) {
+				mark[token] = {};
+			}
+			if (mark[token][match] === undefined) {
+				mark[token][match] = match;
+				var tag = matchTag(match);
+				if (tag && !tag.selfClose && tag.id == token) {
+					return match;
 				}
 			}
-		};
-
-		var handleH = {
-			"open": function(tag) {
-				foundB = tag;
-				hit = true;
-			},
-			"close": function(tag) {
-				foundF = tag;
-				hit = true;
-			},
-			"comment": function(tag) {
-				foundB = tag;
-				hit = true;
-			}
-		};
-
-		function backward(){
-			if (iB < 0) {
-				endB = true;
-				return;
-			}
-			if ((iB = text.lastIndexOf("<", iB)) >= 0) {
-				var tag = matchTag(iB);
-				iB -= 3;	// next search point (<b>)
-				return tag;
-			}
-			endB = true;
-		}
-
-		function forward(){
-			if (iF < 0) {
-				endF = true;
-				return;
-			}
-			if ((iF = text.indexOf("<", iF)) >= 0) {
-				var tag = matchTag(iF);
-				iF = tag ? tag.range.end : iF + 1;
-				return tag;
-			}
-			endF = true;
+			mark[token][match] = searchBack(token, mark[token][match] - 1);
+			return mark[token][match];
 		}
 
 		return {
@@ -3386,76 +3319,124 @@ define(function(require, exports, module) {
 					return this.result();
 				}
 
-				while ((!foundF || !foundB) && !endF && !endB) {
-					if (!foundF && !foundB) {
-						this.searchBoth();
-					} else if (!foundF) {
-						this.searchForward();
-					} else {
-						this.searchBackward();
-					}
+				if (!foundF) {
+					this.searchForward();
+				} else {
+					this.searchBackward();
 				}
 
 				return this.result();
 			},
 			// The pos is in open tag.
 			hit: function(){
-				var match = backward();
-				if (!match) {
-					return;
+				// Try to hit comment
+				var match, tag;
+				match = text.lastIndexOf("<!--", pos - 1);
+				if (match >= 0) {
+					tag = matchTag(match);
+					if (tag && tag.range.end > pos) {
+						foundB = tag;
+						hit = true;
+						return;
+					}
 				}
-				if (match.range.end > pos) {
-					handleH[match.type](match);
-				} else {
-					handleB[match.type](match);
+				match = text.lastIndexOf("<", pos - 1);
+				if (match) {
+					tag = matchTag(match);
+					if (tag && tag.range.end > pos) {
+						if (tag.type == "open") {
+							foundB = tag;
+						} else {
+							foundF = tag;
+						}
+						hit = true;
+						return;
+					}
 				}
 			},
 			// Forward search for end tag.
 			searchForward: function(){
-				var match;
-				while (!endF && !foundF) {
-					match = forward();
+				var match, open, close;
+				if (hit) {
+					// quick search will failed in follow situations
+					// <div><p|></div><p></p>
+					// <p|><div><p></div></p>
+					open = "<" + foundB.name;
+					close = "</" + foundB.name;
+					var matchClose = pos,
+						matchOpen = pos;
 
-					if (!match) {
-						continue;
+					while (matchClose > 0) {
+						matchClose = text.indexOf(close, matchClose);
+						if (matchClose < 0) {
+							return;
+						}
+						matchOpen = searchBack(open, matchClose);
+						if (matchOpen == foundB.range.start) {
+							foundF = matchTag(matchClose);
+							return;
+						}
 					}
+				} else {
+					end_tag_g.lastIndex = pos;
+					// console.log("forward no hit");
 
-					if (handleF[match.type]) {
-						handleF[match.type](match);
+					// look for end tag
+					while ((match = end_tag_g.exec(text))) {
+						open = "<" + match[1];
+						close = "</" + match[1];
+
+						// look for open tag
+						matchOpen = match.index - 1;
+						matchClose = match.index - 1;
+						while (true) {
+							matchOpen = searchBack(open, matchOpen);
+							matchClose = searchBack(close, matchClose);
+							if (matchOpen < 0) {
+								return;
+							}
+							if (matchClose > matchOpen) {
+								// <div><div></div>|</div>
+								continue;
+							}
+							if (matchOpen >= pos) {
+								// <div><div></div>|<div></div></div>
+								if (!mark[close]) {
+									mark[close] = {};
+								}
+								mark[close][match.index] = matchClose >= 0 ? mark[close][matchClose] : -1;
+								delete mark[close][matchClose];
+								break;
+							}
+							foundF = matchTag(match.index);
+							foundB = matchTag(matchOpen);
+							return;
+						}
 					}
 				}
 			},
 			// Backward search for open tag. Must match foundF.
 			searchBackward: function(){
-				var match;
-				while (!endB && !foundB) {
-					match = backward();
+				var open = "<" + foundF.name,
+					close = "</" + foundF.name,
+					matchOpen, matchClose;
 
-					if (!match) {
-						continue;
+				matchOpen = foundF.range.start - 1;
+				matchClose = foundF.range.start - 1;
+				while (true) {
+					matchOpen = searchBack(open, matchOpen);
+					matchClose = searchBack(close, matchClose);
+					if (matchOpen < 0) {
+						return;
 					}
-
-					if (handleB[match.type]) {
-						handleB[match.type](match);
-					}
-				}
-			},
-			// Search both way until find something ot meeting end. This method should make it faster to hit the edge at the top or bottom of the document.
-			searchBoth: function(){
-				var matchF, matchB;
-				while (!foundF && !foundB && !endF && !endB) {
-					matchF = forward();
-					if (matchF && handleF[matchF.type]) {
-						handleF[matchF.type](matchF);
-					}
-
-					matchB = backward();
-					if (matchB && handleB[matchB.type]) {
-						handleB[matchB.type](matchB);
+					if (matchClose < matchOpen) {
+						foundB = matchTag(matchOpen);
+						return;
 					}
 				}
 			},
 			result: function(){
+				// console.log(foundB && foundB.full, foundF && foundF.full);
 				if (foundB && foundF && foundB.name != foundF.name) {
 					if (hit) {
 						foundF = null;
@@ -4721,7 +4702,7 @@ define(function(require, exports, module) {
 
 	return exports;
 });
-}).call(this,"/lib\\emmet-better-matcher\\lib\\assets")
+}).call(this,"/lib\\emmet-quick-match\\lib\\assets")
 },{"../assets/logger":23,"../resolver/css":59,"../utils/common":67,"../vendor/stringScore":73,"./elements":20,"./handlerList":21}],28:[function(require,module,exports){
 /**
  * A trimmed version of CodeMirror's StringStream module for string parsing
@@ -18316,6 +18297,6 @@ module.exports = Array.isArray || function (arr) {
 };
 
 },{}],78:[function(require,module,exports){
-emmet = require("../../lib/emmet-better-matcher/lib/emmet.js");
+emmet = require("../../lib/emmet-quick-match/lib/emmet.js");
 
-},{"../../lib/emmet-better-matcher/lib/emmet.js":34}]},{},[78]);
+},{"../../lib/emmet-quick-match/lib/emmet.js":34}]},{},[78]);
