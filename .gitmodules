@@ -9,3 +9,7 @@
 	path = lib/emmet-better-matcher
 	url = https://github.com/eight04/emmet.git
 	branch = dev-better-matcher
+[submodule "lib/emmet-quick-match"]
+	path = lib/emmet-quick-match
+	url = https://github.com/eight04/emmet.git
+	branch = dev-quick-match
