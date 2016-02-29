@@ -3366,20 +3366,23 @@ define(function(require, exports, module) {
 					var matchClose = pos,
 						matchOpen = pos;
 
-					while (matchClose > 0) {
+					while (true) {
 						matchClose = text.indexOf(close, matchClose);
 						if (matchClose < 0) {
 							return;
 						}
-						matchOpen = searchBack(open, matchClose);
-						if (matchOpen == foundB.range.start) {
-							foundF = matchTag(matchClose);
-							return;
+						var tag = matchTag(matchClose);
+						if (tag && tag.id == close) {
+							matchOpen = searchBack(open, matchClose);
+							if (matchOpen == foundB.range.start) {
+								foundF = matchTag(matchClose);
+								return;
+							}
 						}
+						matchClose++;
 					}
 				} else {
 					end_tag_g.lastIndex = pos;
-					// console.log("forward no hit");
 
 					// look for end tag
 					while ((match = end_tag_g.exec(text))) {
