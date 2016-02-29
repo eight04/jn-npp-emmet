@@ -1,1 +1,1 @@
-emmet = require("../../lib/emmet-better-matcher/lib/emmet.js");
+emmet = require("../../lib/emmet-quick-match/lib/emmet.js");
