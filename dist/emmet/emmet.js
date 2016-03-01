@@ -3434,6 +3434,8 @@ define(function(require, exports, module) {
 					end_tag_g.lastIndex = pos;
 					start_tag_g.lastIndex = pos;
 
+					// console.log("no hit forward");
+
 					// look for end tag
 					while (true) {
 						var matchOpen = start_tag_g.exec(text),
@@ -3450,22 +3452,23 @@ define(function(require, exports, module) {
 							return;
 						}
 
+						// console.log(matchOpen[0], matchClose[0]);
+
 						if (matchOpen[1] == matchClose[1]) {
-							// paired. mark them
-							open = "<" + matchClose[1];
-							close = "</" + matchClose[1];
-							if (!mark[open]) {
-								mark[open] = {};
+							// have same name, try to pair open tag
+							iC = searchNextPair(matchOpen[1], matchOpen.index);
+							if (iC < 0) {
+								// no pair. keep searching
+								// start_tag_g.lastIndex = iO + 1;
+								end_tag_g.lastIndex = matchClose.index;
+							} else {
+								// paired. skip this section.
+								start_tag_g.lastIndex = end_tag_g.lastIndex = iC + 1;
 							}
-							if (!mark[close]) {
-								mark[close] = {};
-							}
-							mark[open][matchOpen.index] = matchOpen.index;
-							mark[close][matchClose.index] = matchOpen.index;
 							continue;
 						}
 
-						// doesn't pair but the position is correct
+						// have different name. try to pair close tag
 						var open = "<" + matchClose[1],
 							close = "</" + matchClose[1],
 							iO;
@@ -3477,28 +3480,27 @@ define(function(require, exports, module) {
 							mark[close] = {};
 						}
 
-						// try to pair close tag
-						iO = searchNext(open, matchOpen.index);
-						// iO = searchBack(open, matchClose.index);
+						iO = searchBack(open, matchClose.index);
 
 						// Can't pair, found
-						// if (iO < matchOpen.index) {
-						if (iO < 0 || iO > matchClose.index) {
-							// mark[open][iO] = undefined;
+						if (iO < matchOpen.index) {
 							foundF = matchTag(matchClose.index);
+							mark[open][iO] = undefined;
 							this.searchBackward();
 							return;
 						}
 
 						// close tag paired. mark them
 						mark[close][matchClose.index] = iO;
-						mark[open][iO] = iO;
 
 						// try to pair open tag
 						iC = searchNextPair(matchOpen[1], matchOpen.index);
 						if (iC < 0) {
-							start_tag_g.lastIndex = iO + 1;
+							// no pair. keep searching
+							// start_tag_g.lastIndex = iO + 1;
+							end_tag_g.lastIndex = matchClose.index;
 						} else {
+							// paired. skip this section
 							start_tag_g.lastIndex = end_tag_g.lastIndex = iC + 1;
 						}
 					}
