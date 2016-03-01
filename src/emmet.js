@@ -282,7 +282,8 @@
 	// Create emmet editor
 	var emmetEditor = (function(){
 		var context,
-			cacheContent;
+			cacheContent,
+			reverse = false;
 
 		// Returns true if using tab character
 		function useTabChar() {
@@ -341,6 +342,7 @@
 			setContext: function(ctx) {
 				context = ctx;
 				cacheContent = null;
+				reverse = false;
 			},
 
 			/**
@@ -354,11 +356,19 @@
 			 * alert(selection.start + ', ' + selection.end);
 			 */
 			getSelectionRange: function() {
-				var cachePos = context.pos;
-				var cacheAnchor = context.anchor;
+				var start = context.anchor,
+					end = context.pos;
+
+				if (start > end) {
+					reverse = true;
+					var t = start;
+					start = end;
+					end = t;
+				}
+
 				return {
-					start: Math.min(cacheAnchor, cachePos),
-					end: Math.max(cacheAnchor, cachePos)
+					start: start,
+					end: end
 				};
 			},
 
@@ -377,6 +387,11 @@
 			createSelection: function(start, end) {
 				if (!end) {
 					end = start;
+				}
+				if (reverse) {
+					var t = start;
+					start = end;
+					end = t;
 				}
 				context.anchor = start;
 				context.pos = end;
