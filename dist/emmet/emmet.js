@@ -3480,7 +3480,7 @@ define(function(require, exports, module) {
 							// paired. skip this section
 							start_tag_g.lastIndex = iC + 1;
 							// if close tag is in this section, skip that too.
-							if (matchClose < iC) {
+							if (matchClose.index < iC) {
 								end_tag_g.lastIndex = iC + 1;
 							}
 						}
