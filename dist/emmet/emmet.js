@@ -3187,6 +3187,7 @@ define(function(require, exports, module) {
 	// Regular Expressions for parsing tags and attributes
 	// 1=id, 2=name, 3=attributes, 4=closeSelf
 	var start_tag = /^(<([\w\:\-]+))((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/,
+		start_tag_g = /(<([\w\:\-]+))((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/g,
 		// 1=id, 2=name
 		end_tag = /^(<\/([\w\:\-]+))[^>]*>/,
 		end_tag_g = /<\/([\w\:\-]+)[^>]*>/g;
@@ -3271,7 +3272,7 @@ define(function(require, exports, module) {
 			var match;
 			if (text[pos + 1] == "/") {
 				// close
-				if (match = text.substr(pos).match(end_tag)) {
+				if ((match = text.substr(pos).match(end_tag))) {
 					return tag(match, pos, "close");
 				}
 			} else if (text[pos + 1] == "!" && text[pos + 2] == "-" && text[pos + 3] == "-") {
@@ -3281,7 +3282,7 @@ define(function(require, exports, module) {
 				} else {
 					return -1;	// unfound
 				}
-			} else if (match = text.substr(pos).match(start_tag)) {
+			} else if ((match = text.substr(pos).match(start_tag))) {
 				// open
 				return tag(match, pos, "open");
 			}
@@ -3310,10 +3311,78 @@ define(function(require, exports, module) {
 			return mark[token][match];
 		}
 
+		function searchNext(token, pos) {
+			var match = pos;
+			while ((match = text.indexOf(token, match)) >= 0) {
+				var tag = matchTag(match);
+				if (tag && tag.id == token) {
+					return match;
+				}
+				match++;
+			}
+			return -1;
+		}
+
+		function searchNextPair(name, pos) {
+			var open = "<" + name,
+				close = "</" + name,
+				iO, iC;
+
+			if (!mark[open]) {
+				mark[open] = {};
+			}
+			if (!mark[close]) {
+				mark[close] = {};
+			}
+
+			iO = iC = pos + 1;
+
+			while (true) {
+				iO = searchNext(open, iO);
+				iC = searchNext(close, iC);
+
+				if (iC < 0) {
+					// no pair. the close tag is omitted. mark it
+					mark[open][pos] = pos;
+					return -1;
+				}
+
+				if (iO < 0 || iO > iC) {
+					// paired. mark them
+					mark[close][iC] = pos;
+					mark[open][pos] = pos;
+					return iC;
+				}
+
+				// paired inside. mark them
+				mark[close][iC] = iO;
+				mark[open][iO] = iO;
+				iO++;
+				iC++;
+			}
+		}
+
+		function searchBackAny(pos) {
+			var match = pos, tag;
+			while (match >= 0) {
+				match = text.lastIndexOf("<", match);
+				if (match < 0) {
+					return null;
+				}
+				tag = matchTag(match);
+				if (tag) {
+					return tag;
+				}
+				match--;
+			}
+		}
+
 		return {
 			// Main search function
 			search: function(){
 				this.hit();
+
+				// console.log("hit", !!hit);
 
 				if (foundB && (foundB.type == "comment" || foundB.selfClose)) {
 					return this.result();
@@ -3340,80 +3409,95 @@ define(function(require, exports, module) {
 						return;
 					}
 				}
-				match = text.lastIndexOf("<", pos - 1);
-				if (match) {
-					tag = matchTag(match);
-					if (tag && tag.range.end > pos) {
-						if (tag.type == "open") {
-							foundB = tag;
-						} else {
-							foundF = tag;
-						}
-						hit = true;
-						return;
+
+				tag = searchBackAny(pos - 1);
+				if (tag && tag.range.end > pos) {
+					if (tag.type == "open") {
+						foundB = tag;
+					} else {
+						foundF = tag;
 					}
+					hit = true;
+					return;
 				}
 			},
 			// Forward search for end tag.
 			searchForward: function(){
-				var match, open, close;
+				var pair;
 				if (hit) {
-					// quick search will failed in follow situations
-					// <div><p|></div><p></p>
-					// <p|><div><p></div></p>
-					open = "<" + foundB.name;
-					close = "</" + foundB.name;
-					var matchClose = pos,
-						matchOpen = pos;
+					pair = searchNextPair(foundB.name, foundB.range.start);
 
-					while (true) {
-						matchClose = text.indexOf(close, matchClose);
-						if (matchClose < 0) {
-							return;
-						}
-						var tag = matchTag(matchClose);
-						if (tag && tag.id == close) {
-							matchOpen = searchBack(open, matchClose);
-							if (matchOpen == foundB.range.start) {
-								foundF = matchTag(matchClose);
-								return;
-							}
-						}
-						matchClose++;
+					if (pair >= 0) {
+						foundF = matchTag(pair);
 					}
 				} else {
 					end_tag_g.lastIndex = pos;
+					start_tag_g.lastIndex = pos;
 
 					// look for end tag
-					while ((match = end_tag_g.exec(text))) {
-						open = "<" + match[1];
-						close = "</" + match[1];
+					while (true) {
+						var matchOpen = start_tag_g.exec(text),
+							matchClose = end_tag_g.exec(text);
 
-						// Mark current match
-						searchBack(close, match.index);
-
-						// look for open tag
-						matchOpen = match.index;
-						matchClose = match.index;
-						while (true) {
-							matchOpen = searchBack(open, matchOpen);
-							matchClose = searchBack(close, matchClose);
-							if (matchOpen < 0) {
-								return;
-							}
-							if (matchClose > matchOpen) {
-								// <div><div></div>|</div>
-								continue;
-							}
-							if (matchOpen >= pos) {
-								// <div><div></div>|<div></div></div>
-								mark[close][match.index]++;
-								mark[close][matchClose] = undefined;
-								break;
-							}
-							foundF = matchTag(match.index);
-							foundB = matchTag(matchOpen);
+						if (!matchClose) {
 							return;
+						}
+
+						if (!matchOpen || matchOpen.index > matchClose.index) {
+							// Found close
+							foundF = matchTag(matchClose.index);
+							this.searchBackward();
+							return;
+						}
+
+						if (matchOpen[1] == matchClose[1]) {
+							// paired. mark them
+							open = "<" + matchClose[1];
+							close = "</" + matchClose[1];
+							if (!mark[open]) {
+								mark[open] = {};
+							}
+							if (!mark[close]) {
+								mark[close] = {};
+							}
+							mark[open][matchClose.index] = matchOpen.index;
+							mark[close][matchOpen.index] = matchOpen.index;
+							continue;
+						}
+
+						// doesn't pair but the position is correct
+						var open = "<" + matchClose[1],
+							close = "</" + matchClose[1],
+							iO;
+
+						if (!mark[open]) {
+							mark[open] = {};
+						}
+						if (!mark[close]) {
+							mark[close] = {};
+						}
+
+						// try to pair close tag
+						iO = searchBack(open, matchClose.index);
+
+						// Can't pair, found
+						if (iO < matchOpen.index) {
+							mark[open][iO] = undefined;
+							foundF = matchTag(matchClose.index);
+							this.searchBackward();
+							return;
+						}
+
+						// close tag paired. mark them
+						mark[close][matchClose.index] = iO;
+						mark[open][iO] = iO;
+
+						// try to pair open tag
+						pair = searchNextPair(matchOpen[1], matchOpen.index);
+						if (pair < 0) {
+							matchOpen.lastIndex = matchClose.lastIndex;
+						} else {
+							matchOpen.lastIndex = matchClose.lastIndex = pair + 1;
 						}
 					}
 				}
@@ -3426,12 +3510,8 @@ define(function(require, exports, module) {
 
 				matchOpen = foundF.range.start - 1;
 				matchClose = foundF.range.start - 1;
-				while (true) {
-					matchOpen = searchBack(open, matchOpen);
+				while ((matchOpen = searchBack(open, matchOpen)) >= 0) {
 					matchClose = searchBack(close, matchClose);
-					if (matchOpen < 0) {
-						return;
-					}
 					if (matchClose < matchOpen) {
 						foundB = matchTag(matchOpen);
 						return;
