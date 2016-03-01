@@ -285,6 +285,13 @@
 			cacheContent,
 			reverse = false;
 
+		var whiteSpace = {
+			" ": true,
+			"\t": true,
+			"\r": true,
+			"\n": true
+		};
+
 		// Returns true if using tab character
 		function useTabChar() {
 			return (new Scintilla(context.handle)).Call("SCI_GETUSETABS", 0, 0);
@@ -571,8 +578,17 @@
 			},
 
 			// Check if the selection is collapsed
-			isCollapsed: function() {
-				return context.bytePos == context.byteAnchor;
+			shouldExpand: function() {
+				if (context.bytePos != context.byteAnchor) {
+					return false;
+				}
+				context.bytePos--;
+				var ch = context.selection;
+				context.bytePos++;
+				if (whiteSpace[ch]) {
+					return false;
+				}
+				return true;
 			}
 		};
 	})();
@@ -692,7 +708,7 @@
 			});
 		} else if (action_name == "expand_abbreviation_with_tab") {
 			// Emmet's indentation style doesn't match notepad++'s.
-			if (emmetEditor.isCollapsed()) {
+			if (emmetEditor.shouldExpand()) {
 				emmet.run(action_name, emmetEditor);
 			} else {
 				MenuCmds.EDIT_INS_TAB();
