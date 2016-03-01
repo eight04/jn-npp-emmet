@@ -3323,6 +3323,21 @@ define(function(require, exports, module) {
 			return -1;
 		}
 
+		function searchPrevPair(name, pos) {
+			var open = "<" + name,
+				close = "</" + name;
+
+			if (!mark[close]) {
+				mark[close] = {};
+			}
+
+			var match = searchBack(open, pos);
+			if (match >= 0) {
+				mark[close][pos] = match;
+			}
+			return match;
+		}
+
 		function searchNextPair(name, pos) {
 			var open = "<" + name,
 				close = "</" + name,
@@ -3423,9 +3438,8 @@ define(function(require, exports, module) {
 			},
 			// Forward search for end tag.
 			searchForward: function(){
-				var pair;
 				if (hit) {
-					pair = searchNextPair(foundB.name, foundB.range.start);
+					var pair = searchNextPair(foundB.name, foundB.range.start);
 
 					if (pair >= 0) {
 						foundF = matchTag(pair);
@@ -3433,8 +3447,6 @@ define(function(require, exports, module) {
 				} else {
 					end_tag_g.lastIndex = pos;
 					start_tag_g.lastIndex = pos;
-
-					// console.log("no hit forward");
 
 					// look for end tag
 					while (true) {
@@ -3452,50 +3464,26 @@ define(function(require, exports, module) {
 							return;
 						}
 
-						// console.log(matchOpen[0], matchClose[0]);
-
-						if (matchOpen[1] == matchClose[1]) {
-							// have same name, try to pair open tag
-							iC = searchNextPair(matchOpen[1], matchOpen.index);
-							// skip this section.
-							start_tag_g.lastIndex = end_tag_g.lastIndex = iC + 1;
-							continue;
-						}
-
-						// have different name. try to pair close tag
-						var open = "<" + matchClose[1],
-							close = "</" + matchClose[1],
-							iO;
-
-						if (!mark[open]) {
-							mark[open] = {};
-						}
-						if (!mark[close]) {
-							mark[close] = {};
-						}
-
-						iO = searchBack(open, matchClose.index);
-
-						// Can't pair, found
-						if (iO < matchOpen.index) {
+						// try to pair close tag
+						var iO = searchPrevPair(matchClose[1], matchClose.index);
+						if (iO < pos) {
+							// it contains cursor. found
 							foundF = matchTag(matchClose.index);
-							mark[open][iO] = undefined;
+							mark["<" + matchClose[1]][iO] = undefined;
 							this.searchBackward();
 							return;
 						}
 
-						// close tag paired. mark them
-						mark[close][matchClose.index] = iO;
-
 						// try to pair open tag
-						iC = searchNextPair(matchOpen[1], matchOpen.index);
+						var iC = searchNextPair(matchOpen[1], matchOpen.index);
 						if (iC >= 0) {
 							// paired. skip this section
-							start_tag_g.lastIndex = end_tag_g.lastIndex = iC + 1;
+							start_tag_g.lastIndex = iC + 1;
+							// if close tag is in this section, skip that too.
+							if (matchClose < iC) {
+								end_tag_g.lastIndex = iC + 1;
+							}
 						}
-
-						// no pair. keep searching
-						// continue;
 					}
 				}
 			},
