@@ -3457,14 +3457,8 @@ define(function(require, exports, module) {
 						if (matchOpen[1] == matchClose[1]) {
 							// have same name, try to pair open tag
 							iC = searchNextPair(matchOpen[1], matchOpen.index);
-							if (iC < 0) {
-								// no pair. keep searching
-								// start_tag_g.lastIndex = iO + 1;
-								end_tag_g.lastIndex = matchClose.index;
-							} else {
-								// paired. skip this section.
-								start_tag_g.lastIndex = end_tag_g.lastIndex = iC + 1;
-							}
+							// skip this section.
+							start_tag_g.lastIndex = end_tag_g.lastIndex = iC + 1;
 							continue;
 						}
 
@@ -3495,14 +3489,13 @@ define(function(require, exports, module) {
 
 						// try to pair open tag
 						iC = searchNextPair(matchOpen[1], matchOpen.index);
-						if (iC < 0) {
-							// no pair. keep searching
-							// start_tag_g.lastIndex = iO + 1;
-							end_tag_g.lastIndex = matchClose.index;
-						} else {
+						if (iC >= 0) {
 							// paired. skip this section
 							start_tag_g.lastIndex = end_tag_g.lastIndex = iC + 1;
 						}
+
+						// no pair. keep searching
+						// continue;
 					}
 				}
 			},
