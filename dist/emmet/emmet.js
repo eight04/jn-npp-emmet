@@ -3187,7 +3187,7 @@ define(function(require, exports, module) {
 	// Regular Expressions for parsing tags and attributes
 	// 1=id, 2=name, 3=attributes, 4=closeSelf
 	var start_tag = /^(<([\w\:\-]+))((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/,
-		start_tag_g = /(<([\w\:\-]+))((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/g,
+		start_tag_g = /<([\w\:\-]+)((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/g,
 		// 1=id, 2=name
 		end_tag = /^(<\/([\w\:\-]+))[^>]*>/,
 		end_tag_g = /<\/([\w\:\-]+)[^>]*>/g;
@@ -3460,8 +3460,8 @@ define(function(require, exports, module) {
 							if (!mark[close]) {
 								mark[close] = {};
 							}
-							mark[open][matchClose.index] = matchOpen.index;
-							mark[close][matchOpen.index] = matchOpen.index;
+							mark[open][matchOpen.index] = matchOpen.index;
+							mark[close][matchClose.index] = matchOpen.index;
 							continue;
 						}
 
@@ -3478,11 +3478,13 @@ define(function(require, exports, module) {
 						}
 
 						// try to pair close tag
-						iO = searchBack(open, matchClose.index);
+						iO = searchNext(open, matchOpen.index);
+						// iO = searchBack(open, matchClose.index);
 
 						// Can't pair, found
-						if (iO < matchOpen.index) {
-							mark[open][iO] = undefined;
+						// if (iO < matchOpen.index) {
+						if (iO < 0 || iO > matchClose.index) {
+							// mark[open][iO] = undefined;
 							foundF = matchTag(matchClose.index);
 							this.searchBackward();
 							return;
@@ -3493,11 +3495,11 @@ define(function(require, exports, module) {
 						mark[open][iO] = iO;
 
 						// try to pair open tag
-						pair = searchNextPair(matchOpen[1], matchOpen.index);
-						if (pair < 0) {
-							matchOpen.lastIndex = matchClose.lastIndex;
+						iC = searchNextPair(matchOpen[1], matchOpen.index);
+						if (iC < 0) {
+							start_tag_g.lastIndex = iO + 1;
 						} else {
-							matchOpen.lastIndex = matchClose.lastIndex = pair + 1;
+							start_tag_g.lastIndex = end_tag_g.lastIndex = iC + 1;
 						}
 					}
 				}
