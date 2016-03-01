@@ -281,7 +281,8 @@
 
 	// Create emmet editor
 	var emmetEditor = (function(){
-		var context = null;
+		var context,
+			cacheContent;
 
 		// Returns true if using tab character
 		function useTabChar() {
@@ -327,6 +328,8 @@
 
 			context.anchor = byteAnchor;
 			context.pos = bytePos;
+
+			cacheContent = null;
 		}
 
 		return {
@@ -337,6 +340,7 @@
 			 */
 			setContext: function(ctx) {
 				context = ctx;
+				cacheContent = null;
 			},
 
 			/**
@@ -474,7 +478,10 @@
 			 * @return {String}
 			 */
 			getContent: function(){
-				return context.text || '';
+				if (cacheContent == null) {
+					cacheContent = context.text || '';
+				}
+				return cacheContent;
 			},
 
 			/**
