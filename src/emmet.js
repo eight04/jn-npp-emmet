@@ -318,15 +318,15 @@
 
 		// Replace document text with value between start and end.
 		function replaceRange(value, start, end) {
-			var anchor = context.anchor,
-				pos = context.pos;
+			var anchor = context.byteAnchor,
+				pos = context.bytePos;
 
 			context.anchor = start;
 			context.pos = end;
 			context.selection = value;
 
-			context.anchor = anchor;
-			context.pos = pos;
+			context.anchor = byteAnchor;
+			context.pos = bytePos;
 		}
 
 		return {
@@ -396,7 +396,7 @@
 			 * @return {Number|null}
 			 */
 			getCaretPos: function(){
-				return Math.min(context.anchor, context.pos);
+				return context.pos;
 			},
 
 			/**
@@ -404,7 +404,8 @@
 			 * @param {Number} pos Caret position
 			 */
 			setCaretPos: function(pos) {
-				context.anchor = context.pos = pos;
+				context.anchor = pos;
+				context.pos = pos;
 			},
 
 			/**
@@ -412,8 +413,6 @@
 			 * @return {String}
 			 */
 			getCurrentLine: function() {
-				// var range = this.getCurrentLineRange();
-				// return this.getContent().substring(range.start, range.end);
 				return context.lines.get(context.line).text;
 			},
 
@@ -438,10 +437,10 @@
 			 */
 			replaceContent: function(value, start, end, noIndent) {
 				// https://github.com/emmetio/brackets-emmet/blob/master/editor.js
-				if (typeof end == 'undefined') {
-					end = (typeof start == 'undefined') ? this.getContent().length : start;
+				if (end === undefined) {
+					end = start === undefined ? this.getContent().length : start;
 				}
-				if (typeof start == 'undefined') {
+				if (start === undefined) {
 					start = 0;
 				}
 
@@ -551,7 +550,7 @@
 
 			// Check if the selection is collapsed
 			isCollapsed: function() {
-				return context.pos == context.anchor;
+				return context.bytePos == context.byteAnchor;
 			}
 		};
 	})();
