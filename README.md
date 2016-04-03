@@ -71,6 +71,17 @@ All config files are placed in the config directory: `%appdata%\Notepad++\plugin
 ]
 ```
 
+### emmet.settings.json
+
+```
+{
+	// setting to false will make tab working in all file types
+	"enableTabExpensionByFileType": true,
+	// "txt", "php", "c", "cpp", "cs", "objc", "java", "rc", "html", "xml", "makefile", "pascal", "batch", "ini", "nfo", "user", "asp", "sql", "vb", "js", "css", "perl", "python", "lua", "tex", "fortran", "bash", "flash", "nsis", "tcl", "lisp", "scheme", "asm", "diff", "props", "ps", "ruby", "smalltalk", "vhdl", "kix", "au3", "caml", "ada", "verilog", "matlab", "haskell", "inno", "searchresult", "cmake", "yaml", "cobol", "gui4cli", "d", "powershell", "r", "jsp", "coffeescript", "json", "javascript", "external"
+	"enableTabExpensionUnder": ["html", "css"]
+}
+```
+
 FileStream.js
 -------------
 http://hp.vector.co.jp/authors/VA033015/fsjs.html
@@ -91,6 +102,13 @@ Speed test
 
 Changelog
 =========
+* 1.0.0 (Apr 3, 2016)
+	- Use [eight04/emmet@dev-quick-match-2](https://github.com/eight04/emmet/tree/dev-quick-match-2).
+	- Drop MenuCmds.js (#6)
+	- Use notepad++ command for tab insertion.
+	- Use cache to speed up action.
+	- Fix dialog bug in Windows 10.
+	- Add option: disable tab expension if not working with HTML or CSS files.
 * 0.2.0 (Feb 26, 2016)
 	- Add readBinary feature.
 	- Temporary fix with read file API. `Update image size` should work now.
