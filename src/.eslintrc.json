@@ -22,6 +22,7 @@
 		"GlobalSettings": false,
 		"debug": false,
 		"FileStream": false,
-		"WScript": true
+		"WScript": true,
+		"timer": false
 	}
 }
