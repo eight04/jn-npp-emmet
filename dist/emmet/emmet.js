@@ -2926,7 +2926,7 @@ define(function(require, exports, module) {
 		}
 	};
 });
-}).call(this,"/lib\\emmet-quick-match\\lib\\assets")
+}).call(this,"/lib\\emmet\\lib\\assets")
 },{"../utils/common":67,"./preferences":24}],20:[function(require,module,exports){
 /**
  * Module that contains factories for element types used by Emmet
@@ -3185,20 +3185,18 @@ if (typeof module === 'object' && typeof define !== 'function') {
 define(function(require, exports, module) {
 	var range = require('./range');
 	// Regular Expressions for parsing tags and attributes
-	// 1=id, 2=name, 3=attributes, 4=closeSelf
-	var start_tag = /^(<([\w\:\-]+))((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/,
-		start_tag_g = /<([\w\:\-]+)((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/g,
-		// 1=id, 2=name
-		end_tag = /^(<\/([\w\:\-]+))[^>]*>/,
-		end_tag_g = /<\/([\w\:\-]+)[^>]*>/g;
+	// 1=name, 2=attributes, 3=closeSelf
+	var start_tag = /^<([\w\:\-]+)((?:\s+[\w\-:]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/,
+		// 2=name
+		end_tag = /^<\/([\w\:\-]+)[^>]*>/;
 
 	function tag(match, ix, type) {
-		return  {
-			full: match[0],
-			id: match[1],
-			name: match[2].toLowerCase(),
+		var name = match[1].toLowerCase();
+		return {
+			id: (type == "open" ? "<" : "</") + name,
+			name: name,
 			type: type,
-			selfClose: !!match[4],
+			selfClose: !!match[3],
 			range: range(ix, match[0])
 		};
 	}
@@ -3264,255 +3262,685 @@ define(function(require, exports, module) {
 		};
 	}
 
-	function createMatcher(text, pos) {
-		var foundB, foundF,
-			hit;
-
-		function matchTag(pos) {
-			var match;
-			if (text[pos + 1] == "/") {
-				// close
-				if ((match = text.substr(pos).match(end_tag))) {
-					return tag(match, pos, "close");
+	var Range = function(start, end) {
+		this.start = start;
+		this.end = end;
+		this.next = null;
+		this.prev = null;
+	};
+	
+	Range.prototype.extend = function(range){
+		// LeftPair, the right most range that l.start < range.start
+		var l = this;
+		if (l.start < range.start) {
+			while (l.next && l.next.start < range.start) {
+				l = l.next;
+			}
+		} else {
+			while (l && l.start >= range.start) {
+				l = l.prev;
+			}
+		}
+		// RightPair, the left most range that r.end > range.end
+		var r = this;
+		if (r.end > range.end) {
+			while (r.prev && r.prev.end > range.end) {
+				r = r.prev;
+			}
+		} else {
+			while (r && r.end <= range.end) {
+				r = r.next;
+			}
+		}
+		
+		var c, n;
+		
+		if (!l) {
+			if (!r) {
+				// cover all ranges
+				// to right
+				c = this.next;
+				while (c) {
+					n = c.next;
+					c.prev = range;
+					c.next = range;
+					c = n;
 				}
-			} else if (text[pos + 1] == "!" && text[pos + 2] == "-" && text[pos + 3] == "-") {
-				// comment
-				if ((match = text.indexOf("-->", pos + 4)) >= 0) {
-					return comment(pos, match + 3);
+				// to left
+				c = this.prev;
+				while (c) {
+					n = c.prev;
+					c.prev = range;
+					c.next = range;
+					c = n;
+				}
+				// self
+				this.prev = range;
+				this.next = range;
+			} else {
+				// cover from r.prev to left
+				// to left
+				c = r.prev;
+				while (c) {
+					n = c.prev;
+					c.prev = range;
+					c.next = range;
+					c = n;
+				}
+				// r
+				r.prev = range;
+				range.next = r;
+			}
+		} else {
+			if (!r) {
+				// cover from l.next to right
+				c = l.next;
+				while (c) {
+					n = c.next;
+					c.prev = range;
+					c.next = range;
+					c = n;
+				}
+				// l
+				l.next = range;
+				range.prev = l;
+			} else {
+				if (l == r) {
+					// inside l (r)
+					range.prev = l;
+					range.next = l;
 				} else {
-					return -1;	// unfound
+					// cover from l.next to r.prev
+					c = l.next;
+					while (c != r) {
+						n = c.next;
+						c.prev = range;
+						c.next = range;
+						c = n;
+					}
+					// insert between l, r
+					l.next = range;
+					range.prev = l;
+					range.next = r;
+					r.prev = range;
 				}
-			} else if ((match = text.substr(pos).match(start_tag))) {
-				// open
-				return tag(match, pos, "open");
 			}
 		}
-
-		var mark = {};
-		function searchBack(token, pos) {
-			if (pos < 0) {
-				return -1;
-			}
-			var match = text.lastIndexOf(token, pos);
-			if (match < 0) {
-				return -1;
-			}
-			if (!mark[token]) {
-				mark[token] = {};
-			}
-			if (mark[token][match] === undefined) {
-				mark[token][match] = match;
-				var tag = matchTag(match);
-				if (tag && !tag.selfClose && tag.id == token) {
-					// console.log(-1, tag.id);
-					return match;
-				}
-			}
-			mark[token][match] = searchBack(token, mark[token][match] - 1);
-			return mark[token][match];
+		
+		return range;
+	};
+			
+	// Match, a data represent with position, match token, tag name.
+	var Match = function(text, startPos, token, name, excludeRange) {
+		this.text = text;
+		this.i = startPos;
+		this.token = token;
+		this.name = name;
+		this.excludeRange = excludeRange;
+		this.tag = null;
+	};
+	
+	Match.prototype.back = function(){
+		var tag, ex;
+		
+		if (this.tag || this.i < 0) {
+			return;
 		}
-
-		function searchNext(token, pos) {
-			var match = pos;
-			while ((match = text.indexOf(token, match)) >= 0) {
-				var tag = matchTag(match);
-				if (tag && tag.id == token) {
-					// console.log(1, tag.id);
-					return match;
-				}
-				match++;
+		
+		ex = this.excludeRange;
+		do {
+			this.i = this.text.lastIndexOf(this.token, this.i);
+			if (this.i < 0) {
+				return;
 			}
-			return -1;
+			// jump over
+			while (ex.prev && ex.prev.end > this.i) {
+				ex = ex.prev;
+			}
+			this.excludeRange = ex;
+			// jump to end
+			if (ex.start <= this.i && ex.end > this.i) {
+				this.i = ex.start - 1;
+				continue;
+			}
+			tag = matchTag(this.i, this.text);
+			if (tag) {
+				if (
+					!tag.selfClose &&
+					(!this.name || tag.name == this.name) &&
+					(!this.excludeName || !this.excludeName[tag.name])
+				) {
+					this.tag = tag;
+				}
+				this.i = tag.range.start - 1;
+			} else {
+				this.i--;
+			}
+		} while (!this.tag);
+		
+		// console.log(-1, this.tag.name);
+	};
+	
+	Match.prototype.next = function() {
+		var tag, ex;
+		
+		if (this.tag || this.i < 0) {
+			return;
 		}
-
-		function searchPrevPair(name, pos) {
-			var open = "<" + name,
-				close = "</" + name;
-
-			if (!mark[close]) {
-				mark[close] = {};
+		
+		ex = this.excludeRange;
+		do {
+			this.i = this.text.indexOf(this.token, this.i);
+			if (this.i < 0) {
+				return;
 			}
-
-			var match = searchBack(open, pos);
-			if (match >= 0) {
-				mark[close][pos] = match;
+			// jump over
+			while (ex.next && ex.next.start <= this.i) {
+				ex = ex.next;
 			}
-			return match;
+			this.excludeRange = ex;
+			// jump to end
+			if (ex.start <= this.i && ex.end > this.i) {
+				this.i = ex.end;
+				continue;
+			}
+			tag = matchTag(this.i, this.text);
+			if (tag) {
+				if (
+					!tag.selfClose &&
+					(!this.name || tag.name == this.name) &&
+					(!this.excludeName || !this.excludeName[tag.name])
+				) {
+					this.tag = tag;
+				}
+				this.i = tag.range.end;
+			} else {
+				this.i++;
+			}
+		} while (!this.tag);
+		
+		// console.log(1, this.tag.name);
+	};
+	
+	Match.prototype.addExclude = function(range){
+		this.excludeRange.extend(range);
+	};
+	
+	// Get first match from group of matches
+	var MatchGroup = function(matches){
+		this.matches = matches;
+	};
+	
+	MatchGroup.prototype.next = function(){
+		var i, len = this.matches.length;
+		for (i = 0; i < len; i++) {
+			this.matches[i].next();
 		}
-
-		function searchNextPair(name, pos) {
-			var open = "<" + name,
-				close = "</" + name,
-				iO, iC;
-
-			if (!mark[open]) {
-				mark[open] = {};
-			}
-			if (!mark[close]) {
-				mark[close] = {};
-			}
-
-			iO = iC = pos + 1;
-
-			while (true) {
-				iO = searchNext(open, iO);
-				iC = searchNext(close, iC);
-
-				if (iC < 0) {
-					// no pair. the close tag is omitted. mark it
-					mark[open][pos] = pos;
-					return -1;
-				}
-
-				if (iO < 0 || iO > iC) {
-					// paired. mark them
-					mark[close][iC] = pos;
-					mark[open][pos] = pos;
-					return iC;
-				}
-
-				// paired inside. mark them
-				mark[close][iC] = iO;
-				mark[open][iO] = iO;
-				iO++;
-				iC++;
-			}
-		}
-
-		function searchBackAny(pos) {
-			var match = pos, tag;
-			while (match >= 0) {
-				match = text.lastIndexOf("<", match);
-				if (match < 0) {
-					return null;
-				}
-				tag = matchTag(match);
-				if (tag) {
-					return tag;
-				}
-				match--;
+		var result;
+		for (i = 0; i < len; i++) {
+			if (this.matches[i].tag && (!result ||  this.matches[i].tag.range.start < result.tag.range.start)) {
+				result = this.matches[i];
 			}
 		}
-
+		if (!result) {
+			return;
+		}
+		var tag = result.tag;
+		result.tag = null;
+		return tag;
+	};
+	
+	MatchGroup.prototype.back = function(){
+		var i, len = this.matches.length;
+		for (i = 0; i < len; i++) {
+			this.matches[i].back();
+		}
+		var result;
+		for (i = 0; i < len; i++) {
+			if (this.matches[i].tag && (!result ||  this.matches[i].tag.range.end > result.tag.range.end)) {
+				result = this.matches[i];
+			}
+		}
+		if (!result) {
+			return;
+		}
+		var tag = result.tag;
+		result.tag = null;
+		return tag;
+	};
+	
+	// Add exclude range?
+	MatchGroup.prototype.exclude = function(){
+		this.matches[0].excludeRange.extend();
+	};
+	
+	// A pair of tag
+	var TagPair = function(open, close) {
+		this.open = open;
+		this.close = close;
+	};
+	
+	// The result of tree.next
+	var TreeResult = function(tag, detached, finished){
+		this.tag = tag;
+		this.detached = detached;
+		this.finished = finished;
+	};
+	
+	TreeResult.finished = new TreeResult(null, null, true);
+	
+	// Tree, a set of matches, iter through tags.
+	var Tree = function(matchGroup, direction, root) {
+		this.matchGroup = matchGroup;
+		this.root = root;
+		this.stack = [];
+		this.direction = direction;
+		this.finished = false;
+		
+		if (direction == "next") {
+			this.openType = "open";
+			this.closeHandle = this.handleNextClose;
+		} else {
+			this.openType = "close";
+			this.closeHandle = this.handleBackOpen;
+		}
+	};
+	
+	Tree.prototype.handleNextClose = function(tag) {
+		var open;
+		while (this.stack.length) {
+			open = this.stack.pop();
+			// paired
+			if (open.name == tag.name) {
+				return new TreeResult(tag, new TagPair(open, tag), false);
+			}
+		}
+		// no pair, no root, found
+		if (!this.root) {
+			this.finished = true;
+			return new TreeResult(tag, null, true);
+		}
+		// paired with root
+		if (this.root.name == tag.name) {
+			this.finished = true;
+			return new TreeResult(tag, new TagPair(this.root, tag), true);
+		}
+		// can't pair root?
+		this.finised = true;
+		return new TreeResult(tag, null, true);
+	};
+	
+	Tree.prototype.handleBackOpen = function(tag) {
+		var len = this.stack.length;
+		if (!len) {
+			// Pending
+			if (!this.root) {
+				this.finished = true;
+				return new TreeResult(tag, null, true);
+			}
+			// Found
+			if (tag.name == this.root.name) {
+				this.finished = true;
+				return new TreeResult(tag, new TagPair(tag, this.root), true);
+			}
+			// Unary open tag
+			return new TreeResult(tag, null, false);
+		}
+		if (this.stack[len - 1].name == tag.name) {
+			// paired
+			return new TreeResult(tag, new TagPair(tag, this.stack.pop()), false);
+		}
+		// Unary open
+		return new TreeResult(tag, null, false);
+	};
+	
+	// Reset finished flag and keep searching.
+	Tree.prototype.keepOn = function(){
+		this.finished = false;
+	};
+	
+	// Get a tag
+	Tree.prototype.next = function(){
+		if (this.finished) {
+			return TreeResult.finished;
+		}
+		
+		var tag = this.matchGroup[this.direction]();
+		
+		if (!tag) {
+			this.finished = true;
+			return TreeResult.finished;
+		}
+		
+		if (tag.type == this.openType) {
+			this.stack.push(tag);
+			return new TreeResult(tag, null, false);
+		} else {
+			return this.closeHandle(tag);
+		}			
+	};
+	
+	// Remove node that is excluded
+	Tree.prototype.stackExclude = function(range) {
+		if (this.root && this.root.range.start >= range.start && this.root.range.end <= range.end) {
+			this.finished = true;
+			return;
+		}
+		var i = this.stack.length, tag;
+		while (i) {
+			tag = this.stack[i - 1];
+			if (tag.range.start >= range.end || tag.range.end <= range.start) {
+				break;
+			}
+			this.stack.pop();
+			i--;
+		}
+	};
+	
+	Tree.prototype.getExclude = function() {
+		return this.matchGroup.matches[0].excludeRange;
+	};
+	
+	var Search = function(text, i, direction, excludeRange){
+		this.text = text;
+		this.direction = direction;
+		this.excludeRange = excludeRange;
+		this.finished = false;
+		this.tag = null;
+		this.trees = [];
+		this.pool = {};
+		this.explicit = null;
+		this.explicitPending = null;
+		this.explicitWeak = null;
+		this.main = new Tree(
+			new MatchGroup([
+				new Match(text, i, "<", null, excludeRange)
+			]),
+			direction,
+			null
+		);
+		if (direction == "next") {
+			this.openType = "open";
+			this.createTree = this.createTreeNext;
+		} else {
+			this.openType = "close";
+			this.createTree = this.createTreeBack;
+		}
+	};
+		
+	Search.prototype.createTreeNext = function(tag, i){
+		if (i == null) {
+			i = tag.range.end;
+		}
+		this.excludeRange = this.main.getExclude();
+		return new Tree(
+			new MatchGroup([
+				new Match(this.text, i, "<" + tag.name, tag.name, this.excludeRange),
+				new Match(this.text, i, "</" + tag.name, tag.name, this.excludeRange)
+			]),
+			this.direction,
+			tag
+		);
+	};
+	
+	Search.prototype.createTreeBack = function(tag, i) {
+		if (i == null) {
+			i = tag.range.start - 1;
+		}
+		this.excludeRange = this.main.getExclude();
+		return new Tree(
+			new MatchGroup([
+				new Match(this.text, i, "<" + tag.name, tag.name, this.excludeRange),
+				new Match(this.text, i, "</" + tag.name, tag.name, this.excludeRange)
+			]),
+			this.direction,
+			tag
+		);
+	};
+	
+	Search.prototype.next = function(){
+		var result, range;
+		
+		// console.log(this.direction);
+		
+		if (this.explicit && !this.explicitPending) {
+			// console.log("explicit");
+			result = this.explicit.next();
+			if (result.finished) {
+				if (result.tag) {
+					this.finished = true;
+					this.tag = result.tag;
+					return;
+				} else if (this.explicitWeak) {
+					// wrong explicit
+					this.pool[this.explicit.root.name] = null;
+					this.explicit = null;
+					this.main.root = null;
+				} else {
+					// can't find
+					this.finished = true;
+					return;
+				}
+			}
+			if (result.detached) {
+				range = new Range(
+					result.detached.open.range.start,
+					result.detached.close.range.end
+				);
+				this.explicit.matchGroup.matches[0].excludeRange.extend(range);
+				this.cleanTreeStack(range);
+			}
+		}
+		
+		// console.log("main");
+		result = this.main.next();
+		
+		if (result.finished) {
+			this.finished = true;
+			this.tag = result.tag;
+			return;
+		}
+		
+		if (result.tag.type == this.openType && !this.pool[result.tag.name]) {
+			this.pool[result.tag.name] = this.createTree(result.tag);
+			this.trees.push(result.tag.name);
+		}
+		
+		// console.log("trees");
+		var i = this.trees.length, name;
+		while (i) {
+			name = this.trees[i - 1];
+			result = this.pool[name].next();
+			if (result.detached) {
+				range = new Range(
+					result.detached.open.range.start,
+					result.detached.close.range.end
+				);
+				this.pool[name].matchGroup.matches[0].excludeRange.extend(range);
+				this.cleanTreeStack(range);
+			}
+			i--;
+		}
+		
+		// remove finished trees
+		i = this.trees.length;
+		while (i) {
+			if (this.pool[this.trees[i - 1]].finished) {
+				this.pool[this.trees[i - 1]] = null;
+				this.trees[i - 1] = this.trees[this.trees.length - 1];
+				this.trees.pop();
+			}
+			i--;
+		}
+		
+		if (this.explicitPending && this.explicitPending.finished) {
+			this.pool[this.explicitPending.root.name] = true;
+			this.explicitPending = null;
+		}
+	};
+	
+	Search.prototype.cleanTreeStack = function(range) {
+		this.main.stackExclude(range);
+		if (this.explicit) {
+			this.explicit.stackExclude(range);
+		}
+		
+		var i, len;
+		for (i = 0, len = this.trees.length; i < len; i++) {
+			this.pool[this.trees[i]].stackExclude(range);
+		}
+	};
+	
+	Search.prototype.keepMatchingPair = function(tag, weak) {
+		this.tag = null;
+		this.finished = false;
+		this.main.finished = false;
+		this.main.root = tag;
+		this.explicit = this.createTree(tag, this.main.matchGroup.matches[0].i);
+		this.explicitWeak = weak;
+		if (this.pool[tag.name]) {
+			// console.log("pending");
+			this.explicitPending = this.pool[tag.name];
+		} else {
+			this.pool[tag.name] = true;
+		}
+	};
+		
+	function matchTag(pos, text) {
+		var match;
+		if (text[pos + 1] == "/") {
+			// close
+			if ((match = text.substr(pos).match(end_tag))) {
+				return tag(match, pos, "close");
+			}
+		} else if (text[pos + 1] == "!" && text[pos + 2] == "-" && text[pos + 3] == "-") {
+			// comment
+			if ((match = text.indexOf("-->", pos + 4)) >= 0) {
+				return comment(pos, match + 3);
+			}
+		} else if ((match = text.substr(pos).match(start_tag))) {
+			// open
+			return tag(match, pos, "open");
+		}
+	}
+	
+	function createMatcher(text, pos) {
+		var excludeRange;
+		
+		function buildExclude(i, j) {
+			var range = excludeRange = new Range(pos, pos);
+			while ((i = text.indexOf("<!--", i)) >= 0 && i < j) {
+				var tag = matchTag(i, text);
+				if (!tag) {
+					i++;
+				} else {
+					i = tag.range.end;
+					range = range.extend(new Range(
+						tag.range.start,
+						tag.range.end
+					));
+				}
+			}
+		}
+		
 		return {
 			// Main search function
 			search: function(){
-				this.hit();
-
-				// console.log("hit", !!hit);
-
-				if (foundB && (foundB.type == "comment" || foundB.selfClose)) {
-					return this.result();
-				}
-
-				if (!foundF) {
-					this.searchForward();
-				} else {
-					this.searchBackward();
-				}
-
-				return this.result();
-			},
-			// The pos is in open tag.
-			hit: function(){
-				// Try to hit comment
-				var match, tag;
-				match = text.lastIndexOf("<!--", pos - 1);
-				if (match >= 0) {
-					tag = matchTag(match);
-					if (tag && tag.range.end > pos) {
-						foundB = tag;
-						hit = true;
-						return;
-					}
-				}
-
-				tag = searchBackAny(pos - 1);
-				if (tag && tag.range.end > pos) {
-					if (tag.type == "open") {
-						foundB = tag;
+				var tag;
+				
+				tag = this.hit();				
+				if (tag) {
+					// console.log("hit");
+					if (tag.type == "comment" || tag.selfClose) {
+						return [tag, null];
+					} else if (tag.type == "open") {
+						buildExclude(tag.range.end, text.length);
+						return this.forward(tag);
 					} else {
-						foundF = tag;
+						buildExclude(0, tag.range.start);
+						return this.backward(tag);
 					}
-					hit = true;
+				} else {
+					// console.log("no hit");
+					buildExclude(0, text.length);
+					return this.loop();
+				}
+			},
+			backward: function(close){
+				var backward = new Search(text, close.range.start - 1, "back", excludeRange);
+				
+				backward.keepMatchingPair(close);
+				
+				while (!backward.finished) {
+					backward.next();
+				}
+				
+				return [backward.tag, close];
+			},
+			forward: function(open){
+				var forward = new Search(text, open.range.end, "next", excludeRange);
+				
+				forward.keepMatchingPair(open);
+				
+				while (!forward.finished) {
+					forward.next();
+				}
+				
+				return [open, forward.tag];
+			},
+			loop: function() {
+				var forward = new Search(text, pos, "next", excludeRange),
+					backward = new Search(text, pos - 1, "back", excludeRange);
+					
+				while (!forward.finished && !backward.finished) {
+					forward.next();
+					backward.next();
+				}
+				
+				if (backward.tag && !forward.finished) {
+					forward.keepMatchingPair(backward.tag, true);
+				}
+				
+				while (!forward.finished) {
+					forward.next();
+				}
+				
+				if (!forward.tag) {
 					return;
 				}
+				
+				if (!backward.tag || backward.tag.name != forward.tag.name) {
+					backward.keepMatchingPair(forward.tag);
+				}
+				
+				while (!backward.finished) {
+					backward.next();
+				}
+				
+				return [backward.tag, forward.tag];
 			},
-			// Forward search for end tag.
-			searchForward: function(){
-				if (hit) {
-					var pair = searchNextPair(foundB.name, foundB.range.start);
-
-					if (pair >= 0) {
-						foundF = matchTag(pair);
-					}
-				} else {
-					end_tag_g.lastIndex = pos;
-					start_tag_g.lastIndex = pos;
-
-					// look for end tag
-					while (true) {
-						var matchOpen = start_tag_g.exec(text),
-							matchClose = end_tag_g.exec(text);
-
-						if (!matchClose) {
-							return;
-						}
-
-						if (!matchOpen || matchOpen.index > matchClose.index) {
-							// Found close
-							foundF = matchTag(matchClose.index);
-							this.searchBackward();
-							return;
-						}
-
-						// try to pair close tag
-						var iO = searchPrevPair(matchClose[1], matchClose.index);
-						if (iO < pos) {
-							// it contains cursor. found
-							foundF = matchTag(matchClose.index);
-							mark["<" + matchClose[1]][iO] = undefined;
-							this.searchBackward();
-							return;
-						}
-
-						// try to pair open tag
-						var iC = searchNextPair(matchOpen[1], matchOpen.index);
-						if (iC >= 0) {
-							// paired. skip this section
-							start_tag_g.lastIndex = iC + 1;
-							// if close tag is in this section, skip that too.
-							if (matchClose.index < iC) {
-								end_tag_g.lastIndex = iC + 1;
-							}
-						}
+			hit: function(){
+				// Try to hit comment
+				var i = text.lastIndexOf("<!--", pos - 1), tag;
+				if (i >= 0) {
+					tag = matchTag(i, text);
+					if (tag && tag.range.end > pos) {
+						return tag;
 					}
 				}
-			},
-			// Backward search for open tag. Must match foundF.
-			searchBackward: function(){
-				var open = "<" + foundF.name,
-					close = "</" + foundF.name,
-					matchOpen, matchClose;
-
-				matchOpen = foundF.range.start - 1;
-				matchClose = foundF.range.start - 1;
-				while ((matchOpen = searchBack(open, matchOpen)) >= 0) {
-					matchClose = searchBack(close, matchClose);
-					if (matchClose < matchOpen) {
-						foundB = matchTag(matchOpen);
-						return;
+				// hit tag
+				i = pos - 1;
+				while ((i = text.lastIndexOf("<", i)) >= 0) {
+					tag = matchTag(i, text);
+					if (!tag) {
+						i--;
+					} else {
+						if (tag.range.end > pos) {
+							return tag;
+						}
+						break;
 					}
 				}
-			},
-			result: function(){
-				// console.log(foundB && foundB.full, foundF && foundF.full);
-				if (foundB && foundF && foundB.name != foundF.name) {
-					if (hit) {
-						foundF = null;
-					}
-				}
-				return [foundB, foundF];
 			}
 		};
 	}
@@ -3525,12 +3953,16 @@ define(function(require, exports, module) {
 				hash = "l" + html.length + "p" + start_ix;
 				if (this._cache[hash] === undefined) {
 					pair = createMatcher(html, start_ix).search();
-					this._cache[hash] = makeRange(pair[0], pair[1], start_ix, html);
+					if (pair) {
+						this._cache[hash] = makeRange(pair[0], pair[1], start_ix, html);
+					}
 				}
 				return this._cache[hash];
 			} else {
 				pair = createMatcher(html, start_ix).search();
-				return makeRange(pair[0], pair[1], start_ix, html);
+				if (pair) {
+					return makeRange(pair[0], pair[1], start_ix, html);
+				}
 			}
 		},
 		tag: function(html, start_ix) {
@@ -4772,7 +5204,7 @@ define(function(require, exports, module) {
 
 	return exports;
 });
-}).call(this,"/lib\\emmet-quick-match\\lib\\assets")
+}).call(this,"/lib\\emmet\\lib\\assets")
 },{"../assets/logger":23,"../resolver/css":59,"../utils/common":67,"../vendor/stringScore":73,"./elements":20,"./handlerList":21}],28:[function(require,module,exports){
 /**
  * A trimmed version of CodeMirror's StringStream module for string parsing
@@ -18367,6 +18799,6 @@ module.exports = Array.isArray || function (arr) {
 };
 
 },{}],78:[function(require,module,exports){
-emmet = require("../../lib/emmet-quick-match/lib/emmet.js");
+emmet = require("../../lib/emmet/lib/emmet.js");
 
-},{"../../lib/emmet-quick-match/lib/emmet.js":34}]},{},[78]);
+},{"../../lib/emmet/lib/emmet.js":34}]},{},[78]);

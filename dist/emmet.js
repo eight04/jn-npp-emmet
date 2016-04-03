@@ -675,9 +675,10 @@
 			// Emmet's indentation style doesn't match notepad++'s.
 			if (emmetEditor.isCollapsed()) {
 				emmet.htmlMatcher.cache(true);
-				timer("action", function(){
-					emmet.run(action_name, emmetEditor);
-				});
+				emmet.run(action_name, emmetEditor);
+				// timer("action", function(){
+					// emmet.run(action_name, emmetEditor);
+				// });
 				emmet.htmlMatcher.cache(false);
 			} else {
 				MenuCmds.EDIT_INS_TAB();
