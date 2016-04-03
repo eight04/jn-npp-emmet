@@ -231,7 +231,14 @@
 		return open;
 
 	})(GlobalSettings, io, PLUGIN_DIR);
-
+	
+	function createMap(list) {
+		var i, len, holder = {};
+		for (i = 0, len = list.length; i < len; i++) {
+			holder[list[i]] = true;
+		}
+		return holder;
+	}
 
 	// Default snippets and caniuse
 	emmet.loadSystemSnippets(io.read(PLUGIN_DIR + "/includes/emmet/snippets.json"));
@@ -291,6 +298,9 @@
 		settings = JSON.parse(settings);
 	} catch (err) {
 		settings = {};
+	}
+	if (settings.enableTabExpensionUnder) {
+		settings.enableTabExpensionUnder = createMap(settings.enableTabExpensionUnder);
 	}
 	
 	function commandInsertTab() {
