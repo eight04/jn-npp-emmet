@@ -251,12 +251,21 @@
 	if (!path.exists(userMenu)) {
 		io.write(userMenu, JSON.stringify(emmet.actions.getMenu(), null, "\t"));
 	}
+	
+	// Default settings
+	var userSettings = Editor.pluginConfigDir + "/emmet.settings.json",
+		defaultSettings = PLUGIN_DIR + "/includes/emmet/settings.json";
+	
+	if (!path.exists(userSettings)) {
+		path.copy(defaultSettings, userSettings);
+	}
 
 	// User settings
 	var preference = io.read(Editor.pluginConfigDir + "/emmet.preferences.json");
 	var snippets = io.read(Editor.pluginConfigDir + "/emmet.snippets.json");
 	var keyMap = io.read(Editor.pluginConfigDir + "/emmet.keymap.json");
 	var menu = io.read(Editor.pluginConfigDir + "/emmet.menu.json");
+	var settings = io.read(Editor.pluginConfigDir + "/emmet.settings.json");
 
 	if (preference) {
 		emmet.loadPreferences(preference);
@@ -276,6 +285,12 @@
 		menu = JSON.parse(menu);
 	} catch (err) {
 		menu = [];
+	}
+	
+	try {
+		settings = JSON.parse(settings);
+	} catch (err) {
+		settings = {};
 	}
 	
 	function commandInsertTab() {
@@ -587,13 +602,27 @@
 
 			// Check if the selection is collapsed
 			shouldExpand: function() {
+				// collapsed
 				if (context.bytePos != context.byteAnchor) {
 					return false;
 				}
+				
+				// on whitespace
 				context.bytePos--;
 				var ch = context.selection;
 				context.bytePos++;
 				if (whiteSpace[ch]) {
+					return false;
+				}
+				
+				// invalid lang
+				if (settings.enableTabExpensionByFileType) {
+					if (settings.enableTabExpensionUnder) {
+						var lang = Editor.langs[Editor.currentView.lang];
+						if (lang && settings.enableTabExpensionUnder[lang.toLowerCase()]) {
+							return true;
+						}
+					}
 					return false;
 				}
 				return true;
