@@ -702,19 +702,28 @@
 				title: "Enter Abbreviation",
 				cmd: function(abbr) {
 					if (abbr) {
+						emmet.htmlMatcher.cache(true);
 						emmet.run(action_name, emmetEditor, abbr);
+						emmet.htmlMatcher.cache(false);
 					}
 				}
 			});
 		} else if (action_name == "expand_abbreviation_with_tab") {
 			// Emmet's indentation style doesn't match notepad++'s.
 			if (emmetEditor.shouldExpand()) {
+				emmet.htmlMatcher.cache(true);
 				emmet.run(action_name, emmetEditor);
+				// timer("action", function(){
+					// emmet.run(action_name, emmetEditor);
+				// });
+				emmet.htmlMatcher.cache(false);
 			} else {
 				MenuCmds.EDIT_INS_TAB();
 			}
 		} else {
-			return emmet.run(action_name, emmetEditor);
+			emmet.htmlMatcher.cache(true);
+			emmet.run(action_name, emmetEditor);
+			emmet.htmlMatcher.cache(false);
 		}
 	}
 

@@ -108,23 +108,18 @@
 						var d = dialog.handle,
 							document = d.document;
 
-						document.getElementById("form").onsubmit = function(e) {
-							e = e || document.parentWindow.event;
-							if (e.preventDefault) {
-								e.preventDefault();
-							} else {
-								e.returnValue = false;
-							}
+						document.getElementById("form").onsubmit = function() {
 							dialog.result = document.getElementById("entry").value;
 							d.close();
+							return false;
 						};
 
 						document.getElementById("cancel").onclick = function() {
 							d.close();
 						};
 
-						document.onkeydown = function() {
-							var e = document.parentWindow.event;
+						document.onkeydown = function(e) {
+							e = e || document.parentWindow.event;
 							if (e.keyCode == 27) {
 								d.close();
 							}
@@ -670,19 +665,28 @@
 				title: "Enter Abbreviation",
 				cmd: function(abbr) {
 					if (abbr) {
+						emmet.htmlMatcher.cache(true);
 						emmet.run(action_name, emmetEditor, abbr);
+						emmet.htmlMatcher.cache(false);
 					}
 				}
 			});
 		} else if (action_name == "expand_abbreviation_with_tab") {
 			// Emmet's indentation style doesn't match notepad++'s.
 			if (emmetEditor.isCollapsed()) {
+				emmet.htmlMatcher.cache(true);
 				emmet.run(action_name, emmetEditor);
+				// timer("action", function(){
+					// emmet.run(action_name, emmetEditor);
+				// });
+				emmet.htmlMatcher.cache(false);
 			} else {
 				MenuCmds.EDIT_INS_TAB();
 			}
 		} else {
-			return emmet.run(action_name, emmetEditor);
+			emmet.htmlMatcher.cache(true);
+			emmet.run(action_name, emmetEditor);
+			emmet.htmlMatcher.cache(false);
 		}
 	}
 

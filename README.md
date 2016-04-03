@@ -81,6 +81,14 @@ Todos
 -----
 * Make license compatible with jN's zen_coding script.
 
+Speed test
+----------
+`test.html`: L4533, L4680, L4
+* better-matcher: 115, 688, 31
+* zen-coding: 105, 679, 26
+* quick-match: 67, 20, 34
+* quick-match-2: 72, 27, 26
+
 Changelog
 =========
 * 0.2.0 (Feb 26, 2016)

@@ -1,0 +1,4685 @@
+<!doctype html>
+<html lang="en" ng-app="App">
+<head>
+	.test
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0" >
+	<title>Test Page</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+	<script src="https://code.angularjs.org/1.2.26/angular.js"></script>
+	<script src="https://code.angularjs.org/1.2.26/angular-animate.js"></script>
+
+	<link rel="stylesheet" href="../dist/end2end.css">
+	<script src="../dist/end2end.js"></script>
+
+	<script>
+		app = angular.module("App", ["end2end", "ngAnimate"]);
+		app.run(function($rootScope, dialog, modal, $interval){
+			$rootScope.dialog = dialog;
+			$rootScope.modal = modal;
+			$rootScope.items = ["Apple", "Orange", "Banana", "Grapes", "Sandwitch"];
+		});
+		app.directive('checkHeight', function(watch){
+			return function(scope, element) {
+				watch(function(){
+					return element[0].offsetHeight;
+				}, function(value) {
+					alert(value);
+				});
+			};
+		});
+	</script>
+
+	<style>
+		.paint-grid .row {
+			background-color: #eee;
+		}
+
+		.paint-grid [class*="col-"] {
+			background-color: #ddd;
+		}
+
+		.paint-grid .content {
+			background-color: #ccc;
+			overflow: hidden;
+		}
+	</style>
+
+	<!--[if lte ie 8]>
+	<script src="https://rawgit.com/scottjehl/Respond/master/dest/respond.src.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv-printshiv.js"></script>
+	<![endif]-->
+
+</head>
+
+<body class="super-fast">
+	<nav class="navbar">
+		<div class="container">
+			<a href="" class="navbar-brand">end2end</a>
+			<div class="stretch none-sm"></div>
+			<div class="navbar-col none-sm">
+				<button class="btn navbar-toggle">
+					&equiv;
+				</button>
+			</div>
+			<div class="navbar-collapse ani-collapse">
+				<div class="navbar-menu">
+					<a href="" class="navbar-link active">link 1</a>
+					<a href="" class="navbar-link">link 2</a>
+					<form class="navbar-form">
+						<div class="form-group">
+							<div class="input-group">
+								<div>
+									<div>
+										<input type="text" class="form-control">
+									</div>
+								</div>
+								<div class="shrink">
+									<div>
+										<button class="btn-default">Search</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+					<div class="stretch"></div>
+					<a href="" class="navbar-link">link 3</a>
+					<a href="" class="navbar-link">link 4</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<header>
+		<div class="blackboard">
+			<div class="container">
+				<div class="row row-middle">
+					<div class="col-md-2-3">
+						<h1 class="blackboard-head">End2end</h1>
+						<p class="blackboard-body">
+							Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem, nesciunt eveniet expedita impedit?
+						</p>
+					</div>
+					<div class="col-md-1-3">
+						<p class="blackboard-side compact">
+							Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint, assumenda, officia, dolor at aliquam numquam facere culpa autem ducimus optio distinctio aut illum totam vero veniam voluptate accusamus dignissimos. Ducimus.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+	<div class="container">
+		<div class="row affix-container">
+			<div class="col-md-3-4 push-md-1-4" scrollspy-target autonav-target>
+				<h2>Title</h2>
+				<p>
+					Welcome to <a href="https://github.com/eight04/end2end">end2end</a> demo page!
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos, ad inventore unde at voluptate. Molestias, dolor, illo, autem, suscipit quaerat distinctio eveniet perspiciatis explicabo nesciunt quam vitae et harum labore.
+				</p>
+
+				<h2>Font size</h2>
+				<p>一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十</p>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Numquam, fugit consectetur iusto quod culpa a nihil saepe labore ut distinctio sint ad dolorem odio hic quidem quaerat expedita similique corporis.</p>
+
+				<h2 id="grids">Grid system</h2>
+				<div class="paint-grid">
+					<h3>Align top</h3>
+					<div class="row row-top">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align middle</h3>
+					<div class="row row-middle">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align bottom</h3>
+					<div class="row row-bottom">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align items separately</h3>
+					<div class="row">
+						<div class="col-xs-1-5 col-top">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-bottom">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+					<p>Note: Make sure the highest item has .col-middle to get correct position below IE9.</p>
+
+					<h3>Without gap</h3>
+					<div class="row row-nogap">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+								.col-xs-1-5<br/>second-line<br/>third-line<p>
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Change order</h3>
+					<div class="row">
+						<div class="col-xs-1-5 push-xs-4-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5 push-xs-2-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<p></p>
+						<div class="col-xs-1-5 pull-xs-2-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 pull-xs-4-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Row justify</h3>
+					<div class="row row-justify">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Row inline</h3>
+					<div class="row row-inline">
+						<div>
+							<div class="content">Lorem ipsum dolor.</div>
+						</div>
+						<div>
+							<div class="content">Aspernatur, ipsa, harum.</div>
+						</div>
+						<div>
+							<div class="content">Laboriosam, aspernatur, dignissimos.</div>
+						</div>
+						<div>
+							<div class="content">Animi, unde, ab.</div>
+						</div>
+						<div>
+							<div class="content">Blanditiis, laboriosam, voluptatibus!</div>
+						</div>
+						<div>
+							<div class="content">Nulla nam, porro!</div>
+						</div>
+						<div>
+							<div class="content">Quaerat, optio, dicta.</div>
+						</div>
+						<div>
+							<div class="content">Deleniti officiis, autem?</div>
+						</div>
+						<div>
+							<div class="content">Tenetur sequi, eaque.</div>
+						</div>
+						<div>
+							<div class="content">Voluptas, ex cumque?</div>
+						</div>
+						<div>
+							<div class="content">Aliquam, odit, blanditiis.</div>
+						</div>
+						<div>
+							<div class="content">Quas, laudantium corrupti.</div>
+						</div>
+						<div>
+							<div class="content">Necessitatibus, veritatis harum.</div>
+						</div>
+						<div>
+							<div class="content">Corporis, sunt aspernatur!</div>
+						</div>
+						<div>
+							<div class="content">Ipsum, voluptatum eos.</div>
+						</div>
+						<div>
+							<div class="content">Commodi natus, odit!</div>
+						</div>
+						<div>
+							<div class="content">Error repellat, quidem.</div>
+						</div>
+						<div>
+							<div class="content">Est, error, itaque.</div>
+						</div>
+						<div>
+							<div class="content">Laudantium, recusandae, unde?</div>
+						</div>
+						<div>
+							<div class="content">Delectus, distinctio, laudantium.</div>
+						</div>
+					</div>
+				</div>
+
+				<h2 id="tables">Table</h2>
+
+				<h3>Raw table</h3>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h3>table-wrap</h3>
+				<div class="table-wrap">
+					<div class="clipper">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Title 1</th>
+									<th>Title 2</th>
+									<th>Title 3</th>
+									<th>Title 4</th>
+									<th>Title 5</th>
+									<th>Title 6</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<h3>Fixed column</h3>
+				<p>Since <code>position:absolute</code> will make td have <code>display:block</code>. You have to make it vertical-center manually.</p>
+				<p>Give table-fixed a name so you can call <code>tableFixed.render()</code> to re-calculate the table.</p>
+				<div class="marger">
+					<button class="btn-default" ng-click="tableFixed.render()">Redraw</button>
+				</div>
+				<div class="marger">
+					<input type="text" class="form-control" ng-model="myText">
+				</div>
+				<div class="table-fixed" fixed-left="2" fixed-right="1">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>
+									Title 1<br>
+									2nd line
+								</th>
+								<th>
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 2</div>
+									</div>
+								</th>
+								<th>Title 3</th>
+								<th>{{myText}}</th>
+								<th>Title 5</th>
+								<th>
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 6</div>
+									</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<p><code>table-fixed</code> will also calculate colspan and rowspan.</p>
+				<div class="table-fixed" fixed-left="2" fixed-right="1" name="tableFixed">
+					<table class="table">
+						<thead>
+							<tr>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 1<br>2nd line</div>
+									</div>
+								</th>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 2</div>
+									</div>
+								</th>
+								<th colspan="3">Title 3</th>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 6</div>
+									</div>
+								</th>
+							</tr>
+							<tr>
+								<th class="table-cell-inner table-cell-first">Title 3-1</th>
+								<th class="table-cell-inner">Title 3-2</th>
+								<th class="table-cell-inner">Title 3-3</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<p>
+					You can also use <code>fixed-span</code> directive. Note that <code>colspan="0"</code> is ignored under IE10-, so you have to add an additional <code>fixed-span</code> directive.
+				</p>
+				<div class="table-fixed">
+					<table class="table" fixed-left="1">
+						<thead>
+							<tr>
+								<th>Title 1</th>
+								<th>Title 2</th>
+								<th>Title 3</th>
+								<th>Title 4</th>
+								<th>Title 5</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit aliquid saepe sunt, perferendis nisi voluptatem odit atque dolore modi inventore dolorem consectetur dolores quia explicabo neque itaque eius iure consequuntur.</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Odio cum animi voluptate tempora nihil neque minima, expedita necessitatibus voluptatem quae at vel maxime pariatur nobis aspernatur distinctio velit magni architecto sunt debitis, dicta quis odit hic! Minus, est.</td>
+							</tr>
+							<tr>
+								<td colspan="0" fixed-span>Overall title</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Tempore recusandae impedit fugiat expedita nihil doloribus, quasi quam dolore asperiores officiis delectus illum veniam aut ad beatae, quidem, minus laboriosam ipsam iste ea consequatur. Nulla optio, facilis exercitationem dolorum.</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Accusamus perferendis ea incidunt iure nisi autem inventore vel fugiat nostrum ut obcaecati rerum vitae repudiandae labore, reiciendis minima est nobis, atque esse, earum fugit. At quos voluptas velit, atque.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h2 id="form">Form</h2>
+				<form>
+					<div class="form-group">
+						<label for="name">Name</label>
+						<input class="form-control" type="text" id="name" value="The quick brown fox jumps over the lazy dog" />
+					</div>
+
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input class="form-control" type="text" id="email" value="床前明月光 疑是地上霜" />
+					</div>
+
+					<div class="form-group">
+						<label for="age">Your age</label>
+						<input class="form-control" type="text" id="age" number min="18" max="100" ng-model="age" />
+					</div>
+
+					<div class="form-group">
+						<label for="comment">Leave a comment</label>
+						<textarea class="form-control" id="comment" placeholder="Type something. This is a placeholder."></textarea>
+					</div>
+
+					<fieldset class="form-group">
+						<legend>Select your gender</legend>
+						<div class="radio">
+							<label>
+								<input type="radio" name="gender" />
+								Male
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="gender" />
+								Female
+							</label>
+						</div>
+					</fieldset>
+
+					<fieldset class="form-group">
+						<legend>New cleaner way to create radio input</legend>
+						<label class="radio">
+							<input type="radio" name="gender2">
+							Male
+						</label>
+						<label class="radio">
+							<input type="radio" name="gender2">
+							Female
+						</label>
+					</fieldset>
+
+					<fieldset class="form-group">
+						<legend>Options</legend>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Google
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Yahoo
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Bing
+							</label>
+						</div>
+					</fieldset>
+
+					<div class="form-group">
+						<select class="form-control" name="" id="">
+							<option value="">Option 1</option>
+							<option value="">Option 2</option>
+							<option value="">Option 3</option>
+							<option value="">Option 4</option>
+							<option value="">Option 5</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<select class="form-control" name="" id="" multiple>
+							<option value="">Option 1</option>
+							<option value="">Option 2</option>
+							<option value="">Option 3</option>
+							<option value="">Option 4</option>
+							<option value="">Option 5</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<button class="btn-default">Submit</button>
+						<button class="btn-default" type="reset">Reset</button>
+					</div>
+					<p>
+						Other buttons <br>
+						Circle button <button class="btn-circle">?</button>
+					</p>
+				</form>
+
+				<h2 id="images">Images</h2>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit <img src="http://placehold.it/24x24" alt="" />. Libero, illum, sequi, earum tempora quas assumenda neque ut tenetur animi consectetur voluptatum fugiat iste sed at deleniti repudiandae labore? Alias, consequuntur.
+				</p>
+				<img src="//placehold.it/140x140" alt="" class="right-sm" />
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora, accusamus, dolores laboriosam neque deleniti non aspernatur impedit ex quaerat quasi inventore ipsa iusto voluptatum nihil similique esse soluta reprehenderit voluptas?
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae, nihil, voluptas, rerum consectetur veritatis adipisci ratione explicabo repellendus reprehenderit officia quo hic ad? Sint, quod eaque adipisci perspiciatis ipsum repellendus.
+				</p>
+				<img src="//placehold.it/140x140" alt="" class="left-sm" />
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum, doloremque, ea eaque iste hic harum eius neque animi magnam quisquam omnis provident veniam molestias dolorem rerum minima nihil officia est.
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto, illo, iure animi soluta officiis nemo porro sed aut nihil quibusdam? Consequatur, commodi, harum assumenda eius incidunt minus numquam quasi voluptas.
+				</p>
+				<div class="clear"></div>
+
+				<h2 id="input-group">Input group</h2>
+				<p>Since IE8 doesn't support background-clip, we add an inner-wrapper to <code>.input-group-addon</code>.</p>
+				<div class="form-group">
+					<div class="input-group-inline">
+						<div>
+							<div><button class="btn-default">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Middle</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group-justified">
+						<div>
+							<div><button class="btn-default btn-block">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Middle</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group">
+						<div class="shrink">
+							<div><button class="btn-default btn-block">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Middle</button></div>
+						</div>
+						<div class="shrink">
+							<div><button class="btn-default btn-block">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group-inline">
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Search</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div class="shrink">
+							<div>
+								<div class="input-group-addon">
+									<div>Some text</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<h2 id="list">List</h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, tenetur, necessitatibus, provident, molestias voluptatibus quia aperiam aut cum suscipit consequatur nam enim minima reprehenderit molestiae voluptates dolorum doloribus maiores similique.</p>
+				<ul class="list">
+					<li>Item 1</li>
+					<li>Item 2</li>
+					<li>Item 3</li>
+					<li>Item 4</li>
+					<li>Item 5</li>
+				</ul>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, numquam, aliquid, natus non quis earum obcaecati tenetur doloribus sequi dolorum ea tempore doloremque deleniti exercitationem maiores nulla nesciunt voluptatum beatae!</p>
+				<ol class="list list-decimal">
+					<li>Item 1</li>
+					<li>Item 2</li>
+					<li>Item 3</li>
+					<li>Item 4</li>
+					<li>Item 5</li>
+				</ol>
+
+				<h2 id="navs">Nav</h2>
+				<h3>Nav list</h3>
+				<ul class="nav-list">
+					<li class="active"><a href="">Link 1</a></li>
+					<li><a href="">Link 2</a></li>
+					<li><a href="">Link 3</a></li>
+					<li><a href="">Link 4</a></li>
+					<li><a href="">Link 5</a></li>
+				</ul>
+
+				<h4>.nav-list-body</h4>
+				<ul class="nav-list">
+					<li class="active">
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et delectus vero vitae, omnis sit aliquid sapiente maxime optio quia rem ipsum, temporibus mollitia autem aspernatur reprehenderit, sequi obcaecati id unde.</p></div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse"><p>Facere nesciunt incidunt assumenda, repudiandae molestiae doloribus ipsa sunt odit officia, voluptatem animi libero magnam laborum alias, veritatis cumque nostrum error rem vitae. Nemo perferendis, accusantium eligendi provident dolore quasi.</p></div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse"><p>Consequatur, excepturi, distinctio. Deleniti, explicabo non culpa. Corporis officia quas eligendi totam assumenda dolorem dicta et, accusamus asperiores nam voluptate in dolore porro iure hic ipsam voluptatibus fugiat tempora error.</p></div>
+					</li>
+				</ul>
+
+				<h3>Nav tab</h3>
+				<div class="nav-responsive">
+					<ul class="nav-tab">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav pill</h3>
+				<div class="nav-responsive">
+					<ul class="nav-pill">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav justified</h3>
+				<div class="nav-responsive marger">
+					<ul class="nav-tab nav-justified">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+				<div class="nav-responsive marger">
+					<ul class="nav-pill nav-justified">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav tree</h3>
+				<ul class="nav-tree">
+					<li class="active">
+						<a href="">Link 1</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+				</ul>
+
+				<h2 id="progress">Progress</h2>
+				<p>
+					&lt;progress> is lack of support.
+				</p>
+				<div class="progress">
+					<div class="progress-bar" style="width: 100%;">
+						<div class="progress-label">
+							100%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 80%;">
+						<div class="progress-label">
+							80%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 1%;">
+						<div class="progress-label">
+							1%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 0%;">
+						<div class="progress-label">
+							0%
+						</div>
+					</div>
+				</div>
+
+				<h2 id="dialog">Dialog</h2>
+				<div class="dialog">
+					<div class="dialog-head">
+						This is a dialog!
+					</div>
+					<div class="dialog-body">
+						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, esse, magnam, libero est labore vel architecto officia unde quam modi voluptatibus odit enim veritatis nam quaerat deserunt quos cum repellendus.</p>
+					</div>
+				</div>
+
+				<h2 id="modal">Modal service</h2>
+				<p>Press <kbd>Esc</kbd> to dismiss modal.</p>
+				<button class="btn-default" ng-click="modal.open({templateUrl:'modal-example'})">Open</button>
+				<script type="text/ng-template" id="modal-example">
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia minus cupiditate, eligendi, nobis sint eos ut aperiam sit minima veniam id! Animi maiores, cumque dolores odio, culpa facere ea fuga.</p>
+				</script>
+
+				<h2 id="modal-dialog">Dialog service</h2>
+				<p>Original ezdialog. Based on modal service.</p>
+				<div class="marger">
+					<button class="btn-default" ng-click="dialog.show('Hi there!')">Open</button>
+				</div>
+
+				<h2 id="panes">Panes</h2>
+				<p>Use panes to create stacked window.</p>
+				<div class="panes">
+					<div class="pane active">Pane 1</div>
+					<div class="pane active">Pane 2</div>
+					<div class="pane active">Pane 3</div>
+					<div class="pane active">Pane 4</div>
+					<div class="pane active">Pane 5</div>
+				</div>
+
+				<h2 id="toggler">Toggler</h2>
+                <p>Use toggler and toggled to link navs and panes.</p>
+                <div class="marger">
+					<ul class="nav-pill" toggler="myToggle">
+						<li class="active"><a href="">Nav 1</a></li>
+						<li><a href="">Nav 2</a></li>
+						<li><a href="">Nav 3</a></li>
+						<li><a href="">Nav 4</a></li>
+						<li><a href="">Nav 5</a></li>
+					</ul>
+				</div>
+				<ul class="nav-tab" toggler="myToggle">
+					<li><a href="">Link 1</a></li>
+					<li><a href="">Link 2</a></li>
+					<li><a href="">Link 3</a></li>
+					<li><a href="">Link 4</a></li>
+					<li><a href="">Link 5</a></li>
+				</ul>
+				<div class="panes" toggled="myToggle">
+					<div class="pane"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint ea nobis tempore quibusdam quos voluptatem consequuntur, reprehenderit animi illum id! Minus repellat cumque fugit esse adipisci, non nulla, vel vitae!</p></div>
+					<div class="pane"><p>Et esse rem ipsa sint quia, molestias sed minus neque fugiat voluptate distinctio in voluptatum alias fuga consectetur ut illo dolorum ipsum. Esse nulla eligendi iste fuga earum. Quas, soluta!</p></div>
+					<div class="pane"><p>Voluptatem nemo vero, nostrum. Dolores maiores voluptate inventore numquam, laboriosam, cum voluptatibus, laborum consequatur autem illo quas porro. Nostrum eum, a veniam reprehenderit architecto voluptatibus rerum ad illum commodi veritatis.</p></div>
+					<div class="pane"><p>Quia incidunt velit, accusantium provident error, fugit quaerat aperiam corporis sequi et qui animi voluptates alias, exercitationem quo veniam repellat quas. Deleniti nulla, optio vero perferendis consequatur minus sapiente! Eos.</p></div>
+					<div class="pane"><p>Temporibus totam, hic facere beatae veniam ea aperiam laudantium fugit odit unde repudiandae, laborum perferendis nisi deserunt molestiae, omnis impedit ipsa inventore accusamus at aliquam sint magni voluptatum. Quos, provident!</p></div>
+				</div>
+				<ul class="nav-list" toggler="myToggle">
+					<li>
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quo optio iusto quae fugiat repudiandae esse ratione mollitia libero totam rem veritatis expedita natus quod harum eaque, debitis sunt neque.</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Consequatur accusamus iure vitae voluptatibus neque, veritatis repellat fugiat aspernatur dolorum cupiditate, nihil recusandae quisquam animi harum voluptatem eos aliquam, corrupti corporis dolor nesciunt necessitatibus, similique id maxime quam? Amet!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ea accusamus, maxime corporis harum impedit odio consequatur. Ea numquam sint delectus saepe maiores quam, praesentium! Error cumque dolorem, laborum omnis fugiat quis sint aperiam impedit explicabo voluptatum optio unde!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Voluptate molestias quibusdam eos, eum iste magnam dolore corporis nulla iure molestiae non reiciendis provident quasi alias magni eius quis? Nobis dolore neque aut quas molestias excepturi explicabo ad rem!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ipsam labore ad iste quibusdam eos ullam quas, eius animi eligendi et distinctio non fuga, omnis veritatis est harum. In vel quidem, maiores eligendi qui praesentium assumenda libero at debitis.</p>
+						</div>
+					</li>
+				</ul>
+				<p>You can use <code>multiple</code> option to make it act like checkbox.</p>
+				<ul class="nav-list" toggler="multiToggle" multiple>
+					<li>
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quo optio iusto quae fugiat repudiandae esse ratione mollitia libero totam rem veritatis expedita natus quod harum eaque, debitis sunt neque.</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Consequatur accusamus iure vitae voluptatibus neque, veritatis repellat fugiat aspernatur dolorum cupiditate, nihil recusandae quisquam animi harum voluptatem eos aliquam, corrupti corporis dolor nesciunt necessitatibus, similique id maxime quam? Amet!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ea accusamus, maxime corporis harum impedit odio consequatur. Ea numquam sint delectus saepe maiores quam, praesentium! Error cumque dolorem, laborum omnis fugiat quis sint aperiam impedit explicabo voluptatum optio unde!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Voluptate molestias quibusdam eos, eum iste magnam dolore corporis nulla iure molestiae non reiciendis provident quasi alias magni eius quis? Nobis dolore neque aut quas molestias excepturi explicabo ad rem!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ipsam labore ad iste quibusdam eos ullam quas, eius animi eligendi et distinctio non fuga, omnis veritatis est harum. In vel quidem, maiores eligendi qui praesentium assumenda libero at debitis.</p>
+						</div>
+					</li>
+				</ul>
+
+
+				<h2>Collapse</h2>
+				<p><code>.ani-collapse</code> support <code>ng-enter, ng-leave, ng-hide and active</code></p>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" ng-model="show">
+						Toggle ng-if
+					</label>
+				</div>
+				<div class="ani-collapse" ng-if="show">
+					<div class="test">
+						<p>
+							ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>
+						</p>
+					</div>
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" ng-model="show2">
+						Toggle ng-show
+					</label>
+				</div>
+				<div class="ani-collapse" ng-show="show2">
+					<p>
+						ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>
+					</p>
+				</div>
+				<div class="form-group">
+					<label for="repeat">ng-repeat</label>
+					<input type="text" ng-model="search" class="form-control">
+				</div>
+				<div class="ani-collapse" ng-repeat="i in items | filter:search">
+					<p>{{i}}</p>
+				</div>
+			</div>
+			<div class="col-md-1-4 pull-md-3-4 ">
+				<div class="affix">
+					<div class="affix-content fill-view-height">
+						<div class="sidebar">
+							<button class="sidebar-toggle"></button>
+							<div class="sidebar-content">
+								<div class="nav-group marger">
+									<div autonav-nav scrollspy-nav></div>
+									<ul class="nav-tree">
+										<li><a href="#">Back to top</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="test"></div>
+		</div>
+
+		<footer class="page-footer">
+			<p>eight04 &copy; 2014</p>
+		</footer>
+
+		<div class="test3">
+			<div class="test">
+				<img src="test.jpg" alt="" width="50" height="50">
+				<div class="test"></div>
+			</div>
+			<div class="test"></div>
+		</div>
+
+	</div>
+	<div class="container">
+		<div class="row affix-container">
+			<div class="col-md-3-4 push-md-1-4" scrollspy-target autonav-target>
+				<h2>Title</h2>
+				<p>
+					Welcome to <a href="https://github.com/eight04/end2end">end2end</a> demo page!
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos, ad inventore unde at voluptate. Molestias, dolor, illo, autem, suscipit quaerat distinctio eveniet perspiciatis explicabo nesciunt quam vitae et harum labore.
+				</p>
+
+				<h2>Font size</h2>
+				<p>一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十</p>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Numquam, fugit consectetur iusto quod culpa a nihil saepe labore ut distinctio sint ad dolorem odio hic quidem quaerat expedita similique corporis.</p>
+
+				<h2 id="grids">Grid system</h2>
+				<div class="paint-grid">
+					<h3>Align top</h3>
+					<div class="row row-top">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align middle</h3>
+					<div class="row row-middle">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align bottom</h3>
+					<div class="row row-bottom">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align items separately</h3>
+					<div class="row">
+						<div class="col-xs-1-5 col-top">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-bottom">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+					<p>Note: Make sure the highest item has .col-middle to get correct position below IE9.</p>
+
+					<h3>Without gap</h3>
+					<div class="row row-nogap">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Change order</h3>
+					<div class="row">
+						<div class="col-xs-1-5 push-xs-4-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5 push-xs-2-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 pull-xs-2-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 pull-xs-4-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Row justify</h3>
+					<div class="row row-justify">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Row inline</h3>
+					<div class="row row-inline">
+						<div>
+							<div class="content">Lorem ipsum dolor.</div>
+						</div>
+						<div>
+							<div class="content">Aspernatur, ipsa, harum.</div>
+						</div>
+						<div>
+							<div class="content">Laboriosam, aspernatur, dignissimos.</div>
+						</div>
+						<div>
+							<div class="content">Animi, unde, ab.</div>
+						</div>
+						<div>
+							<div class="content">Blanditiis, laboriosam, voluptatibus!</div>
+						</div>
+						<div>
+							<div class="content">Nulla nam, porro!</div>
+						</div>
+						<div>
+							<div class="content">Quaerat, optio, dicta.</div>
+						</div>
+						<div>
+							<div class="content">Deleniti officiis, autem?</div>
+						</div>
+						<div>
+							<div class="content">Tenetur sequi, eaque.</div>
+						</div>
+						<div>
+							<div class="content">Voluptas, ex cumque?</div>
+						</div>
+						<div>
+							<div class="content">Aliquam, odit, blanditiis.</div>
+						</div>
+						<div>
+							<div class="content">Quas, laudantium corrupti.</div>
+						</div>
+						<div>
+							<div class="content">Necessitatibus, veritatis harum.</div>
+						</div>
+						<div>
+							<div class="content">Corporis, sunt aspernatur!</div>
+						</div>
+						<div>
+							<div class="content">Ipsum, voluptatum eos.</div>
+						</div>
+						<div>
+							<div class="content">Commodi natus, odit!</div>
+						</div>
+						<div>
+							<div class="content">Error repellat, quidem.</div>
+						</div>
+						<div>
+							<div class="content">Est, error, itaque.</div>
+						</div>
+						<div>
+							<div class="content">Laudantium, recusandae, unde?</div>
+						</div>
+						<div>
+							<div class="content">Delectus, distinctio, laudantium.</div>
+						</div>
+					</div>
+				</div>
+
+				<h2 id="tables">Table</h2>
+
+				<h3>Raw table</h3>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h3>table-wrap</h3>
+				<div class="table-wrap">
+					<div class="clipper">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Title 1</th>
+									<th>Title 2</th>
+									<th>Title 3</th>
+									<th>Title 4</th>
+									<th>Title 5</th>
+									<th>Title 6</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<h3>Fixed column</h3>
+				<p>Since <code>position:absolute</code> will make td have <code>display:block</code>. You have to make it vertical-center manually.</p>
+				<p>Give table-fixed a name so you can call <code>tableFixed.render()</code> to re-calculate the table.</p>
+				<div class="marger">
+					<button class="btn-default" ng-click="tableFixed.render()">Redraw</button>
+				</div>
+				<div class="marger">
+					<input type="text" class="form-control" ng-model="myText">
+				</div>
+				<div class="table-fixed" fixed-left="2" fixed-right="1">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>
+									Title 1<br>
+									2nd line
+								</th>
+								<th>
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 2</div>
+									</div>
+								</th>
+								<th>Title 3</th>
+								<th>{{myText}}</th>
+								<th>Title 5</th>
+								<th>
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 6</div>
+									</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<p><code>table-fixed</code> will also calculate colspan and rowspan.</p>
+				<div class="table-fixed" fixed-left="2" fixed-right="1" name="tableFixed">
+					<table class="table">
+						<thead>
+							<tr>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 1<br>2nd line</div>
+									</div>
+								</th>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 2</div>
+									</div>
+								</th>
+								<th colspan="3">Title 3</th>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 6</div>
+									</div>
+								</th>
+							</tr>
+							<tr>
+								<th class="table-cell-inner table-cell-first">Title 3-1</th>
+								<th class="table-cell-inner">Title 3-2</th>
+								<th class="table-cell-inner">Title 3-3</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<p>
+					You can also use <code>fixed-span</code> directive. Note that <code>colspan="0"</code> is ignored under IE10-, so you have to add an additional <code>fixed-span</code> directive.
+				</p>
+				<div class="table-fixed">
+					<table class="table" fixed-left="1">
+						<thead>
+							<tr>
+								<th>Title 1</th>
+								<th>Title 2</th>
+								<th>Title 3</th>
+								<th>Title 4</th>
+								<th>Title 5</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit aliquid saepe sunt, perferendis nisi voluptatem odit atque dolore modi inventore dolorem consectetur dolores quia explicabo neque itaque eius iure consequuntur.</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Odio cum animi voluptate tempora nihil neque minima, expedita necessitatibus voluptatem quae at vel maxime pariatur nobis aspernatur distinctio velit magni architecto sunt debitis, dicta quis odit hic! Minus, est.</td>
+							</tr>
+							<tr>
+								<td colspan="0" fixed-span>Overall title</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Tempore recusandae impedit fugiat expedita nihil doloribus, quasi quam dolore asperiores officiis delectus illum veniam aut ad beatae, quidem, minus laboriosam ipsam iste ea consequatur. Nulla optio, facilis exercitationem dolorum.</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Accusamus perferendis ea incidunt iure nisi autem inventore vel fugiat nostrum ut obcaecati rerum vitae repudiandae labore, reiciendis minima est nobis, atque esse, earum fugit. At quos voluptas velit, atque.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h2 id="form">Form</h2>
+				<form>
+					<div class="form-group">
+						<label for="name">Name</label>
+						<input class="form-control" type="text" id="name" value="The quick brown fox jumps over the lazy dog" />
+					</div>
+
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input class="form-control" type="text" id="email" value="床前明月光 疑是地上霜" />
+					</div>
+
+					<div class="form-group">
+						<label for="age">Your age</label>
+						<input class="form-control" type="text" id="age" number min="18" max="100" ng-model="age" />
+					</div>
+
+					<div class="form-group">
+						<label for="comment">Leave a comment</label>
+						<textarea class="form-control" id="comment" placeholder="Type something. This is a placeholder."></textarea>
+					</div>
+
+					<fieldset class="form-group">
+						<legend>Select your gender</legend>
+						<div class="radio">
+							<label>
+								<input type="radio" name="gender" />
+								Male
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="gender" />
+								Female
+							</label>
+						</div>
+					</fieldset>
+
+					<fieldset class="form-group">
+						<legend>New cleaner way to create radio input</legend>
+						<label class="radio">
+							<input type="radio" name="gender2">
+							Male
+						</label>
+						<label class="radio">
+							<input type="radio" name="gender2">
+							Female
+						</label>
+					</fieldset>
+
+					<fieldset class="form-group">
+						<legend>Options</legend>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Google
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Yahoo
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Bing
+							</label>
+						</div>
+					</fieldset>
+
+					<div class="form-group">
+						<select class="form-control" name="" id="">
+							<option value="">Option 1</option>
+							<option value="">Option 2</option>
+							<option value="">Option 3</option>
+							<option value="">Option 4</option>
+							<option value="">Option 5</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<select class="form-control" name="" id="" multiple>
+							<option value="">Option 1</option>
+							<option value="">Option 2</option>
+							<option value="">Option 3</option>
+							<option value="">Option 4</option>
+							<option value="">Option 5</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<button class="btn-default">Submit</button>
+						<button class="btn-default" type="reset">Reset</button>
+					</div>
+					<p>
+						Other buttons <br>
+						Circle button <button class="btn-circle">?</button>
+					</p>
+				</form>
+
+				<h2 id="images">Images</h2>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit <img src="http://placehold.it/24x24" alt="" />. Libero, illum, sequi, earum tempora quas assumenda neque ut tenetur animi consectetur voluptatum fugiat iste sed at deleniti repudiandae labore? Alias, consequuntur.
+				</p>
+				<img src="//placehold.it/140x140" alt="" class="right-sm" />
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora, accusamus, dolores laboriosam neque deleniti non aspernatur impedit ex quaerat quasi inventore ipsa iusto voluptatum nihil similique esse soluta reprehenderit voluptas?
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae, nihil, voluptas, rerum consectetur veritatis adipisci ratione explicabo repellendus reprehenderit officia quo hic ad? Sint, quod eaque adipisci perspiciatis ipsum repellendus.
+				</p>
+				<img src="//placehold.it/140x140" alt="" class="left-sm" />
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum, doloremque, ea eaque iste hic harum eius neque animi magnam quisquam omnis provident veniam molestias dolorem rerum minima nihil officia est.
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto, illo, iure animi soluta officiis nemo porro sed aut nihil quibusdam? Consequatur, commodi, harum assumenda eius incidunt minus numquam quasi voluptas.
+				</p>
+				<div class="clear"></div>
+
+				<h2 id="input-group">Input group</h2>
+				<p>Since IE8 doesn't support background-clip, we add an inner-wrapper to <code>.input-group-addon</code>.</p>
+				<div class="form-group">
+					<div class="input-group-inline">
+						<div>
+							<div><button class="btn-default">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Middle</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group-justified">
+						<div>
+							<div><button class="btn-default btn-block">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Middle</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group">
+						<div class="shrink">
+							<div><button class="btn-default btn-block">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Middle</button></div>
+						</div>
+						<div class="shrink">
+							<div><button class="btn-default btn-block">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group-inline">
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Search</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div class="shrink">
+							<div>
+								<div class="input-group-addon">
+									<div>Some text</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<h2 id="list">List</h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, tenetur, necessitatibus, provident, molestias voluptatibus quia aperiam aut cum suscipit consequatur nam enim minima reprehenderit molestiae voluptates dolorum doloribus maiores similique.</p>
+				<ul class="list">
+					<li>Item 1</li>
+					<li>Item 2</li>
+					<li>Item 3</li>
+					<li>Item 4</li>
+					<li>Item 5</li>
+				</ul>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, numquam, aliquid, natus non quis earum obcaecati tenetur doloribus sequi dolorum ea tempore doloremque deleniti exercitationem maiores nulla nesciunt voluptatum beatae!</p>
+				<ol class="list list-decimal">
+					<li>Item 1</li>
+					<li>Item 2</li>
+					<li>Item 3</li>
+					<li>Item 4</li>
+					<li>Item 5</li>
+				</ol>
+
+				<h2 id="navs">Nav</h2>
+				<h3>Nav list</h3>
+				<ul class="nav-list">
+					<li class="active"><a href="">Link 1</a></li>
+					<li><a href="">Link 2</a></li>
+					<li><a href="">Link 3</a></li>
+					<li><a href="">Link 4</a></li>
+					<li><a href="">Link 5</a></li>
+				</ul>
+
+				<h4>.nav-list-body</h4>
+				<ul class="nav-list">
+					<li class="active">
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et delectus vero vitae, omnis sit aliquid sapiente maxime optio quia rem ipsum, temporibus mollitia autem aspernatur reprehenderit, sequi obcaecati id unde.</p></div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse"><p>Facere nesciunt incidunt assumenda, repudiandae molestiae doloribus ipsa sunt odit officia, voluptatem animi libero magnam laborum alias, veritatis cumque nostrum error rem vitae. Nemo perferendis, accusantium eligendi provident dolore quasi.</p></div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse"><p>Consequatur, excepturi, distinctio. Deleniti, explicabo non culpa. Corporis officia quas eligendi totam assumenda dolorem dicta et, accusamus asperiores nam voluptate in dolore porro iure hic ipsam voluptatibus fugiat tempora error.</p></div>
+					</li>
+				</ul>
+
+				<h3>Nav tab</h3>
+				<div class="nav-responsive">
+					<ul class="nav-tab">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav pill</h3>
+				<div class="nav-responsive">
+					<ul class="nav-pill">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav justified</h3>
+				<div class="nav-responsive marger">
+					<ul class="nav-tab nav-justified">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+				<div class="nav-responsive marger">
+					<ul class="nav-pill nav-justified">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav tree</h3>
+				<ul class="nav-tree">
+					<li class="active">
+						<a href="">Link 1</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+				</ul>
+
+				<h2 id="progress">Progress</h2>
+				<p>
+					&lt;progress> is lack of support.
+				</p>
+				<div class="progress">
+					<div class="progress-bar" style="width: 100%;">
+						<div class="progress-label">
+							100%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 80%;">
+						<div class="progress-label">
+							80%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 1%;">
+						<div class="progress-label">
+							1%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 0%;">
+						<div class="progress-label">
+							0%
+						</div>
+					</div>
+				</div>
+
+				<h2 id="dialog">Dialog</h2>
+				<div class="dialog">
+					<div class="dialog-head">
+						This is a dialog!
+					</div>
+					<div class="dialog-body">
+						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, esse, magnam, libero est labore vel architecto officia unde quam modi voluptatibus odit enim veritatis nam quaerat deserunt quos cum repellendus.</p>
+					</div>
+				</div>
+
+				<h2 id="modal">Modal service</h2>
+				<p>Press <kbd>Esc</kbd> to dismiss modal.</p>
+				<button class="btn-default" ng-click="modal.open({templateUrl:'modal-example'})">Open</button>
+				<script type="text/ng-template" id="modal-example">
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia minus cupiditate, eligendi, nobis sint eos ut aperiam sit minima veniam id! Animi maiores, cumque dolores odio, culpa facere ea fuga.</p>
+				</script>
+
+				<h2 id="modal-dialog">Dialog service</h2>
+				<p>Original ezdialog. Based on modal service.</p>
+				<div class="marger">
+					<button class="btn-default" ng-click="dialog.show('Hi there!')">Open</button>
+				</div>
+
+				<h2 id="panes">Panes</h2>
+				<p>Use panes to create stacked window.</p>
+				<div class="panes">
+					<div class="pane active">Pane 1</div>
+					<div class="pane active">Pane 2</div>
+					<div class="pane active">Pane 3</div>
+					<div class="pane active">Pane 4</div>
+					<div class="pane active">Pane 5</div>
+				</div>
+
+				<h2 id="toggler">Toggler</h2>
+                <p>Use toggler and toggled to link navs and panes.</p>
+                <div class="marger">
+					<ul class="nav-pill" toggler="myToggle">
+						<li class="active"><a href="">Nav 1</a></li>
+						<li><a href="">Nav 2</a></li>
+						<li><a href="">Nav 3</a></li>
+						<li><a href="">Nav 4</a></li>
+						<li><a href="">Nav 5</a></li>
+					</ul>
+				</div>
+				<ul class="nav-tab" toggler="myToggle">
+					<li><a href="">Link 1</a></li>
+					<li><a href="">Link 2</a></li>
+					<li><a href="">Link 3</a></li>
+					<li><a href="">Link 4</a></li>
+					<li><a href="">Link 5</a></li>
+				</ul>
+				<div class="panes" toggled="myToggle">
+					<div class="pane"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint ea nobis tempore quibusdam quos voluptatem consequuntur, reprehenderit animi illum id! Minus repellat cumque fugit esse adipisci, non nulla, vel vitae!</p></div>
+					<div class="pane"><p>Et esse rem ipsa sint quia, molestias sed minus neque fugiat voluptate distinctio in voluptatum alias fuga consectetur ut illo dolorum ipsum. Esse nulla eligendi iste fuga earum. Quas, soluta!</p></div>
+					<div class="pane"><p>Voluptatem nemo vero, nostrum. Dolores maiores voluptate inventore numquam, laboriosam, cum voluptatibus, laborum consequatur autem illo quas porro. Nostrum eum, a veniam reprehenderit architecto voluptatibus rerum ad illum commodi veritatis.</p></div>
+					<div class="pane"><p>Quia incidunt velit, accusantium provident error, fugit quaerat aperiam corporis sequi et qui animi voluptates alias, exercitationem quo veniam repellat quas. Deleniti nulla, optio vero perferendis consequatur minus sapiente! Eos.</p></div>
+					<div class="pane"><p>Temporibus totam, hic facere beatae veniam ea aperiam laudantium fugit odit unde repudiandae, laborum perferendis nisi deserunt molestiae, omnis impedit ipsa inventore accusamus at aliquam sint magni voluptatum. Quos, provident!</p></div>
+				</div>
+				<ul class="nav-list" toggler="myToggle">
+					<li>
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quo optio iusto quae fugiat repudiandae esse ratione mollitia libero totam rem veritatis expedita natus quod harum eaque, debitis sunt neque.</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Consequatur accusamus iure vitae voluptatibus neque, veritatis repellat fugiat aspernatur dolorum cupiditate, nihil recusandae quisquam animi harum voluptatem eos aliquam, corrupti corporis dolor nesciunt necessitatibus, similique id maxime quam? Amet!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ea accusamus, maxime corporis harum impedit odio consequatur. Ea numquam sint delectus saepe maiores quam, praesentium! Error cumque dolorem, laborum omnis fugiat quis sint aperiam impedit explicabo voluptatum optio unde!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Voluptate molestias quibusdam eos, eum iste magnam dolore corporis nulla iure molestiae non reiciendis provident quasi alias magni eius quis? Nobis dolore neque aut quas molestias excepturi explicabo ad rem!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ipsam labore ad iste quibusdam eos ullam quas, eius animi eligendi et distinctio non fuga, omnis veritatis est harum. In vel quidem, maiores eligendi qui praesentium assumenda libero at debitis.</p>
+						</div>
+					</li>
+				</ul>
+				<p>You can use <code>multiple</code> option to make it act like checkbox.</p>
+				<ul class="nav-list" toggler="multiToggle" multiple>
+					<li>
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quo optio iusto quae fugiat repudiandae esse ratione mollitia libero totam rem veritatis expedita natus quod harum eaque, debitis sunt neque.</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Consequatur accusamus iure vitae voluptatibus neque, veritatis repellat fugiat aspernatur dolorum cupiditate, nihil recusandae quisquam animi harum voluptatem eos aliquam, corrupti corporis dolor nesciunt necessitatibus, similique id maxime quam? Amet!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ea accusamus, maxime corporis harum impedit odio consequatur. Ea numquam sint delectus saepe maiores quam, praesentium! Error cumque dolorem, laborum omnis fugiat quis sint aperiam impedit explicabo voluptatum optio unde!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Voluptate molestias quibusdam eos, eum iste magnam dolore corporis nulla iure molestiae non reiciendis provident quasi alias magni eius quis? Nobis dolore neque aut quas molestias excepturi explicabo ad rem!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ipsam labore ad iste quibusdam eos ullam quas, eius animi eligendi et distinctio non fuga, omnis veritatis est harum. In vel quidem, maiores eligendi qui praesentium assumenda libero at debitis.</p>
+						</div>
+					</li>
+				</ul>
+
+
+				<h2>Collapse</h2>
+				<p><code>.ani-collapse</code> support <code>ng-enter, ng-leave, ng-hide and active</code></p>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" ng-model="show">
+						Toggle ng-if
+					</label>
+				</div>
+				<div class="ani-collapse" ng-if="show">
+					<div class="test">
+						<p>
+							ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>
+						</p>
+					</div>
+				</div>
+				.test
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" ng-model="show2">
+						Toggle ng-show
+					</label>
+				</div>
+				<div class="ani-collapse" ng-show="show2">
+					<p>
+						ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>
+					</p>
+				</div>
+				<div class="form-group">
+					<label for="repeat">ng-repeat</label>
+					<input type="text" ng-model="search" class="form-control">
+				</div>
+				<div class="ani-collapse" ng-repeat="i in items | filter:search">
+					<p>{{i}}</p>
+				</div>
+			</div>
+			<div class="col-md-1-4 pull-md-3-4 ">
+				<div class="affix">
+					<div class="affix-content fill-view-height">
+						<div class="sidebar">
+							<button class="sidebar-toggle"></button>
+							<div class="sidebar-content">
+								<div class="nav-group marger">
+									<div autonav-nav scrollspy-nav></div>
+									<ul class="nav-tree">
+										<li><a href="#">Back to top</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="test"></div>
+		</div>
+
+		<footer class="page-footer">
+			<p>eight04 &copy; 2014</p>
+		</footer>
+
+		<div class="test3">
+			<div class="test">
+				<img src="test.jpg" alt="" width="50" height="50">
+				<div class="test"></div>
+			</div>
+			<div class="test"></div>
+		</div>
+
+	</div>
+	<div class="container">
+		<div class="row affix-container">
+			<div class="col-md-3-4 push-md-1-4" scrollspy-target autonav-target>
+				<h2>Title</h2>
+				<p>
+					Welcome to <a href="https://github.com/eight04/end2end">end2end</a> demo page!
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos, ad inventore unde at voluptate. Molestias, dolor, illo, autem, suscipit quaerat distinctio eveniet perspiciatis explicabo nesciunt quam vitae et harum labore.
+				</p>
+
+				<h2>Font size</h2>
+				<p>一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十</p>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Numquam, fugit consectetur iusto quod culpa a nihil saepe labore ut distinctio sint ad dolorem odio hic quidem quaerat expedita similique corporis.</p>
+
+				<h2 id="grids">Grid system</h2>
+				<div class="paint-grid">
+					<h3>Align top</h3>
+					<div class="row row-top">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align middle</h3>
+					<div class="row row-middle">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align bottom</h3>
+					<div class="row row-bottom">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align items separately</h3>
+					<div class="row">
+						<div class="col-xs-1-5 col-top">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-bottom">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+					<p>Note: Make sure the highest item has .col-middle to get correct position below IE9.</p>
+
+					<h3>Without gap</h3>
+					<div class="row row-nogap">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Change order</h3>
+					<div class="row">
+						<div class="col-xs-1-5 push-xs-4-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5 push-xs-2-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 pull-xs-2-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 pull-xs-4-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Row justify</h3>
+					<div class="row row-justify">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Row inline</h3>
+					<div class="row row-inline">
+						<div>
+							<div class="content">Lorem ipsum dolor.</div>
+						</div>
+						<div>
+							<div class="content">Aspernatur, ipsa, harum.</div>
+						</div>
+						<div>
+							<div class="content">Laboriosam, aspernatur, dignissimos.</div>
+						</div>
+						<div>
+							<div class="content">Animi, unde, ab.</div>
+						</div>
+						<div>
+							<div class="content">Blanditiis, laboriosam, voluptatibus!</div>
+						</div>
+						<div>
+							<div class="content">Nulla nam, porro!</div>
+						</div>
+						<div>
+							<div class="content">Quaerat, optio, dicta.</div>
+						</div>
+						<div>
+							<div class="content">Deleniti officiis, autem?</div>
+						</div>
+						<div>
+							<div class="content">Tenetur sequi, eaque.</div>
+						</div>
+						<div>
+							<div class="content">Voluptas, ex cumque?</div>
+						</div>
+						<div>
+							<div class="content">Aliquam, odit, blanditiis.</div>
+						</div>
+						<div>
+							<div class="content">Quas, laudantium corrupti.</div>
+						</div>
+						<div>
+							<div class="content">Necessitatibus, veritatis harum.</div>
+						</div>
+						<div>
+							<div class="content">Corporis, sunt aspernatur!</div>
+						</div>
+						<div>
+							<div class="content">Ipsum, voluptatum eos.</div>
+						</div>
+						<div>
+							<div class="content">Commodi natus, odit!</div>
+						</div>
+						<div>
+							<div class="content">Error repellat, quidem.</div>
+						</div>
+						<div>
+							<div class="content">Est, error, itaque.</div>
+						</div>
+						<div>
+							<div class="content">Laudantium, recusandae, unde?</div>
+						</div>
+						<div>
+							<div class="content">Delectus, distinctio, laudantium.</div>
+						</div>
+					</div>
+				</div>
+
+				<h2 id="tables">Table</h2>
+
+				<h3>Raw table</h3>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h3>table-wrap</h3>
+				<div class="table-wrap">
+					<div class="clipper">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Title 1</th>
+									<th>Title 2</th>
+									<th>Title 3</th>
+									<th>Title 4</th>
+									<th>Title 5</th>
+									<th>Title 6</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<h3>Fixed column</h3>
+				<p>Since <code>position:absolute</code> will make td have <code>display:block</code>. You have to make it vertical-center manually.</p>
+				<p>Give table-fixed a name so you can call <code>tableFixed.render()</code> to re-calculate the table.</p>
+				<div class="marger">
+					<button class="btn-default" ng-click="tableFixed.render()">Redraw</button>
+				</div>
+				<div class="marger">
+					<input type="text" class="form-control" ng-model="myText">
+				</div>
+				<div class="table-fixed" fixed-left="2" fixed-right="1">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>
+									Title 1<br>
+									2nd line
+								</th>
+								<th>
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 2</div>
+									</div>
+								</th>
+								<th>Title 3</th>
+								<th>{{myText}}</th>
+								<th>Title 5</th>
+								<th>
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 6</div>
+									</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<p><code>table-fixed</code> will also calculate colspan and rowspan.</p>
+				<div class="table-fixed" fixed-left="2" fixed-right="1" name="tableFixed">
+					<table class="table">
+						<thead>
+							<tr>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 1<br>2nd line</div>
+									</div>
+								</th>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 2</div>
+									</div>
+								</th>
+								<th colspan="3">Title 3</th>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 6</div>
+									</div>
+								</th>
+							</tr>
+							<tr>
+								<th class="table-cell-inner table-cell-first">Title 3-1</th>
+								<th class="table-cell-inner">Title 3-2</th>
+								<th class="table-cell-inner">Title 3-3</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<p>
+					You can also use <code>fixed-span</code> directive. Note that <code>colspan="0"</code> is ignored under IE10-, so you have to add an additional <code>fixed-span</code> directive.
+				</p>
+				<div class="table-fixed">
+					<table class="table" fixed-left="1">
+						<thead>
+							<tr>
+								<th>Title 1</th>
+								<th>Title 2</th>
+								<th>Title 3</th>
+								<th>Title 4</th>
+								<th>Title 5</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit aliquid saepe sunt, perferendis nisi voluptatem odit atque dolore modi inventore dolorem consectetur dolores quia explicabo neque itaque eius iure consequuntur.</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Odio cum animi voluptate tempora nihil neque minima, expedita necessitatibus voluptatem quae at vel maxime pariatur nobis aspernatur distinctio velit magni architecto sunt debitis, dicta quis odit hic! Minus, est.</td>
+							</tr>
+							<tr>
+								<td colspan="0" fixed-span>Overall title</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Tempore recusandae impedit fugiat expedita nihil doloribus, quasi quam dolore asperiores officiis delectus illum veniam aut ad beatae, quidem, minus laboriosam ipsam iste ea consequatur. Nulla optio, facilis exercitationem dolorum.</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Accusamus perferendis ea incidunt iure nisi autem inventore vel fugiat nostrum ut obcaecati rerum vitae repudiandae labore, reiciendis minima est nobis, atque esse, earum fugit. At quos voluptas velit, atque.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h2 id="form">Form</h2>
+				<form>
+					<div class="form-group">
+						<label for="name">Name</label>
+						<input class="form-control" type="text" id="name" value="The quick brown fox jumps over the lazy dog" />
+					</div>
+
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input class="form-control" type="text" id="email" value="床前明月光 疑是地上霜" />
+					</div>
+
+					<div class="form-group">
+						<label for="age">Your age</label>
+						<input class="form-control" type="text" id="age" number min="18" max="100" ng-model="age" />
+					</div>
+
+					<div class="form-group">
+						<label for="comment">Leave a comment</label>
+						<textarea class="form-control" id="comment" placeholder="Type something. This is a placeholder."></textarea>
+					</div>
+
+					<fieldset class="form-group">
+						<legend>Select your gender</legend>
+						<div class="radio">
+							<label>
+								<input type="radio" name="gender" />
+								Male
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="gender" />
+								Female
+							</label>
+						</div>
+					</fieldset>
+
+					<fieldset class="form-group">
+						<legend>New cleaner way to create radio input</legend>
+						<label class="radio">
+							<input type="radio" name="gender2">
+							Male
+						</label>
+						<label class="radio">
+							<input type="radio" name="gender2">
+							Female
+						</label>
+					</fieldset>
+
+					<fieldset class="form-group">
+						<legend>Options</legend>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Google
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Yahoo
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Bing
+							</label>
+						</div>
+					</fieldset>
+
+					<div class="form-group">
+						<select class="form-control" name="" id="">
+							<option value="">Option 1</option>
+							<option value="">Option 2</option>
+							<option value="">Option 3</option>
+							<option value="">Option 4</option>
+							<option value="">Option 5</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<select class="form-control" name="" id="" multiple>
+							<option value="">Option 1</option>
+							<option value="">Option 2</option>
+							<option value="">Option 3</option>
+							<option value="">Option 4</option>
+							<option value="">Option 5</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<button class="btn-default">Submit</button>
+						<button class="btn-default" type="reset">Reset</button>
+					</div>
+					<p>
+						Other buttons <br>
+						Circle button <button class="btn-circle">?</button>
+					</p>
+				</form>
+
+				<h2 id="images">Images</h2>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit <img src="http://placehold.it/24x24" alt="" />. Libero, illum, sequi, earum tempora quas assumenda neque ut tenetur animi consectetur voluptatum fugiat iste sed at deleniti repudiandae labore? Alias, consequuntur.
+				</p>
+				<img src="//placehold.it/140x140" alt="" class="right-sm" />
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora, accusamus, dolores laboriosam neque deleniti non aspernatur impedit ex quaerat quasi inventore ipsa iusto voluptatum nihil similique esse soluta reprehenderit voluptas?
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae, nihil, voluptas, rerum consectetur veritatis adipisci ratione explicabo repellendus reprehenderit officia quo hic ad? Sint, quod eaque adipisci perspiciatis ipsum repellendus.
+				</p>
+				<img src="//placehold.it/140x140" alt="" class="left-sm" />
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum, doloremque, ea eaque iste hic harum eius neque animi magnam quisquam omnis provident veniam molestias dolorem rerum minima nihil officia est.
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto, illo, iure animi soluta officiis nemo porro sed aut nihil quibusdam? Consequatur, commodi, harum assumenda eius incidunt minus numquam quasi voluptas.
+				</p>
+				<div class="clear"></div>
+
+				<h2 id="input-group">Input group</h2>
+				<p>Since IE8 doesn't support background-clip, we add an inner-wrapper to <code>.input-group-addon</code>.</p>
+				<div class="form-group">
+					<div class="input-group-inline">
+						<div>
+							<div><button class="btn-default">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Middle</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group-justified">
+						<div>
+							<div><button class="btn-default btn-block">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Middle</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group">
+						<div class="shrink">
+							<div><button class="btn-default btn-block">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Middle</button></div>
+						</div>
+						<div class="shrink">
+							<div><button class="btn-default btn-block">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group-inline">
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Search</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div class="shrink">
+							<div>
+								<div class="input-group-addon">
+									<div>Some text</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<h2 id="list">List</h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, tenetur, necessitatibus, provident, molestias voluptatibus quia aperiam aut cum suscipit consequatur nam enim minima reprehenderit molestiae voluptates dolorum doloribus maiores similique.</p>
+				<ul class="list">
+					<li>Item 1</li>
+					<li>Item 2</li>
+					<li>Item 3</li>
+					<li>Item 4</li>
+					<li>Item 5</li>
+				</ul>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, numquam, aliquid, natus non quis earum obcaecati tenetur doloribus sequi dolorum ea tempore doloremque deleniti exercitationem maiores nulla nesciunt voluptatum beatae!</p>
+				<ol class="list list-decimal">
+					<li>Item 1</li>
+					<li>Item 2</li>
+					<li>Item 3</li>
+					<li>Item 4</li>
+					<li>Item 5</li>
+				</ol>
+
+				<h2 id="navs">Nav</h2>
+				<h3>Nav list</h3>
+				<ul class="nav-list">
+					<li class="active"><a href="">Link 1</a></li>
+					<li><a href="">Link 2</a></li>
+					<li><a href="">Link 3</a></li>
+					<li><a href="">Link 4</a></li>
+					<li><a href="">Link 5</a></li>
+				</ul>
+
+				<h4>.nav-list-body</h4>
+				<ul class="nav-list">
+					<li class="active">
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et delectus vero vitae, omnis sit aliquid sapiente maxime optio quia rem ipsum, temporibus mollitia autem aspernatur reprehenderit, sequi obcaecati id unde.</p></div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse"><p>Facere nesciunt incidunt assumenda, repudiandae molestiae doloribus ipsa sunt odit officia, voluptatem animi libero magnam laborum alias, veritatis cumque nostrum error rem vitae. Nemo perferendis, accusantium eligendi provident dolore quasi.</p></div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse"><p>Consequatur, excepturi, distinctio. Deleniti, explicabo non culpa. Corporis officia quas eligendi totam assumenda dolorem dicta et, accusamus asperiores nam voluptate in dolore porro iure hic ipsam voluptatibus fugiat tempora error.</p></div>
+					</li>
+				</ul>
+
+				<h3>Nav tab</h3>
+				<div class="nav-responsive">
+					<ul class="nav-tab">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav pill</h3>
+				<div class="nav-responsive">
+					<ul class="nav-pill">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav justified</h3>
+				<div class="nav-responsive marger">
+					<ul class="nav-tab nav-justified">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+				<div class="nav-responsive marger">
+					<ul class="nav-pill nav-justified">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav tree</h3>
+				<ul class="nav-tree">
+					<li class="active">
+						<a href="">Link 1</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+				</ul>
+
+				<h2 id="progress">Progress</h2>
+				<p>
+					&lt;progress> is lack of support.
+				</p>
+				<div class="progress">
+					<div class="progress-bar" style="width: 100%;">
+						<div class="progress-label">
+							100%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 80%;">
+						<div class="progress-label">
+							80%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 1%;">
+						<div class="progress-label">
+							1%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 0%;">
+						<div class="progress-label">
+							0%
+						</div>
+					</div>
+				</div>
+
+				<h2 id="dialog">Dialog</h2>
+				<div class="dialog">
+					<div class="dialog-head">
+						This is a dialog!
+					</div>
+					<div class="dialog-body">
+						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, esse, magnam, libero est labore vel architecto officia unde quam modi voluptatibus odit enim veritatis nam quaerat deserunt quos cum repellendus.</p>
+					</div>
+				</div>
+
+				<h2 id="modal">Modal service</h2>
+				<p>Press <kbd>Esc</kbd> to dismiss modal.</p>
+				<button class="btn-default" ng-click="modal.open({templateUrl:'modal-example'})">Open</button>
+				<script type="text/ng-template" id="modal-example">
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia minus cupiditate, eligendi, nobis sint eos ut aperiam sit minima veniam id! Animi maiores, cumque dolores odio, culpa facere ea fuga.</p>
+				</script>
+
+				<h2 id="modal-dialog">Dialog service</h2>
+				<p>Original ezdialog. Based on modal service.</p>
+				<div class="marger">
+					<button class="btn-default" ng-click="dialog.show('Hi there!')">Open</button>
+				</div>
+
+				<h2 id="panes">Panes</h2>
+				<p>Use panes to create stacked window.</p>
+				<div class="panes">
+					<div class="pane active">Pane 1</div>
+					<div class="pane active">Pane 2</div>
+					<div class="pane active">Pane 3</div>
+					<div class="pane active">Pane 4</div>
+					<div class="pane active">Pane 5</div>
+				</div>
+
+				<h2 id="toggler">Toggler</h2>
+                <p>Use toggler and toggled to link navs and panes.</p>
+                <div class="marger">
+					<ul class="nav-pill" toggler="myToggle">
+						<li class="active"><a href="">Nav 1</a></li>
+						<li><a href="">Nav 2</a></li>
+						<li><a href="">Nav 3</a></li>
+						<li><a href="">Nav 4</a></li>
+						<li><a href="">Nav 5</a></li>
+					</ul>
+				</div>
+				<ul class="nav-tab" toggler="myToggle">
+					<li><a href="">Link 1</a></li>
+					<li><a href="">Link 2</a></li>
+					<li><a href="">Link 3</a></li>
+					<li><a href="">Link 4</a></li>
+					<li><a href="">Link 5</a></li>
+				</ul>
+				<div class="panes" toggled="myToggle">
+					<div class="pane"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint ea nobis tempore quibusdam quos voluptatem consequuntur, reprehenderit animi illum id! Minus repellat cumque fugit esse adipisci, non nulla, vel vitae!</p></div>
+					<div class="pane"><p>Et esse rem ipsa sint quia, molestias sed minus neque fugiat voluptate distinctio in voluptatum alias fuga consectetur ut illo dolorum ipsum. Esse nulla eligendi iste fuga earum. Quas, soluta!</p></div>
+					<div class="pane"><p>Voluptatem nemo vero, nostrum. Dolores maiores voluptate inventore numquam, laboriosam, cum voluptatibus, laborum consequatur autem illo quas porro. Nostrum eum, a veniam reprehenderit architecto voluptatibus rerum ad illum commodi veritatis.</p></div>
+					<div class="pane"><p>Quia incidunt velit, accusantium provident error, fugit quaerat aperiam corporis sequi et qui animi voluptates alias, exercitationem quo veniam repellat quas. Deleniti nulla, optio vero perferendis consequatur minus sapiente! Eos.</p></div>
+					<div class="pane"><p>Temporibus totam, hic facere beatae veniam ea aperiam laudantium fugit odit unde repudiandae, laborum perferendis nisi deserunt molestiae, omnis impedit ipsa inventore accusamus at aliquam sint magni voluptatum. Quos, provident!</p></div>
+				</div>
+				<ul class="nav-list" toggler="myToggle">
+					<li>
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quo optio iusto quae fugiat repudiandae esse ratione mollitia libero totam rem veritatis expedita natus quod harum eaque, debitis sunt neque.</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Consequatur accusamus iure vitae voluptatibus neque, veritatis repellat fugiat aspernatur dolorum cupiditate, nihil recusandae quisquam animi harum voluptatem eos aliquam, corrupti corporis dolor nesciunt necessitatibus, similique id maxime quam? Amet!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ea accusamus, maxime corporis harum impedit odio consequatur. Ea numquam sint delectus saepe maiores quam, praesentium! Error cumque dolorem, laborum omnis fugiat quis sint aperiam impedit explicabo voluptatum optio unde!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Voluptate molestias quibusdam eos, eum iste magnam dolore corporis nulla iure molestiae non reiciendis provident quasi alias magni eius quis? Nobis dolore neque aut quas molestias excepturi explicabo ad rem!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ipsam labore ad iste quibusdam eos ullam quas, eius animi eligendi et distinctio non fuga, omnis veritatis est harum. In vel quidem, maiores eligendi qui praesentium assumenda libero at debitis.</p>
+						</div>
+					</li>
+				</ul>
+				<p>You can use <code>multiple</code> option to make it act like checkbox.</p>
+				<ul class="nav-list" toggler="multiToggle" multiple>
+					<li>
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quo optio iusto quae fugiat repudiandae esse ratione mollitia libero totam rem veritatis expedita natus quod harum eaque, debitis sunt neque.</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Consequatur accusamus iure vitae voluptatibus neque, veritatis repellat fugiat aspernatur dolorum cupiditate, nihil recusandae quisquam animi harum voluptatem eos aliquam, corrupti corporis dolor nesciunt necessitatibus, similique id maxime quam? Amet!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ea accusamus, maxime corporis harum impedit odio consequatur. Ea numquam sint delectus saepe maiores quam, praesentium! Error cumque dolorem, laborum omnis fugiat quis sint aperiam impedit explicabo voluptatum optio unde!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Voluptate molestias quibusdam eos, eum iste magnam dolore corporis nulla iure molestiae non reiciendis provident quasi alias magni eius quis? Nobis dolore neque aut quas molestias excepturi explicabo ad rem!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ipsam labore ad iste quibusdam eos ullam quas, eius animi eligendi et distinctio non fuga, omnis veritatis est harum. In vel quidem, maiores eligendi qui praesentium assumenda libero at debitis.</p>
+						</div>
+					</li>
+				</ul>
+
+
+				<h2>Collapse</h2>
+				<p><code>.ani-collapse</code> support <code>ng-enter, ng-leave, ng-hide and active</code></p>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" ng-model="show">
+						Toggle ng-if
+					</label>
+				</div>
+				<div class="ani-collapse" ng-if="show">
+					<div class="test">
+						<p>
+							ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>
+						</p>
+					</div>
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" ng-model="show2">
+						Toggle ng-show
+					</label>
+				</div>
+				<div class="ani-collapse" ng-show="show2">
+					<p>
+						ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>
+					</p>
+				</div>
+				<div class="form-group">
+					<label for="repeat">ng-repeat</label>
+					<input type="text" ng-model="search" class="form-control">
+				</div>
+				<div class="ani-collapse" ng-repeat="i in items | filter:search">
+					<p>{{i}}</p>
+				</div>
+			</div>
+			<div class="col-md-1-4 pull-md-3-4 ">
+				<div class="affix">
+					<div class="affix-content fill-view-height">
+						<div class="sidebar">
+							<button class="sidebar-toggle"></button>
+							<div class="sidebar-content">
+								<div class="nav-group marger">
+									<div autonav-nav scrollspy-nav></div>
+									<ul class="nav-tree">
+										<li><a href="#">Back to top</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="test"></div>
+		</div>
+
+		<footer class="page-footer">
+			<p>eight04 &copy; 2014</p>
+		</footer>
+
+		<div class="test3">
+			<div class="test">
+				<img src="test.jpg" alt="" width="50" height="50">
+				<div class="test"></div>
+			</div>
+			<div class="test"></div>
+		</div>
+
+	</div>
+	<div class="container">
+		<div class="row affix-container">
+			<div class="col-md-3-4 push-md-1-4" scrollspy-target autonav-target>
+				<h2>Title</h2>
+				<p>
+					Welcome to <a href="https://github.com/eight04/end2end">end2end</a> demo page!
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos, ad inventore unde at voluptate. Molestias, dolor, illo, autem, suscipit quaerat distinctio eveniet perspiciatis explicabo nesciunt quam vitae et harum labore.
+				</p>
+
+				<h2>Font size</h2>
+				<p>一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十</p>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Numquam, fugit consectetur iusto quod culpa a nihil saepe labore ut distinctio sint ad dolorem odio hic quidem quaerat expedita similique corporis.</p>
+
+				<h2 id="grids">Grid system</h2>
+				<div class="paint-grid">
+					<h3>Align top</h3>
+					<div class="row row-top">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align middle</h3>
+					<div class="row row-middle">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align bottom</h3>
+					<div class="row row-bottom">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Align items separately</h3>
+					<div class="row">
+						<div class="col-xs-1-5 col-top">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-bottom">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 col-middle">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+					<p>Note: Make sure the highest item has .col-middle to get correct position below IE9.</p>
+
+					<h3>Without gap</h3>
+					<div class="row row-nogap">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Change order</h3>
+					<div class="row">
+						<div class="col-xs-1-5 push-xs-4-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5 push-xs-2-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 pull-xs-2-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+						<div class="col-xs-1-5 pull-xs-4-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line<br/>5th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Row justify</h3>
+					<div class="row row-justify">
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line
+							</div>
+						</div>
+						<div class="col-xs-1-5">
+							<div class="content">
+								.col-xs-1-5<br/>second-line<br/>third-line<br/>4th-line
+							</div>
+						</div>
+					</div>
+
+					<h3>Row inline</h3>
+					<div class="row row-inline">
+						<div>
+							<div class="content">Lorem ipsum dolor.</div>
+						</div>
+						<div>
+							<div class="content">Aspernatur, ipsa, harum.</div>
+						</div>
+						<div>
+							<div class="content">Laboriosam, aspernatur, dignissimos.</div>
+						</div>
+						<div>
+							<div class="content">Animi, unde, ab.</div>
+						</div>
+						<div>
+							<div class="content">Blanditiis, laboriosam, voluptatibus!</div>
+						</div>
+						<div>
+							<div class="content">Nulla nam, porro!</div>
+						</div>
+						<div>
+							<div class="content">Quaerat, optio, dicta.</div>
+						</div>
+						<div>
+							<div class="content">Deleniti officiis, autem?</div>
+						</div>
+						<div>
+							<div class="content">Tenetur sequi, eaque.</div>
+						</div>
+						<div>
+							<div class="content">Voluptas, ex cumque?</div>
+						</div>
+						<div>
+							<div class="content">Aliquam, odit, blanditiis.</div>
+						</div>
+						<div>
+							<div class="content">Quas, laudantium corrupti.</div>
+						</div>
+						<div>
+							<div class="content">Necessitatibus, veritatis harum.</div>
+						</div>
+						<div>
+							<div class="content">Corporis, sunt aspernatur!</div>
+						</div>
+						<div>
+							<div class="content">Ipsum, voluptatum eos.</div>
+						</div>
+						<div>
+							<div class="content">Commodi natus, odit!</div>
+						</div>
+						<div>
+							<div class="content">Error repellat, quidem.</div>
+						</div>
+						<div>
+							<div class="content">Est, error, itaque.</div>
+						</div>
+						<div>
+							<div class="content">Laudantium, recusandae, unde?</div>
+						</div>
+						<div>
+							<div class="content">Delectus, distinctio, laudantium.</div>
+						</div>
+					</div>
+				</div>
+
+				<h2 id="tables">Table</h2>
+
+				<h3>Raw table</h3>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+							<th>Title</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+						<tr>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+							<td>Content</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h3>table-wrap</h3>
+				<div class="table-wrap">
+					<div class="clipper">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Title 1</th>
+									<th>Title 2</th>
+									<th>Title 3</th>
+									<th>Title 4</th>
+									<th>Title 5</th>
+									<th>Title 6</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								</tr>
+								<tr>
+									<td>Content 1</td>
+									<td>Content 2</td>
+									<td>Content 3</td>
+									<td>Content 4</td>
+									<td>Content 5</td>
+									<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<h3>Fixed column</h3>
+				<p>Since <code>position:absolute</code> will make td have <code>display:block</code>. You have to make it vertical-center manually.</p>
+				<p>Give table-fixed a name so you can call <code>tableFixed.render()</code> to re-calculate the table.</p>
+				<div class="marger">
+					<button class="btn-default" ng-click="tableFixed.render()">Redraw</button>
+				</div>
+				<div class="marger">
+					<input type="text" class="form-control" ng-model="myText">
+				</div>
+				<div class="table-fixed" fixed-left="2" fixed-right="1">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>
+									Title 1<br>
+									2nd line
+								</th>
+								<th>
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 2</div>
+									</div>
+								</th>
+								<th>Title 3</th>
+								<th>{{myText}}</th>
+								<th>Title 5</th>
+								<th>
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 6</div>
+									</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<p><code>table-fixed</code> will also calculate colspan and rowspan.</p>
+				<div class="table-fixed" fixed-left="2" fixed-right="1" name="tableFixed">
+					<table class="table">
+						<thead>
+							<tr>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 1<br>2nd line</div>
+									</div>
+								</th>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 2</div>
+									</div>
+								</th>
+								<th colspan="3">Title 3</th>
+								<th rowspan="2">
+									<div class="vcenter-table">
+										<div class="vcenter-cell">Title 6</div>
+									</div>
+								</th>
+							</tr>
+							<tr>
+								<th class="table-cell-inner table-cell-first">Title 3-1</th>
+								<th class="table-cell-inner">Title 3-2</th>
+								<th class="table-cell-inner">Title 3-3</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, accusantium.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Tenetur sed iusto ad veritatis, velit molestiae reprehenderit quas quo.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Molestias non esse, ipsum delectus, nisi quam nesciunt ipsam dolorem.</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Provident voluptatibus molestiae nemo nesciunt quod quas laboriosam, commodi, repudiandae!</td>
+								<td>Content 4</td>
+								<td>Content 5</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<p>
+					You can also use <code>fixed-span</code> directive. Note that <code>colspan="0"</code> is ignored under IE10-, so you have to add an additional <code>fixed-span</code> directive.
+				</p>
+				<div class="table-fixed">
+					<table class="table" fixed-left="1">
+						<thead>
+							<tr>
+								<th>Title 1</th>
+								<th>Title 2</th>
+								<th>Title 3</th>
+								<th>Title 4</th>
+								<th>Title 5</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit aliquid saepe sunt, perferendis nisi voluptatem odit atque dolore modi inventore dolorem consectetur dolores quia explicabo neque itaque eius iure consequuntur.</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Odio cum animi voluptate tempora nihil neque minima, expedita necessitatibus voluptatem quae at vel maxime pariatur nobis aspernatur distinctio velit magni architecto sunt debitis, dicta quis odit hic! Minus, est.</td>
+							</tr>
+							<tr>
+								<td colspan="0" fixed-span>Overall title</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Tempore recusandae impedit fugiat expedita nihil doloribus, quasi quam dolore asperiores officiis delectus illum veniam aut ad beatae, quidem, minus laboriosam ipsam iste ea consequatur. Nulla optio, facilis exercitationem dolorum.</td>
+							</tr>
+							<tr>
+								<td>Content 1</td>
+								<td>Content 2</td>
+								<td>Content 3</td>
+								<td>Content 4</td>
+								<td>Accusamus perferendis ea incidunt iure nisi autem inventore vel fugiat nostrum ut obcaecati rerum vitae repudiandae labore, reiciendis minima est nobis, atque esse, earum fugit. At quos voluptas velit, atque.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h2 id="form">Form</h2>
+				<form>
+					<div class="form-group">
+						<label for="name">Name</label>
+						<input class="form-control" type="text" id="name" value="The quick brown fox jumps over the lazy dog" />
+					</div>
+
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input class="form-control" type="text" id="email" value="床前明月光 疑是地上霜" />
+					</div>
+
+					<div class="form-group">
+						<label for="age">Your age</label>
+						<input class="form-control" type="text" id="age" number min="18" max="100" ng-model="age" />
+					</div>
+
+					<div class="form-group">
+						<label for="comment">Leave a comment</label>
+						<textarea class="form-control" id="comment" placeholder="Type something. This is a placeholder."></textarea>
+					</div>
+
+					<fieldset class="form-group">
+						<legend>Select your gender</legend>
+						<div class="radio">
+							<label>
+								<input type="radio" name="gender" />
+								Male
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="gender" />
+								Female
+							</label>
+						</div>
+					</fieldset>
+
+					<fieldset class="form-group">
+						<legend>New cleaner way to create radio input</legend>
+						<label class="radio">
+							<input type="radio" name="gender2">
+							Male
+						</label>
+						<label class="radio">
+							<input type="radio" name="gender2">
+							Female
+						</label>
+					</fieldset>
+
+					<fieldset class="form-group">
+						<legend>Options</legend>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Google
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Yahoo
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" />
+								Bing
+							</label>
+						</div>
+					</fieldset>
+
+					<div class="form-group">
+						<select class="form-control" name="" id="">
+							<option value="">Option 1</option>
+							<option value="">Option 2</option>
+							<option value="">Option 3</option>
+							<option value="">Option 4</option>
+							<option value="">Option 5</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<select class="form-control" name="" id="" multiple>
+							<option value="">Option 1</option>
+							<option value="">Option 2</option>
+							<option value="">Option 3</option>
+							<option value="">Option 4</option>
+							<option value="">Option 5</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<button class="btn-default">Submit</button>
+						<button class="btn-default" type="reset">Reset</button>
+					</div>
+					<p>
+						Other buttons <br>
+						Circle button <button class="btn-circle">?</button>
+					</p>
+				</form>
+
+				<h2 id="images">Images</h2>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit <img src="http://placehold.it/24x24" alt="" />. Libero, illum, sequi, earum tempora quas assumenda neque ut tenetur animi consectetur voluptatum fugiat iste sed at deleniti repudiandae labore? Alias, consequuntur.
+				</p>
+				<img src="//placehold.it/140x140" alt="" class="right-sm" />
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora, accusamus, dolores laboriosam neque deleniti non aspernatur impedit ex quaerat quasi inventore ipsa iusto voluptatum nihil similique esse soluta reprehenderit voluptas?
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae, nihil, voluptas, rerum consectetur veritatis adipisci ratione explicabo repellendus reprehenderit officia quo hic ad? Sint, quod eaque adipisci perspiciatis ipsum repellendus.
+				</p>
+				<img src="//placehold.it/140x140" alt="" class="left-sm" />
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum, doloremque, ea eaque iste hic harum eius neque animi magnam quisquam omnis provident veniam molestias dolorem rerum minima nihil officia est.
+				</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto, illo, iure animi soluta officiis nemo porro sed aut nihil quibusdam? Consequatur, commodi, harum assumenda eius incidunt minus numquam quasi voluptas.
+				</p>
+				<div class="clear"></div>
+
+				<h2 id="input-group">Input group</h2>
+				<p>Since IE8 doesn't support background-clip, we add an inner-wrapper to <code>.input-group-addon</code>.</p>
+				<div class="form-group">
+					<div class="input-group-inline">
+						<div>
+							<div><button class="btn-default">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Middle</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group-justified">
+						<div>
+							<div><button class="btn-default btn-block">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Middle</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group">
+						<div class="shrink">
+							<div><button class="btn-default btn-block">Left</button></div>
+						</div>
+						<div>
+							<div><button class="btn-default btn-block">Middle</button></div>
+						</div>
+						<div class="shrink">
+							<div><button class="btn-default btn-block">Right</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group-inline">
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><button class="btn-default">Search</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="input-group stretch">
+						<div class="shrink">
+							<div><button class="btn-default">Search</button></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div>
+							<div><input type="text" class="form-control"></div>
+						</div>
+						<div class="shrink">
+							<div>
+								<div class="input-group-addon">
+									<div>Some text</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<h2 id="list">List</h2>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia, tenetur, necessitatibus, provident, molestias voluptatibus quia aperiam aut cum suscipit consequatur nam enim minima reprehenderit molestiae voluptates dolorum doloribus maiores similique.</p>
+				<ul class="list">
+					<li>Item 1</li>
+					<li>Item 2</li>
+					<li>Item 3</li>
+					<li>Item 4</li>
+					<li>Item 5</li>
+				</ul>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, numquam, aliquid, natus non quis earum obcaecati tenetur doloribus sequi dolorum ea tempore doloremque deleniti exercitationem maiores nulla nesciunt voluptatum beatae!</p>
+				<ol class="list list-decimal">
+					<li>Item 1</li>
+					<li>Item 2</li>
+					<li>Item 3</li>
+					<li>Item 4</li>
+					<li>Item 5</li>
+				</ol>
+
+				<h2 id="navs">Nav</h2>
+				<h3>Nav list</h3>
+				<ul class="nav-list">
+					<li class="active"><a href="">Link 1</a></li>
+					<li><a href="">Link 2</a></li>
+					<li><a href="">Link 3</a></li>
+					<li><a href="">Link 4</a></li>
+					<li><a href="">Link 5</a></li>
+				</ul>
+
+				<h4>.nav-list-body</h4>
+				<ul class="nav-list">
+					<li class="active">
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et delectus vero vitae, omnis sit aliquid sapiente maxime optio quia rem ipsum, temporibus mollitia autem aspernatur reprehenderit, sequi obcaecati id unde.</p></div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse"><p>Facere nesciunt incidunt assumenda, repudiandae molestiae doloribus ipsa sunt odit officia, voluptatem animi libero magnam laborum alias, veritatis cumque nostrum error rem vitae. Nemo perferendis, accusantium eligendi provident dolore quasi.</p></div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse"><p>Consequatur, excepturi, distinctio. Deleniti, explicabo non culpa. Corporis officia quas eligendi totam assumenda dolorem dicta et, accusamus asperiores nam voluptate in dolore porro iure hic ipsam voluptatibus fugiat tempora error.</p></div>
+					</li>
+				</ul>
+
+				<h3>Nav tab</h3>
+				<div class="nav-responsive">
+					<ul class="nav-tab">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav pill</h3>
+				<div class="nav-responsive">
+					<ul class="nav-pill">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav justified</h3>
+				<div class="nav-responsive marger">
+					<ul class="nav-tab nav-justified">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+				<div class="nav-responsive marger">
+					<ul class="nav-pill nav-justified">
+						<li class="active"><a href="">Link 1</a></li>
+						<li><a href="">Link 2</a></li>
+						<li><a href="">Link 3</a></li>
+						<li><a href="">Link 4</a></li>
+						<li><a href="">Link 5</a></li>
+					</ul>
+				</div>
+
+				<h3>Nav tree</h3>
+				<ul class="nav-tree">
+					<li class="active">
+						<a href="">Link 1</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<ul class="nav-tree">
+							<li><a href="">Sub 1</a></li>
+							<li><a href="">Sub 2</a></li>
+							<li><a href="">Sub 3</a></li>
+						</ul>
+					</li>
+				</ul>
+
+				<h2 id="progress">Progress</h2>
+				<p>
+					&lt;progress> is lack of support.
+				</p>
+				<div class="progress">
+					<div class="progress-bar" style="width: 100%;">
+						<div class="progress-label">
+							100%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 80%;">
+						<div class="progress-label">
+							80%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 1%;">
+						<div class="progress-label">
+							1%
+						</div>
+					</div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar" style="width: 0%;">
+						<div class="progress-label">
+							0%
+						</div>
+					</div>
+				</div>
+
+				<h2 id="dialog">Dialog</h2>
+				<div class="dialog">
+					<div class="dialog-head">
+						This is a dialog!
+					</div>
+					<div class="dialog-body">
+						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, esse, magnam, libero est labore vel architecto officia unde quam modi voluptatibus odit enim veritatis nam quaerat deserunt quos cum repellendus.</p>
+					</div>
+				</div>
+
+				<h2 id="modal">Modal service</h2>
+				<p>Press <kbd>Esc</kbd> to dismiss modal.</p>
+				<button class="btn-default" ng-click="modal.open({templateUrl:'modal-example'})">Open</button>
+				<script type="text/ng-template" id="modal-example">
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia minus cupiditate, eligendi, nobis sint eos ut aperiam sit minima veniam id! Animi maiores, cumque dolores odio, culpa facere ea fuga.</p>
+				</script>
+
+				<h2 id="modal-dialog">Dialog service</h2>
+				<p>Original ezdialog. Based on modal service.</p>
+				<div class="marger">
+					<button class="btn-default" ng-click="dialog.show('Hi there!')">Open</button>
+				</div>
+
+				<h2 id="panes">Panes</h2>
+				<p>Use panes to create stacked window.</p>
+				<div class="panes">
+					<div class="pane active">Pane 1</div>
+					<div class="pane active">Pane 2</div>
+					<div class="pane active">Pane 3</div>
+					<div class="pane active">Pane 4</div>
+					<div class="pane active">Pane 5</div>
+				</div>
+
+				<h2 id="toggler">Toggler</h2>
+	      <p>Use toggler and toggled to link navs and panes.</p>
+	      <div class="marger">
+					<ul class="nav-pill" toggler="myToggle">
+						<li class="active"><a href="">Nav 1</a></li>
+						<li><a href="">Nav 2</a></li>
+						<li><a href="">Nav 3</a></li>
+						<li><a href="">Nav 4</a></li>
+						<li><a href="">Nav 5</a></li>
+					</ul>
+				</div>
+				<ul class="nav-tab" toggler="myToggle">
+					<li><a href="">Link 1</a></li>
+					<li><a href="">Link 2</a></li>
+					<li><a href="">Link 3</a></li>
+					<li><a href="">Link 4</a></li>
+					<li><a href="">Link 5</a></li>
+				</ul>
+				.test
+				<div class="panes" toggled="myToggle">
+					<div class="pane"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sint ea nobis tempore quibusdam quos voluptatem consequuntur, reprehenderit animi illum id! Minus repellat cumque fugit esse adipisci, non nulla, vel vitae!</p></div>
+					<div class="pane"><p>Et esse rem ipsa sint quia, molestias sed minus neque fugiat voluptate distinctio in voluptatum alias fuga consectetur ut illo dolorum ipsum. Esse nulla eligendi iste fuga earum. Quas, soluta!</p></div>
+					<div class="pane"><p>Voluptatem nemo vero, nostrum. Dolores maiores voluptate inventore numquam, laboriosam, cum voluptatibus, laborum consequatur autem illo quas porro. Nostrum eum, a veniam reprehenderit architecto voluptatibus rerum ad illum commodi veritatis.</p></div>
+					<div class="pane"><p>Quia incidunt velit, accusantium provident error, fugit quaerat aperiam corporis sequi et qui animi voluptates alias, exercitationem quo veniam repellat quas. Deleniti nulla, optio vero perferendis consequatur minus sapiente! Eos.</p></div>
+					<div class="pane"><p>Temporibus totam, hic facere beatae veniam ea aperiam laudantium fugit odit unde repudiandae, laborum perferendis nisi deserunt molestiae, omnis impedit ipsa inventore accusamus at aliquam sint magni voluptatum. Quos, provident!</p></div>
+				</div>
+				<ul class="nav-list" toggler="myToggle">
+					<li>
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quo optio iusto quae fugiat repudiandae esse ratione mollitia libero totam rem veritatis expedita natus quod harum eaque, debitis sunt neque.</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Consequatur accusamus iure vitae voluptatibus neque, veritatis repellat fugiat aspernatur dolorum cupiditate, nihil recusandae quisquam animi harum voluptatem eos aliquam, corrupti corporis dolor nesciunt necessitatibus, similique id maxime quam? Amet!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ea accusamus, maxime corporis harum impedit odio consequatur. Ea numquam sint delectus saepe maiores quam, praesentium! Error cumque dolorem, laborum omnis fugiat quis sint aperiam impedit explicabo voluptatum optio unde!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Voluptate molestias quibusdam eos, eum iste magnam dolore corporis nulla iure molestiae non reiciendis provident quasi alias magni eius quis? Nobis dolore neque aut quas molestias excepturi explicabo ad rem!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ipsam labore ad iste quibusdam eos ullam quas, eius animi eligendi et distinctio non fuga, omnis veritatis est harum. In vel quidem, maiores eligendi qui praesentium assumenda libero at debitis.</p>
+						</div>
+					</li>
+				</ul>
+				<p>You can use <code>multiple</code> option to make it act like checkbox.</p>
+				<ul class="nav-list" toggler="multiToggle" multiple>
+					<li>
+						<a href="">Link 1</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quo optio iusto quae fugiat repudiandae esse ratione mollitia libero totam rem veritatis expedita natus quod harum eaque, debitis sunt neque.</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 2</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Consequatur accusamus iure vitae voluptatibus neque, veritatis repellat fugiat aspernatur dolorum cupiditate, nihil recusandae quisquam animi harum voluptatem eos aliquam, corrupti corporis dolor nesciunt necessitatibus, similique id maxime quam? Amet!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 3</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ea accusamus, maxime corporis harum impedit odio consequatur. Ea numquam sint delectus saepe maiores quam, praesentium! Error cumque dolorem, laborum omnis fugiat quis sint aperiam impedit explicabo voluptatum optio unde!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 4</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Voluptate molestias quibusdam eos, eum iste magnam dolore corporis nulla iure molestiae non reiciendis provident quasi alias magni eius quis? Nobis dolore neque aut quas molestias excepturi explicabo ad rem!</p>
+						</div>
+					</li>
+					<li>
+						<a href="">Link 5</a>
+						<div class="nav-list-body ani-collapse">
+							<p>Ipsam labore ad iste quibusdam eos ullam quas, eius animi eligendi et distinctio non fuga, omnis veritatis est harum. In vel quidem, maiores eligendi qui praesentium assumenda libero at debitis.</p>
+						</div>
+					</li>
+				</ul>
+
+
+				<h2>Collapse</h2>
+				<p><code>.ani-collapse</code> support <code>ng-enter, ng-leave, ng-hide and active</code></p>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" ng-model="show">
+						Toggle ng-if
+					</label>
+				</div>
+				<div class="ani-collapse" ng-if="show">
+					<div class="test">
+						<p>
+							ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>ng-if<br>
+						</p>
+					</div>
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" ng-model="show2">
+						Toggle ng-show
+					</label>
+				</div>
+				<div class="ani-collapse" ng-show="show2">
+					<p>
+						ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>ng-show<br>
+					</p>
+				</div>
+				<div class="form-group">
+					<label for="repeat">ng-repeat</label>
+					<input type="text" ng-model="search" class="form-control">
+				</div>
+				<div class="ani-collapse" ng-repeat="i in items | filter:search">
+					<p>{{i}}</p>
+				</div>
+			</div>
+			<div class="col-md-1-4 pull-md-3-4 ">
+				<div class="affix">
+					<div class="affix-content fill-view-height">
+						<div class="sidebar">
+							<button class="sidebar-toggle"></button>
+							<div class="sidebar-content">
+								<div class="nav-group marger">
+									<div autonav-nav scrollspy-nav></div>
+									<ul class="nav-tree">
+										<li><a href="#">Back to top</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="test"></div>
+		</div>
+
+		<footer class="page-footer">
+			<p>eight04 &copy; 2014</p>
+		</footer>
+
+		<div class="test3">
+			<div class="test10">
+				<p>
+					<div class="test4">
+						<img src="test.jpg" alt="" width="50" height="50">
+						<div class="test5">
+							<div class="test6"></div>
+						</div>
+					</div>
+				</p>
+			</div>
+			<div class="test7"></div>
+		</div>
+	</div>
+	.test
+	<div class="test8"></div>
+	<div class="test9"></div>
+</body>
+</html>
