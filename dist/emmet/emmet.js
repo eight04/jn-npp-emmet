@@ -3304,6 +3304,7 @@ define(function(require, exports, module) {
 				mark[token][match] = match;
 				var tag = matchTag(match);
 				if (tag && !tag.selfClose && tag.id == token) {
+					// console.log(-1, tag.id);
 					return match;
 				}
 			}
@@ -3316,6 +3317,7 @@ define(function(require, exports, module) {
 			while ((match = text.indexOf(token, match)) >= 0) {
 				var tag = matchTag(match);
 				if (tag && tag.id == token) {
+					// console.log(1, tag.id);
 					return match;
 				}
 				match++;
