@@ -3193,7 +3193,7 @@ define(function(require, exports, module) {
 	function tag(match, ix, type) {
 		var name = match[1].toLowerCase();
 		return {
-			id: (type == "open" ? "<" : "</") + name,
+			// id: (type == "open" ? "<" : "</") + name,
 			name: name,
 			type: type,
 			selfClose: !!match[3],
@@ -3383,11 +3383,25 @@ define(function(require, exports, module) {
 	Match.prototype.back = function(){
 		var tag, ex;
 		
-		if (this.tag || this.i < 0) {
+		if (this.i < 0) {
 			return;
 		}
 		
+		// check if the tag is inside exclude range
 		ex = this.excludeRange;
+		if (this.tag) {
+			// jump over
+			while (ex.prev && ex.prev.end >= this.tag.range.end) {
+				ex = ex.prev;
+			}
+			if (this.tag.range.start >= ex.start) {
+				this.tag = null;
+			} else {
+				this.excludeRange = ex;
+				return;
+			}
+		}
+		
 		do {
 			this.i = this.text.lastIndexOf(this.token, this.i);
 			if (this.i < 0) {
@@ -3418,17 +3432,29 @@ define(function(require, exports, module) {
 			}
 		} while (!this.tag);
 		
-		// console.log(-1, this.tag.name);
+		// console.log(-1, this.tag.name, this.tag.type);
 	};
 	
 	Match.prototype.next = function() {
 		var tag, ex;
 		
-		if (this.tag || this.i < 0) {
+		if (this.i < 0) {
 			return;
 		}
 		
 		ex = this.excludeRange;
+		if (this.tag) {
+			while (ex.next && ex.next.start <= this.tag.range.start) {
+				ex = ex.next;
+			}
+			if (ex.end >= this.tag.range.end) {
+				this.tag = null;
+			} else {
+				this.excludeRange = ex;
+				return;
+			}
+		}
+		
 		do {
 			this.i = this.text.indexOf(this.token, this.i);
 			if (this.i < 0) {
@@ -3438,7 +3464,6 @@ define(function(require, exports, module) {
 			while (ex.next && ex.next.start <= this.i) {
 				ex = ex.next;
 			}
-			this.excludeRange = ex;
 			// jump to end
 			if (ex.start <= this.i && ex.end > this.i) {
 				this.i = ex.end;
@@ -3459,7 +3484,7 @@ define(function(require, exports, module) {
 			}
 		} while (!this.tag);
 		
-		// console.log(1, this.tag.name);
+		// console.log(1, this.tag.name, this.tag.type);
 	};
 	
 	Match.prototype.addExclude = function(range){
@@ -3607,6 +3632,8 @@ define(function(require, exports, module) {
 		
 		var tag = this.matchGroup[this.direction]();
 		
+		// console.log((this.root && this.root.id) + " >>> " + (tag && tag.id) + " at " + (tag && tag.range.start));
+		
 		if (!tag) {
 			this.finished = true;
 			return TreeResult.finished;
@@ -3669,7 +3696,7 @@ define(function(require, exports, module) {
 	};
 		
 	Search.prototype.createTreeNext = function(tag, i){
-		if (i == null) {
+		if (i == null || tag.range.end > i) {
 			i = tag.range.end;
 		}
 		this.excludeRange = this.main.getExclude();
@@ -3684,7 +3711,7 @@ define(function(require, exports, module) {
 	};
 	
 	Search.prototype.createTreeBack = function(tag, i) {
-		if (i == null) {
+		if (i == null || tag.range.start - 1 < i) {
 			i = tag.range.start - 1;
 		}
 		this.excludeRange = this.main.getExclude();
@@ -3706,6 +3733,7 @@ define(function(require, exports, module) {
 		if (this.explicit && !this.explicitPending) {
 			// console.log("explicit");
 			result = this.explicit.next();
+			// console.log(result);
 			if (result.finished) {
 				if (result.tag) {
 					this.finished = true;
@@ -3752,6 +3780,7 @@ define(function(require, exports, module) {
 			name = this.trees[i - 1];
 			result = this.pool[name].next();
 			if (result.detached) {
+				// console.log("detached", result.detached);
 				range = new Range(
 					result.detached.open.range.start,
 					result.detached.close.range.end
@@ -3783,6 +3812,8 @@ define(function(require, exports, module) {
 		this.main.stackExclude(range);
 		if (this.explicit) {
 			this.explicit.stackExclude(range);
+			// console.log("explicit stack length", this.explicit.stack.length);
+			// console.log(this.explicit.matchGroup.matches[0].excludeRange);
 		}
 		
 		var i, len;

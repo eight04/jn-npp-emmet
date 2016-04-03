@@ -12,7 +12,6 @@
 	require("lib/Scintilla.js");
 	require("lib/ECMA262.js");
 	require("includes/emmet/emmet.js");
-	require("includes/MenuCmds.js");
 	require("includes/FileStream/FileStream.js");
 
 	var path = function(){
@@ -713,12 +712,9 @@
 			if (emmetEditor.shouldExpand()) {
 				emmet.htmlMatcher.cache(true);
 				emmet.run(action_name, emmetEditor);
-				// timer("action", function(){
-					// emmet.run(action_name, emmetEditor);
-				// });
 				emmet.htmlMatcher.cache(false);
 			} else {
-				MenuCmds.EDIT_INS_TAB();
+				Editor.runMenuCmd(42008);
 			}
 		} else {
 			emmet.htmlMatcher.cache(true);
