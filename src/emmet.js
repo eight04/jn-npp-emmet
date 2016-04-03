@@ -277,6 +277,10 @@
 	} catch (err) {
 		menu = [];
 	}
+	
+	function commandInsertTab() {
+		Editor.runMenuCmd(42008);
+	}
 
 	// Create emmet editor
 	var emmetEditor = (function(){
@@ -331,7 +335,12 @@
 
 			context.anchor = start;
 			context.pos = end;
-			context.selection = value;
+			
+			if (value == "\t") {
+				commandInsertTab();
+			} else {
+				context.selection = value;
+			}
 
 			context.byteAnchor = byteAnchor;
 			context.bytePos = bytePos;
@@ -714,7 +723,7 @@
 				emmet.run(action_name, emmetEditor);
 				emmet.htmlMatcher.cache(false);
 			} else {
-				Editor.runMenuCmd(42008);
+				commandInsertTab();
 			}
 		} else {
 			emmet.htmlMatcher.cache(true);
