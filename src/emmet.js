@@ -327,15 +327,15 @@
 
 		// Replace document text with value between start and end.
 		function replaceRange(value, start, end) {
-			var anchor = context.byteAnchor,
-				pos = context.bytePos;
+			var byteAnchor = context.byteAnchor,
+				bytePos = context.bytePos;
 
 			context.anchor = start;
 			context.pos = end;
 			context.selection = value;
 
-			context.anchor = byteAnchor;
-			context.pos = bytePos;
+			context.byteAnchor = byteAnchor;
+			context.bytePos = bytePos;
 
 			cacheContent = null;
 		}
