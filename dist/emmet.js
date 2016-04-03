@@ -281,7 +281,16 @@
 
 	// Create emmet editor
 	var emmetEditor = (function(){
-		var context = null;
+		var context,
+			cacheContent,
+			reverse = false;
+
+		var whiteSpace = {
+			" ": true,
+			"\t": true,
+			"\r": true,
+			"\n": true
+		};
 
 		// Returns true if using tab character
 		function useTabChar() {
@@ -318,15 +327,17 @@
 
 		// Replace document text with value between start and end.
 		function replaceRange(value, start, end) {
-			var anchor = context.anchor,
-				pos = context.pos;
+			var byteAnchor = context.byteAnchor,
+				bytePos = context.bytePos;
 
 			context.anchor = start;
 			context.pos = end;
 			context.selection = value;
 
-			context.anchor = anchor;
-			context.pos = pos;
+			context.byteAnchor = byteAnchor;
+			context.bytePos = bytePos;
+
+			cacheContent = null;
 		}
 
 		return {
@@ -337,6 +348,8 @@
 			 */
 			setContext: function(ctx) {
 				context = ctx;
+				cacheContent = null;
+				reverse = false;
 			},
 
 			/**
@@ -350,11 +363,19 @@
 			 * alert(selection.start + ', ' + selection.end);
 			 */
 			getSelectionRange: function() {
-				var cachePos = context.pos;
-				var cacheAnchor = context.anchor;
+				var start = context.anchor,
+					end = context.pos;
+
+				if (start > end) {
+					reverse = true;
+					var t = start;
+					start = end;
+					end = t;
+				}
+
 				return {
-					start: Math.min(cacheAnchor, cachePos),
-					end: Math.max(cacheAnchor, cachePos)
+					start: start,
+					end: end
 				};
 			},
 
@@ -373,6 +394,11 @@
 			createSelection: function(start, end) {
 				if (!end) {
 					end = start;
+				}
+				if (reverse) {
+					var t = start;
+					start = end;
+					end = t;
 				}
 				context.anchor = start;
 				context.pos = end;
@@ -396,7 +422,7 @@
 			 * @return {Number|null}
 			 */
 			getCaretPos: function(){
-				return Math.min(context.anchor, context.pos);
+				return context.pos;
 			},
 
 			/**
@@ -404,7 +430,8 @@
 			 * @param {Number} pos Caret position
 			 */
 			setCaretPos: function(pos) {
-				context.anchor = context.pos = pos;
+				context.anchor = pos;
+				context.pos = pos;
 			},
 
 			/**
@@ -412,8 +439,6 @@
 			 * @return {String}
 			 */
 			getCurrentLine: function() {
-				// var range = this.getCurrentLineRange();
-				// return this.getContent().substring(range.start, range.end);
 				return context.lines.get(context.line).text;
 			},
 
@@ -438,10 +463,10 @@
 			 */
 			replaceContent: function(value, start, end, noIndent) {
 				// https://github.com/emmetio/brackets-emmet/blob/master/editor.js
-				if (typeof end == 'undefined') {
-					end = (typeof start == 'undefined') ? this.getContent().length : start;
+				if (end === undefined) {
+					end = start === undefined ? this.getContent().length : start;
 				}
-				if (typeof start == 'undefined') {
+				if (start === undefined) {
 					start = 0;
 				}
 
@@ -475,7 +500,10 @@
 			 * @return {String}
 			 */
 			getContent: function(){
-				return context.text || '';
+				if (cacheContent == null) {
+					cacheContent = context.text || '';
+				}
+				return cacheContent;
 			},
 
 			/**
@@ -550,8 +578,17 @@
 			},
 
 			// Check if the selection is collapsed
-			isCollapsed: function() {
-				return context.pos == context.anchor;
+			shouldExpand: function() {
+				if (context.bytePos != context.byteAnchor) {
+					return false;
+				}
+				context.bytePos--;
+				var ch = context.selection;
+				context.bytePos++;
+				if (whiteSpace[ch]) {
+					return false;
+				}
+				return true;
 			}
 		};
 	})();
@@ -673,7 +710,7 @@
 			});
 		} else if (action_name == "expand_abbreviation_with_tab") {
 			// Emmet's indentation style doesn't match notepad++'s.
-			if (emmetEditor.isCollapsed()) {
+			if (emmetEditor.shouldExpand()) {
 				emmet.htmlMatcher.cache(true);
 				emmet.run(action_name, emmetEditor);
 				// timer("action", function(){
