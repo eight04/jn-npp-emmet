@@ -3430,7 +3430,7 @@ define(function(require, exports, module) {
 			} else {
 				this.i--;
 			}
-		} while (!this.tag);
+		} while (!this.tag && this.i >= 0);
 		
 		// console.log(-1, this.tag.name, this.tag.type);
 	};
@@ -3961,7 +3961,7 @@ define(function(require, exports, module) {
 				}
 				// hit tag
 				i = pos - 1;
-				while ((i = text.lastIndexOf("<", i)) >= 0) {
+				while (i >= 0 && (i = text.lastIndexOf("<", i)) >= 0) {
 					tag = matchTag(i, text);
 					if (!tag) {
 						i--;
