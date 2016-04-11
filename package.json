@@ -1,6 +1,6 @@
 {
   "name": "jn-npp-emmet",
-  "version": "0.2.0",
+  "version": "1.0.1",
   "devDependencies": {
     "eslint": "^1.6.0",
     "grunt": "^0.4.5",
