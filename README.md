@@ -102,6 +102,8 @@ Speed test
 
 Changelog
 =========
+* 1.0.1 (Apr 12, 2016)
+	- Fix infinite loop bug. [#7](https://github.com/eight04/jn-npp-emmet/issues/7)
 * 1.0.0 (Apr 3, 2016)
 	- Use [eight04/emmet@dev-quick-match-2](https://github.com/eight04/emmet/tree/dev-quick-match-2).
 	- Drop MenuCmds.js (#6)
