@@ -9,7 +9,7 @@ module.exports = function(grunt) {
 			options: {
 				files: ["package.json"],
 				updateConfigs: ["pkg"],
-				commitFiles: ["package.json", "bower.json"],
+				commitFiles: ["package.json"],
 				pushTo: "origin"
 			}
 		},
