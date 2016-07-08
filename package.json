@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "browserify": "^13.0.1",
-    "emmet": "git+https://github.com/eight04/emmet.git#dev-quick-match-2"
+    "emmet": "git+https://github.com/eight04/emmet.git#dev-cache"
   },
   "scripts": {
     "test": "eslint src/*.js",
