@@ -101,6 +101,10 @@ Speed test
 
 Changelog
 =========
+* 1.1.0 (Jul 9, 2016)
+	- Update emmet to v1.6.0.
+	- Drop Grunt.
+	- Drop submodule, use npm to manage dependencies.
 * 1.0.1 (Apr 12, 2016)
 	- Fix infinite loop bug. [#7](https://github.com/eight04/jn-npp-emmet/issues/7)
 * 1.0.0 (Apr 3, 2016)
