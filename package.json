@@ -15,7 +15,7 @@
     "build-src": "n-copy -s src ** -d dist -i emmet/emmet.js",
     "build-asset": "n-copy -s node_modules/emmet/lib *.json -d dist/emmet && copy /y node_modules\\emmet\\node_modules\\caniuse-db\\data.json dist\\emmet\\caniuse.json",
     "build-lib": "n-copy -s lib ** -d dist",
-    "build": "npm run build-emmet && npm run build-src && npm run build-asset && npm run build-lib",
+    "build": "n-clean dist && npm run build-src && npm run build-asset && npm run build-lib && npm run build-emmet",
     "preversion": "npm test && npm run build",
     "post-version": "git push --follow-tags"
   }
