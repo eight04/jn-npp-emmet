@@ -3,14 +3,20 @@
   "version": "1.0.1",
   "devDependencies": {
     "eslint": "^1.6.0",
-    "grunt": "^0.4.5",
-    "grunt-browserify": "^4.0.1",
-    "grunt-bump": "0.0.16",
-    "grunt-contrib-copy": "^0.8.2",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-eslint": "^18.0.0"
+    "npm-build-tools": "^2.2.5"
   },
   "dependencies": {
+    "browserify": "^13.0.1",
     "emmet": "git+https://github.com/eight04/emmet.git#dev-quick-match-2"
+  },
+  "scripts": {
+    "test": "eslint src/*.js",
+    "build-emmet": "browserify src/emmet/emmet.js -o dist/emmet/emmet.js",
+    "build-src": "n-copy -s src ** -d dist -i emmet/emmet.js",
+    "build-asset": "n-copy -s node_modules/emmet/lib *.json -d dist/emmet",
+    "build-lib": "n-copy -s lib ** -d dist",
+    "build": "npm run build-emmet && npm run build-src && npm run build-asset && npm run build-lib",
+    "preversion": "npm test && npm run build",
+    "post-version": "git push --follow-tags"
   }
 }
