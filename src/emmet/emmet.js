@@ -1,1 +1,1 @@
-emmet = require("../../lib/emmet/lib/emmet.js");
+emmet = require("../../node_modules/emmet/lib/emmet.js");
