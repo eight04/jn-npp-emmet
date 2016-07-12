@@ -17,6 +17,6 @@
     "build-lib": "n-copy -s lib ** -d dist",
     "build": "n-clean dist && npm run build-src && npm run build-asset && npm run build-lib && npm run build-emmet",
     "preversion": "npm test && npm run build",
-    "post-version": "git push --follow-tags"
+    "postversion": "git push --follow-tags"
   }
 }
