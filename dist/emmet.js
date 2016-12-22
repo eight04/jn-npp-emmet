@@ -329,6 +329,10 @@
 		function tabWidth() {
 			return (new Scintilla(context.handle)).Call("SCI_GETTABWIDTH", 0, 0);
 		}
+		
+		function scrollIntoView() {
+			return (new Scintilla(context.handle)).Call("SCI_SCROLLCARET", 0, 0);
+		}
 
 		/**
 		 * Normalizes text before it goes to editor: replaces indentation
@@ -465,6 +469,7 @@
 			setCaretPos: function(pos) {
 				context.anchor = pos;
 				context.pos = pos;
+				scrollIntoView();
 			},
 
 			/**
