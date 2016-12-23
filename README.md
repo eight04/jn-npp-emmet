@@ -101,6 +101,9 @@ Speed test
 
 Changelog
 =========
+* 1.1.1 (Dec 23, 2016)
+	- Update emmet to v1.6.1.
+	- Fix: scrollbar doesn't scroll when setting caret pos.
 * 1.1.0 (Jul 9, 2016)
 	- Update emmet to v1.6.0.
 	- Drop Grunt.
