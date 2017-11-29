@@ -5491,9 +5491,9 @@ define(function(require, exports, module) {
 			this.finished = true;
 			return new TreeResult(tag, new TagPair(this.root, tag), true);
 		}
-		// can't pair root?
+		// doesn't pair, root's close tag is missing
 		this.finised = true;
-		return new TreeResult(tag, null, true);
+		return TreeResult.finished;
 	};
 	
 	// Close tag handler for backward search
