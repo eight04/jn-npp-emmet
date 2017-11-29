@@ -2885,7 +2885,7 @@ define(function(require, exports, module) {
 				var lineRange = editor.getCurrentLineRange();
 				var nextPadding = '';
 					
-				for (var i = lineRange.end + 1, ch; i < len; i++) {
+				for (var i = lineRange.end, ch; i < len; i++) {
 					ch = content.charAt(i);
 					if (ch == ' ' || ch == '\t')
 						nextPadding += ch;
@@ -2963,6 +2963,7 @@ define(function(require, exports, module) {
 		}
 	};
 });
+
 },{"../assets/htmlMatcher":26,"../assets/preferences":28,"../assets/resources":31,"../utils/common":71,"../utils/editor":73}],12:[function(require,module,exports){
 /**
  * Module describes and performs Emmet actions. The actions themselves are
@@ -14717,7 +14718,7 @@ define(function(require, exports, module) {
 			}
 			
 			if (!snippet) {
-				if (!abbrData.property) {
+				if (!abbrData.property || abbrData.property.endsWith(':')) {
 					return null;
 				}
 				snippet = abbrData.property + ':' + defaultValue;
@@ -16123,7 +16124,7 @@ define(function(require, exports, module) {
 		 * @returns {Object}
 		 */
 		captureContext: function(editor, pos) {
-			var allowedSyntaxes = {'html': 1, 'xml': 1, 'xsl': 1};
+			var allowedSyntaxes = {'html': 1, 'xml': 1, 'xsl': 1, 'jsx': 1};
 			var syntax = editor.getSyntax();
 			if (syntax in allowedSyntaxes) {
 				var content = editor.getContent();
