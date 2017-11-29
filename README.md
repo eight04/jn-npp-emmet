@@ -101,6 +101,9 @@ Speed test
 
 Changelog
 =========
+* 1.1.2 (Nov 30, 2017)
+	- Update emmet to v1.6.3.
+	- Fix: single open tag is not handled correctly.
 * 1.1.1 (Dec 23, 2016)
 	- Update emmet to v1.6.1.
 	- Fix: scrollbar doesn't scroll when setting caret pos.
