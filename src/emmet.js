@@ -700,17 +700,18 @@
 			 * @param {String} fileName
 			 * @return {String} Returns null if <code>fileName</code> cannot be located
 			 */
-			locateFile: function(editorFile, fileName) {
+			locateFile: function(editorFile, fileName, done) {
 				var folder = path.parent(editorFile),
 					result;
 				while (folder) {
 					result = path.join(folder, fileName);
 					if (path.exists(result)) {
-						return result;
+            done(result);
+						return;
 					}
 					folder = path.parent(folder);
 				}
-				return '';
+        done('');
 			},
 
 			/**
