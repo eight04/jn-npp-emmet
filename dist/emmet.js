@@ -98,139 +98,146 @@
 		return path.parent(System.scriptFullName);
 	})(path);
 
-	var dialog = (function(settings, io, PLUGIN_DIR){
-		var pool = {},
-			htmlCache = {},
-			prof = {
-				prompt: {
-					oncreate: function(dialog) {
-						var d = dialog.handle,
-							document = d.document;
+  var DIMENSION_PROPS = ["width", "height", "left", "top"];
 
-						document.getElementById("form").onsubmit = function() {
-							dialog.result = document.getElementById("entry").value;
-							d.close();
-							return false;
-						};
+  /**
+   *  Create a dialog. options may contain following properties:
+   *  
+   *  * id: when specified, the position of the dialog would be saved to global config.
+   *  * title: dialog title.
+   *  * html: dialog innerHTML.
+   *  * onresolve: resolve handler.
+   *  * onreject: reject handler.
+   */
+  function createDialog(options) {
+    var destroyed = false;
+    
+    var htmlDialog = System.createDialog({
+      onbeforeclose: function() {
+        // overwrite the behavior of top right "x" button
+        if (!destroyed) {
+          reject();
+          return false;
+        }
+      }
+    });
+    
+    htmlDialog.visible = false;
+    htmlDialog.title = options.title;
 
-						document.getElementById("cancel").onclick = function() {
-							d.close();
-						};
+    // restore position
+    if (options.id) {
+      DIMENSION_PROPS.forEach(function(prop) {
+        htmlDialog[prop] =
+          options.id && GlobalSettings.get("dialog." + options.id + "." + prop) ||
+          options[prop] ||
+          htmlDialog[prop];
+      });
+    }
 
-						document.onkeydown = function(e) {
-							e = e || document.parentWindow.event;
-							if (e.keyCode == 27) {
-								d.close();
-							}
-						};
-					},
-					onshow: function(dialog) {
-						var entry = dialog.handle.document.getElementById("entry");
-						entry.value = dialog.options.value || "";
-						entry.focus();
-						dialog.result = null;
-					},
-					onclose: function(dialog) {
-						if (dialog.result && dialog.options.cmd) {
-							dialog.options.cmd(dialog.result);
-						}
-					}
-				}
-			};
+    // Build interface
+    var document = htmlDialog.document;
 
-		function html(type) {
-			if (!htmlCache[type]) {
-				htmlCache[type] = io.read(PLUGIN_DIR + "/includes/dialog/" + type + ".html");
-			}
-			return htmlCache[type];
-		}
+    document.write(options.html);
+    document.close();
 
-		function create(options) {
-			var dialog = {
-				options: options,
-				handle: System.createDialog({
-					onbeforeclose: function(){
-						var d = dialog.handle,
-							o = dialog.options;
+    document.forms[0].onsubmit = function() {
+      resolve(document.getElementById("entry").value);
+      return false;
+    };
 
-						if (prof[o.type].onclose) {
-							prof[o.type].onclose(dialog);
-						}
+    document.getElementById("cancel").onclick = function() {
+      reject();
+    };
 
-						if (o.id) {
-							settings.set("dialog." + o.id + ".width", d.width);
-							settings.set("dialog." + o.id + ".height", d.height);
-							settings.set("dialog." + o.id + ".left", d.left);
-							settings.set("dialog." + o.id + ".top", d.top);
-							d.visible = false;
-							return true;
-						}
-					}
-				}),
-				show: function(){
-					var d = dialog.handle,
-						o = dialog.options;
-
-					d.visible = true;
-
-					if (prof[o.type].onshow) {
-						prof[o.type].onshow(dialog);
-					}
-				},
-				useOptions: function(options){
-					dialog.options = options;
-				}
-			};
-
-			var d = dialog.handle,
-				o = dialog.options;
-
-			d.title = o.title;
-
-			if (o.id) {
-				o.width = settings.get("dialog." + o.id + ".width") || o.width;
-				o.height = settings.get("dialog." + o.id + ".height") || o.width;
-				o.left = settings.get("dialog." + o.id + ".left") || o.left;
-				o.top = settings.get("dialog." + o.id + ".top") || o.top;
-			}
-
-			d.width = o.width || 409;
-			d.height = o.height || 112;
-			d.left = o.left || d.left;
-			d.top = o.top || d.top;
-
-			// Build interface
-			var document = d.document;
-
-			document.write(html(o.type));
-			document.close();
-
-			if (prof[o.type] && prof[o.type].oncreate) {
-				prof[o.type].oncreate(dialog);
-			}
-
-			return dialog;
-		}
-
-		function open(o) {
-			var dialog;
-
-			if (pool[o.id]) {
-				dialog = pool[o.id];
-				dialog.useOptions(o);
-			} else {
-				dialog = create(o);
-				if (o.id) {
-					pool[o.id] = dialog;
-				}
-			}
-
-			dialog.show();
-		}
-
-		return open;
-
-	})(GlobalSettings, io, PLUGIN_DIR);
+    document.onkeydown = function(e) {
+      e = e || document.parentWindow.event;
+      if (e.keyCode == 27) {
+        reject();
+      }
+    };
+    
+    function show() {
+      htmlDialog.visible = true;
+      var autofocus = document.querySelector("[autofocus]");
+      if (autofocus) {
+        autofocus.focus();
+      }
+      if (options.onshow) {
+        options.onshow(htmlDialog);
+      }
+    }
+    
+    function hide() {
+      if (options.id) {
+        DIMENSION_PROPS.forEach(function (prop) {
+          GlobalSettings.set(
+            "dialog." + options.id + "." + prop,
+            htmlDialog[prop]
+          );
+        });
+      }
+      htmlDialog.visible = false;
+    }
+    
+    function resolve(value) {
+      hide();
+      if (options.onresolve) {
+        options.onresolve(value);
+      }
+    }
+    
+    function reject(value) {
+      hide();
+      if (options.onreject) {
+        options.onreject(value);
+      }
+    }
+    
+    function destroy() {
+      destroyed = true;
+      htmlDialog.close();
+    }
+    
+    return {
+      show: show,
+      hide: hide,
+      resolve: resolve,
+      reject: reject,
+      destroy: destroy,
+      isShown: function() {
+        return htmlDialog.visible;
+      }
+    };
+  }
+  
+  var emmetPrompt = (function() {
+    var dialog, callback;
+    return function(title, _callback) {
+      if (!dialog) {
+        dialog = createDialog({
+          id: "emmet",
+          title: title,
+          width: 409,
+          height: 112,
+          html: io.read(PLUGIN_DIR + "/includes/dialog/prompt.html"),
+          onresolve: function(value) {
+            if (callback) {
+              callback(value);
+            }
+          },
+          onshow: function(htmlDialog) {
+            htmlDialog.document.getElementById("entry").value = "";
+          }
+        });
+      }
+      if (dialog.isShown()) {
+        dialog.reject();
+      }
+      callback = _callback;
+      dialog.show();
+    };
+  })();
 	
 	function createMap(list) {
 		var i, len, holder = {};
@@ -748,18 +755,13 @@
 	function runAction(action_name) {
 		emmetEditor.setContext(Editor.currentView);
 		if (action_name == 'wrap_with_abbreviation' || action_name == "update_tag") {
-			dialog({
-				id: "emmet",
-				type: "prompt",
-				title: "Enter Abbreviation",
-				cmd: function(abbr) {
-					if (abbr) {
-						emmet.htmlMatcher.cache(true);
-						emmet.run(action_name, emmetEditor, abbr);
-						emmet.htmlMatcher.cache(false);
-					}
-				}
-			});
+			emmetPrompt("Enter Abbreviation", function(abbr) {
+        if (abbr) {
+          emmet.htmlMatcher.cache(true);
+          emmet.run(action_name, emmetEditor, abbr);
+          emmet.htmlMatcher.cache(false);
+        }
+      });
 		} else if (action_name == "expand_abbreviation_with_tab") {
 			// Emmet's indentation style doesn't match notepad++'s.
 			if (emmetEditor.shouldExpand()) {
