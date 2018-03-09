@@ -114,6 +114,7 @@
     
     var htmlDialog = System.createDialog({
       onbeforeclose: function() {
+        // overwrite the behavior of top right "x" button
         if (!destroyed) {
           reject();
           return false;
