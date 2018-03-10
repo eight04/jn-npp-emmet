@@ -16,7 +16,7 @@ All config files are placed in the config directory: `%appdata%\Notepad++\plugin
 
 ### emmet.keymap.json
 
-```
+```js
 {
 	// The order of key combination doesn't matter
 	"encode_decode_data_url": "Ctrl+Shift+I",
@@ -33,7 +33,7 @@ All config files are placed in the config directory: `%appdata%\Notepad++\plugin
 
 ### emmet.menu.json
 
-```
+```js
 [
 	{
 		"type": "action",	// action, submenu, separator
@@ -72,7 +72,7 @@ All config files are placed in the config directory: `%appdata%\Notepad++\plugin
 
 ### emmet.settings.json
 
-```
+```js
 {
 	// setting to false will make tab working in all file types
 	"enableTabExpensionByFileType": true,
