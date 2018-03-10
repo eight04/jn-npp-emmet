@@ -1,8 +1,4 @@
 {
-	"env": {
-		"node": true,
-		"browser": true
-	},
 	"rules": {
 		"no-use-before-define": [2, "nofunc"],
 		"semi": [2, "always"],
@@ -10,19 +6,5 @@
 	},
 	"extends": [
 		"eslint:recommended"
-	],
-	"globals": {
-		"Dialog": false,
-		"Editor": false,
-		"Scintilla": false,
-		"ActiveXObject": false,
-		"System": false,
-		"emmet": false,
-		"MenuCmds": false,
-		"GlobalSettings": false,
-		"debug": false,
-		"FileStream": false,
-		"WScript": true,
-		"timer": false
-	}
+	]
 }
