@@ -221,7 +221,7 @@ require("includes/emmet/FileStream/FileStream.js");
           title: title,
           width: 409,
           height: 112,
-          html: io.read(PLUGIN_DIR + "/includes/dialog/prompt.html"),
+          html: io.read(PLUGIN_DIR + "/includes/emmet/prompt-template.html"),
           onresolve: function(value) {
             if (callback) {
               callback(value);
