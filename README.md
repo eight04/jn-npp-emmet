@@ -101,6 +101,12 @@ Speed test
 
 Changelog
 =========
+* 1.2.0 (Mar 10, 2018)
+  - Update eslint to v4.18.2.
+  - Change: dist folder structure. Libraries are put inside `dist/emmet` subfolder.
+  - Add info header to `dist/emmet.js`.
+  - Fix: file related actions doesn't work.
+  - Fix: dialog service.
 * 1.1.2 (Nov 30, 2017)
 	- Update emmet to v1.6.3.
 	- Fix: single open tag is not handled correctly.
