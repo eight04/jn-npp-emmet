@@ -1,3 +1,10 @@
+/**
+ *  jn-npp-emmet v$inline("../package.json|parse:version")
+ *  
+ *  Author: eight04 <eight04@gmail.com>
+ *  Homepage: https://github.com/eight04/jn-npp-emmet
+ */
+
 require("lib/Scintilla.js");
 require("lib/ECMA262.js");
 
