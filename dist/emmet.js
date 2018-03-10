@@ -1,5 +1,7 @@
+/* global require WScript: true ActiveXObject FileStream System GlobalSettings */
+/* global Editor emmet Scintilla */
 /**
- *  jn-npp-emmet v1.1.2
+ *  jn-npp-emmet v1.2.0
  *  
  *  Author: eight04 <eight04@gmail.com>
  *  Homepage: https://github.com/eight04/jn-npp-emmet
@@ -748,7 +750,7 @@ require("includes/emmet/FileStream/FileStream.js");
 			 * @return {String}
 			 */
 			getExt: function(file) {
-				var m = (file || '').match(/\.([\w\-]+)$/);
+				var m = (file || '').match(/\.([\w-]+)$/);
 				return m ? m[1].toLowerCase() : '';
 			}
 		};
