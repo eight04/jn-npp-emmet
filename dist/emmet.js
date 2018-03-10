@@ -1,3 +1,16 @@
+/**
+ *  jn-npp-emmet v1.1.2
+ *  
+ *  Author: eight04 <eight04@gmail.com>
+ *  Homepage: https://github.com/eight04/jn-npp-emmet
+ */
+
+require("lib/Scintilla.js");
+require("lib/ECMA262.js");
+
+require("includes/emmet/emmet-core.js");
+require("includes/emmet/FileStream/FileStream.js");
+
 (function(){
 
 	// Fake WScript env
@@ -8,11 +21,6 @@
 			}
 		};
 	}
-
-	require("lib/Scintilla.js");
-	require("lib/ECMA262.js");
-	require("includes/emmet/emmet.js");
-	require("includes/FileStream/FileStream.js");
 
 	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -220,7 +228,7 @@
           title: title,
           width: 409,
           height: 112,
-          html: io.read(PLUGIN_DIR + "/includes/dialog/prompt.html"),
+          html: io.read(PLUGIN_DIR + "/includes/emmet/prompt-template.html"),
           onresolve: function(value) {
             if (callback) {
               callback(value);
