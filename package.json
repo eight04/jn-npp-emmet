@@ -2,19 +2,16 @@
   "name": "jn-npp-emmet",
   "version": "1.1.2",
   "devDependencies": {
+    "browserify": "^16.1.1",
     "eslint": "^1.6.0",
-    "npm-build-tools": "^2.2.5",
-    "rollup": "^0.56.5",
-    "rollup-plugin-commonjs": "^9.0.0",
-    "rollup-plugin-node-resolve": "^3.2.0",
-    "rollup-plugin-re": "^1.0.6"
+    "npm-build-tools": "^2.2.5"
   },
   "dependencies": {
     "emmet": "github:eight04/emmet#dev-cache"
   },
   "scripts": {
     "test": "eslint src/*.js",
-    "build-emmet": "rollup -c",
+    "build-emmet": "browserify bundle/emmet-core.js -o dist/emmet/emmet-core.js --bare",
     "build-src": "n-copy -s src ** -d dist -i emmet/emmet.js",
     "build-asset": "n-copy -s node_modules/emmet/lib *.json -d dist/emmet && copy /y node_modules\\caniuse-db\\data.json dist\\emmet\\caniuse.json",
     "build-lib": "n-copy -s lib ** -d dist/emmet",
