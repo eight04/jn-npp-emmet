@@ -1,14 +1,15 @@
 jN-npp-emmet
 ============
-Add emmet to notepad++.
+Add Emmet to Notepad++.
 
 Apparently, current Emmet plugin for Notepad++ is extreme slow on big file ([emmetio/npp#2](https://github.com/emmetio/npp/issues/2)). This version is much faster although I don't know where is the problem :|
 
-Install
--------
+Installation
+------------
 1. Install [jn-npp-plugin](https://github.com/sieukrem/jn-npp-plugin).
 2. Copy everything in `dist` into `plugins\jN\includes`.
-3. Keymap is located at `%appdata%\Notepad++\plugins\config\emmet.keymap.json`
+3. Restart Notepad++, or just start it if it is already closed.
+4. Keymap and other settings would be generated to `%appdata%\Notepad++\plugins\config\`. After changing the settings, restart Nodepad++ to take effect.
 
 Config
 ------
