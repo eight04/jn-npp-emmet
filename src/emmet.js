@@ -1,3 +1,9 @@
+require("lib/Scintilla.js");
+require("lib/ECMA262.js");
+
+require("includes/emmet/emmet-core.js");
+require("includes/emmet/FileStream/FileStream.js");
+
 (function(){
 
 	// Fake WScript env
@@ -8,11 +14,6 @@
 			}
 		};
 	}
-
-	require("lib/Scintilla.js");
-	require("lib/ECMA262.js");
-	require("includes/emmet/emmet.js");
-	require("includes/FileStream/FileStream.js");
 
 	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");

@@ -3,18 +3,21 @@
   "version": "1.1.2",
   "devDependencies": {
     "eslint": "^1.6.0",
-    "npm-build-tools": "^2.2.5"
+    "npm-build-tools": "^2.2.5",
+    "rollup": "^0.56.5",
+    "rollup-plugin-commonjs": "^9.0.0",
+    "rollup-plugin-node-resolve": "^3.2.0",
+    "rollup-plugin-re": "^1.0.6"
   },
   "dependencies": {
-    "browserify": "^13.0.1",
     "emmet": "github:eight04/emmet#dev-cache"
   },
   "scripts": {
     "test": "eslint src/*.js",
-    "build-emmet": "browserify src/emmet/emmet.js -o dist/emmet/emmet.js",
+    "build-emmet": "rollup -c",
     "build-src": "n-copy -s src ** -d dist -i emmet/emmet.js",
     "build-asset": "n-copy -s node_modules/emmet/lib *.json -d dist/emmet && copy /y node_modules\\caniuse-db\\data.json dist\\emmet\\caniuse.json",
-    "build-lib": "n-copy -s lib ** -d dist",
+    "build-lib": "n-copy -s lib ** -d dist/emmet",
     "build": "n-clean dist && npm run build-src && npm run build-asset && npm run build-lib && npm run build-emmet",
     "preversion": "npm test && npm run build",
     "postversion": "git push --follow-tags"
