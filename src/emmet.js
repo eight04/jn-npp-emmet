@@ -23,6 +23,13 @@ require("includes/emmet/FileStream/FileStream.js");
 			}
 		};
 	}
+  
+  // Some string utils
+  if (typeof String.prototype.endsWith === "undefined") {
+    String.prototype.endsWith = function(suffix) {
+      return this.lastIndexOf(suffix, this.length - suffix.length) >= 0;
+    };
+  }
 
 	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
