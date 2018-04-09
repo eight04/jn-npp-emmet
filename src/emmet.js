@@ -329,7 +329,7 @@ require("includes/emmet/FileStream/FileStream.js");
   var userData = readUserData();
   emmet.loadUserData(userData);
   
-  var settings = userData.settings || {};
+  var settings = userData.settings;
   
 	if (settings.enableTabExpensionUnder) {
 		settings.enableTabExpensionUnder = createMap(settings.enableTabExpensionUnder);
