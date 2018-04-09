@@ -314,12 +314,18 @@ require("includes/emmet/FileStream/FileStream.js");
         }
       }
       
-      try {
-        data[file.name] = JSON.parse(io.read(userPath));
-      } catch (err) {
+      var content = io.read(userPath);
+      if (!content) {
         if (file.mandatory) {
-          alert("Failed to read " + userPath + "\n" + String(err));
+          alert("Failed to read " + userPath);
         }
+        return;
+      }
+      
+      try {
+        data[file.name] = JSON.parse(content);
+      } catch (err) {
+        alert("Failed to parse JSON " + userPath + "\n" + String(err));
       }
     });
     return data;
