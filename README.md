@@ -106,6 +106,12 @@ Speed test
 
 Changelog
 =========
+* 1.2.2 (Apr 9, 2018)
+  - Update emmet. Fix infinite recursion bug.
+  - Fix: close autocomplete dialog after execution.
+  - Fix: TypeError when calling `endsWith`.
+  - Add: load syntaxProfiles. Switch to `emmet.loadUserData`.
+  - Change: the hotkey of Balance (outward). <kbd>Ctrl</kbd> + <kbd>D</kbd> -> <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>D</kbd>.
 * 1.2.0 (Mar 10, 2018)
   - Update eslint to v4.18.2.
   - Change: dist folder structure. Libraries are put inside `dist/emmet` subfolder.
