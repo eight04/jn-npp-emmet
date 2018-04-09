@@ -26,6 +26,7 @@ require("includes/emmet/FileStream/FileStream.js");
   
   // Some string utils
   if (typeof String.prototype.endsWith === "undefined") {
+    // https://github.com/emmetio/emmet/blob/8fa340dc4c7d209c3e6836ab9fe2e42d23d2cd40/lib/resolver/css.js#L832
     String.prototype.endsWith = function(suffix) {
       return this.lastIndexOf(suffix, this.length - suffix.length) >= 0;
     };
@@ -290,39 +291,27 @@ require("includes/emmet/FileStream/FileStream.js");
 	if (!path.exists(userSettings)) {
 		path.copy(defaultSettings, userSettings);
 	}
+  
+  function readUserData() {
+    var data = {};
+    ["preferences", "snippets", "syntaxProfiles", "keymap", "menu", "settings"]
+      .forEach(function (name) {
+        var content = io.read(Editor.pluginConfigDir + "/emmet." + name + ".json");
+        try {
+          data[name] = JSON.parse(content);
+        } catch (err) {
+          // pass
+        }
+      });
+    return data;
+  }
 
 	// User settings
-	var preference = io.read(Editor.pluginConfigDir + "/emmet.preferences.json");
-	var snippets = io.read(Editor.pluginConfigDir + "/emmet.snippets.json");
-	var keyMap = io.read(Editor.pluginConfigDir + "/emmet.keymap.json");
-	var menu = io.read(Editor.pluginConfigDir + "/emmet.menu.json");
-	var settings = io.read(Editor.pluginConfigDir + "/emmet.settings.json");
-
-	if (preference) {
-		emmet.loadPreferences(preference);
-	}
-
-	if (snippets) {
-		emmet.loadSnippets(snippets);
-	}
-
-	try {
-		keyMap = JSON.parse(keyMap);
-	} catch (err) {
-		keyMap = {};
-	}
-
-	try {
-		menu = JSON.parse(menu);
-	} catch (err) {
-		menu = [];
-	}
-	
-	try {
-		settings = JSON.parse(settings);
-	} catch (err) {
-		settings = {};
-	}
+  var userData = readUserData();
+  emmet.loadUserData(userData);
+  
+  var settings = userData.settings || {};
+  
 	if (settings.enableTabExpensionUnder) {
 		settings.enableTabExpensionUnder = createMap(settings.enableTabExpensionUnder);
 	}
@@ -798,6 +787,7 @@ require("includes/emmet/FileStream/FileStream.js");
 
 	// Construct menu helper
 	function constructMenu(menu, list) {
+    var keyMap = userData.keymap || {};
 		list.forEach(function(item){
 			var label = item.label || item.name;
 			if (item.type == "submenu") {
@@ -818,7 +808,9 @@ require("includes/emmet/FileStream/FileStream.js");
 		});
 	}
 
-	constructMenu(Editor.addMenu("Emmet"), menu);
+  if (userData.menu) {
+    constructMenu(Editor.addMenu("Emmet"), userData.menu);
+  }
 
 	// Map key name to key code.
 	// https://msdn.microsoft.com/en-us/library/dd375731%28v=VS.85%29.aspx
@@ -884,36 +876,38 @@ require("includes/emmet/FileStream/FileStream.js");
 	};
 
 	// Regist hotkeys.
-	emmet.actions.getList().forEach(function(action){
-		var userHotkey = keyMap[action.name];
-		if (!userHotkey) {
-			return;
-		}
-		var keys = userHotkey.split("+");
-		var cfg = {
-			cmd: function() {
-				runAction(action.name);
-			}
-		};
-		var i;
-		for (i = 0; i < keys.length; i++) {
-			var token = keys[i].toLowerCase().split(" ").join("");
+  if (userData.keymap) {
+    emmet.actions.getList().forEach(function(action){
+      var userHotkey = userData.keymap[action.name];
+      if (!userHotkey) {
+        return;
+      }
+      var keys = userHotkey.split("+");
+      var cfg = {
+        cmd: function() {
+          runAction(action.name);
+        }
+      };
+      var i;
+      for (i = 0; i < keys.length; i++) {
+        var token = keys[i].toLowerCase().split(" ").join("");
 
-			token = keycodeMap[token] || token;
+        token = keycodeMap[token] || token;
 
-			switch (token) {
-				case "ctrl":
-				case "shift":
-				case "alt":
-					cfg[token] = true;
-					break;
+        switch (token) {
+          case "ctrl":
+          case "shift":
+          case "alt":
+            cfg[token] = true;
+            break;
 
-				default:
-					cfg.key = token;
-					break;
-			}
-		}
+          default:
+            cfg.key = token;
+            break;
+        }
+      }
 
-		Editor.addHotKey(cfg);
-	});
+      Editor.addHotKey(cfg);
+    });
+  }
 })();
