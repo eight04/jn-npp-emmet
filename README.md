@@ -106,6 +106,12 @@ Speed test
 
 Changelog
 =========
+* 1.2.1 (Apr 9, 2018)
+  - Update emmet. Fix "Out of stack space" bug.
+  - Fix: close autocomplete dialog after execution.
+  - Fix: TypeError when calling `endsWith`.
+  - Add: read `emmet.syntaxProfiles.json`. Add the documentation.
+  - Change: the default hotkey of `Balance (outward)` is changed from <kbd>Ctrl</kbd> + <kbd>D</kbd> to <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>D</kbd>.
 * 1.2.0 (Mar 10, 2018)
   - Update eslint to v4.18.2.
   - Change: dist folder structure. Libraries are put inside `dist/emmet` subfolder.
