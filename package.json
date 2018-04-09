@@ -1,6 +1,6 @@
 {
   "name": "jn-npp-emmet",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "devDependencies": {
     "browserify": "^16.1.1",
     "eslint": "^4.18.2",

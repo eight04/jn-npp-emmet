@@ -1,7 +1,7 @@
 /* global require WScript: true ActiveXObject FileStream System GlobalSettings */
 /* global Editor emmet Scintilla alert */
 /**
- *  jn-npp-emmet v1.2.0
+ *  jn-npp-emmet v1.2.1
  *  
  *  Author: eight04 <eight04@gmail.com>
  *  Homepage: https://github.com/eight04/jn-npp-emmet
