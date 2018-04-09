@@ -82,6 +82,10 @@ All config files are placed in the config directory: `%appdata%\Notepad++\plugin
 }
 ```
 
+### Emmet customization
+
+[Emmet allows you to change its behavior through 3 JSON files](https://docs.emmet.io/customization/): `snippets.json`, `preferences.json`, and `syntaxProfiles.json`. In jn-npp-emmet, they would be read from the config folder with filename prefix `emmet.` i.e. `emmet.snippets.json`, `emmet.preferences.json`, and `emmet.syntaxProfiles.json`.
+
 FileStream.js
 -------------
 http://hp.vector.co.jp/authors/VA033015/fsjs.html
