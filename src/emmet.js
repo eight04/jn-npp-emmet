@@ -266,7 +266,7 @@ require("includes/emmet/FileStream/FileStream.js");
 	}
 
 	// Default snippets and caniuse
-	emmet.loadSystemSnippets(io.read(PLUGIN_DIR + "/includes/emmet/snippets.json"));
+	emmet.loadSystemSnippets(io.read(PLUGIN_DIR + "/includes/emmet/system-snippets.json"));
 	emmet.loadCIU(io.read(PLUGIN_DIR + "/includes/emmet/caniuse.json"));
 
   // user data
@@ -297,7 +297,7 @@ require("includes/emmet/FileStream/FileStream.js");
     {
       name: "settings",
       mandatory: true
-    },
+    }
   ];
   
   function readUserData() {

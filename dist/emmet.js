@@ -1,5 +1,5 @@
 /* global require WScript: true ActiveXObject FileStream System GlobalSettings */
-/* global Editor emmet Scintilla */
+/* global Editor emmet Scintilla alert */
 /**
  *  jn-npp-emmet v1.2.0
  *  
@@ -266,43 +266,62 @@ require("includes/emmet/FileStream/FileStream.js");
 	}
 
 	// Default snippets and caniuse
-	emmet.loadSystemSnippets(io.read(PLUGIN_DIR + "/includes/emmet/snippets.json"));
+	emmet.loadSystemSnippets(io.read(PLUGIN_DIR + "/includes/emmet/system-snippets.json"));
 	emmet.loadCIU(io.read(PLUGIN_DIR + "/includes/emmet/caniuse.json"));
 
-	// Default keymap
-	var userKeymap = Editor.pluginConfigDir + "/emmet.keymap.json",
-		defaultKeymap = PLUGIN_DIR + "/includes/emmet/keymap.json";
-
-	if (!path.exists(userKeymap)) {
-		path.copy(defaultKeymap, userKeymap);
-	}
-
-	// Default menu
-	var userMenu = Editor.pluginConfigDir + "/emmet.menu.json";
-
-	if (!path.exists(userMenu)) {
-		io.write(userMenu, JSON.stringify(emmet.actions.getMenu(), null, "\t"));
-	}
-	
-	// Default settings
-	var userSettings = Editor.pluginConfigDir + "/emmet.settings.json",
-		defaultSettings = PLUGIN_DIR + "/includes/emmet/settings.json";
-	
-	if (!path.exists(userSettings)) {
-		path.copy(defaultSettings, userSettings);
-	}
+  // user data
+  var userFileList = [
+    {
+      name: "preferences",
+      mandatory: false
+    },
+    {
+      name: "snippets",
+      mandatory: false
+    },
+    {
+      name: "syntaxProfiles",
+      mandatory: false
+    },
+    {
+      name: "keymap",
+      mandatory: true
+    },
+    {
+      name: "menu",
+      mandatory: true,
+      defaultValue: function() {
+        return emmet.actions.getMenu();
+      }
+    },
+    {
+      name: "settings",
+      mandatory: true
+    }
+  ];
   
   function readUserData() {
     var data = {};
-    ["preferences", "snippets", "syntaxProfiles", "keymap", "menu", "settings"]
-      .forEach(function (name) {
-        var content = io.read(Editor.pluginConfigDir + "/emmet." + name + ".json");
-        try {
-          data[name] = JSON.parse(content);
-        } catch (err) {
-          // pass
+    userFileList.forEach(function (file) {
+      var userPath = Editor.pluginConfigDir + "/emmet." + file.name + ".json";
+      var defaultPath = PLUGIN_DIR + "/includes/emmet/" + file.name + ".json";
+      
+      if (!path.exists(userPath)) {
+        if (path.exists(defaultPath)) {
+          path.copy(defaultPath, userPath);
+        } else if (file.defaultValue) {
+          io.write(userPath, JSON.stringify(file.defaultValue(), null, "\t"));
         }
-      });
+      }
+      
+      try {
+        data[file.name] = JSON.parse(io.read(userPath));
+      } catch (err) {
+        if (file.mandatory) {
+          alert("Failed to read " + userPath + "\n" + String(err));
+        }
+      }
+    });
     return data;
   }
 
@@ -310,7 +329,7 @@ require("includes/emmet/FileStream/FileStream.js");
   var userData = readUserData();
   emmet.loadUserData(userData);
   
-  var settings = userData.settings || {};
+  var settings = userData.settings;
   
 	if (settings.enableTabExpensionUnder) {
 		settings.enableTabExpensionUnder = createMap(settings.enableTabExpensionUnder);
@@ -787,7 +806,7 @@ require("includes/emmet/FileStream/FileStream.js");
 
 	// Construct menu helper
 	function constructMenu(menu, list) {
-    var keyMap = userData.keymap || {};
+    var keyMap = userData.keymap;
 		list.forEach(function(item){
 			var label = item.label || item.name;
 			if (item.type == "submenu") {
@@ -808,7 +827,7 @@ require("includes/emmet/FileStream/FileStream.js");
 		});
 	}
 
-  if (userData.menu) {
+  if (userData.menu && userData.menu.length) {
     constructMenu(Editor.addMenu("Emmet"), userData.menu);
   }
 
@@ -876,38 +895,36 @@ require("includes/emmet/FileStream/FileStream.js");
 	};
 
 	// Regist hotkeys.
-  if (userData.keymap) {
-    emmet.actions.getList().forEach(function(action){
-      var userHotkey = userData.keymap[action.name];
-      if (!userHotkey) {
-        return;
+  emmet.actions.getList().forEach(function(action){
+    var userHotkey = userData.keymap[action.name];
+    if (!userHotkey) {
+      return;
+    }
+    var keys = userHotkey.split("+");
+    var cfg = {
+      cmd: function() {
+        runAction(action.name);
       }
-      var keys = userHotkey.split("+");
-      var cfg = {
-        cmd: function() {
-          runAction(action.name);
-        }
-      };
-      var i;
-      for (i = 0; i < keys.length; i++) {
-        var token = keys[i].toLowerCase().split(" ").join("");
+    };
+    var i;
+    for (i = 0; i < keys.length; i++) {
+      var token = keys[i].toLowerCase().split(" ").join("");
 
-        token = keycodeMap[token] || token;
+      token = keycodeMap[token] || token;
 
-        switch (token) {
-          case "ctrl":
-          case "shift":
-          case "alt":
-            cfg[token] = true;
-            break;
+      switch (token) {
+        case "ctrl":
+        case "shift":
+        case "alt":
+          cfg[token] = true;
+          break;
 
-          default:
-            cfg.key = token;
-            break;
-        }
+        default:
+          cfg.key = token;
+          break;
       }
+    }
 
-      Editor.addHotKey(cfg);
-    });
-  }
+    Editor.addHotKey(cfg);
+  });
 })();
