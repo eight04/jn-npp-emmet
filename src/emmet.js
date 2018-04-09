@@ -23,6 +23,14 @@ require("includes/emmet/FileStream/FileStream.js");
 			}
 		};
 	}
+  
+  // Some string utils
+  if (typeof String.prototype.endsWith === "undefined") {
+    // https://github.com/emmetio/emmet/blob/8fa340dc4c7d209c3e6836ab9fe2e42d23d2cd40/lib/resolver/css.js#L832
+    String.prototype.endsWith = function(suffix) {
+      return this.lastIndexOf(suffix, this.length - suffix.length) >= 0;
+    };
+  }
 
 	var path = function(){
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
