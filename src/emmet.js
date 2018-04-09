@@ -1,5 +1,5 @@
 /* global require WScript: true ActiveXObject FileStream System GlobalSettings */
-/* global Editor emmet Scintilla */
+/* global Editor emmet Scintilla alert */
 /**
  *  jn-npp-emmet v$inline("../package.json|parse:version")
  *  
@@ -269,40 +269,59 @@ require("includes/emmet/FileStream/FileStream.js");
 	emmet.loadSystemSnippets(io.read(PLUGIN_DIR + "/includes/emmet/snippets.json"));
 	emmet.loadCIU(io.read(PLUGIN_DIR + "/includes/emmet/caniuse.json"));
 
-	// Default keymap
-	var userKeymap = Editor.pluginConfigDir + "/emmet.keymap.json",
-		defaultKeymap = PLUGIN_DIR + "/includes/emmet/keymap.json";
-
-	if (!path.exists(userKeymap)) {
-		path.copy(defaultKeymap, userKeymap);
-	}
-
-	// Default menu
-	var userMenu = Editor.pluginConfigDir + "/emmet.menu.json";
-
-	if (!path.exists(userMenu)) {
-		io.write(userMenu, JSON.stringify(emmet.actions.getMenu(), null, "\t"));
-	}
-	
-	// Default settings
-	var userSettings = Editor.pluginConfigDir + "/emmet.settings.json",
-		defaultSettings = PLUGIN_DIR + "/includes/emmet/settings.json";
-	
-	if (!path.exists(userSettings)) {
-		path.copy(defaultSettings, userSettings);
-	}
+  // user data
+  var userFileList = [
+    {
+      name: "preferences",
+      mandatory: false
+    },
+    {
+      name: "snippets",
+      mandatory: false
+    },
+    {
+      name: "syntaxProfiles",
+      mandatory: false
+    },
+    {
+      name: "keymap",
+      mandatory: true
+    },
+    {
+      name: "menu",
+      mandatory: true,
+      defaultValue: function() {
+        return emmet.actions.getMenu();
+      }
+    },
+    {
+      name: "settings",
+      mandatory: true
+    },
+  ];
   
   function readUserData() {
     var data = {};
-    ["preferences", "snippets", "syntaxProfiles", "keymap", "menu", "settings"]
-      .forEach(function (name) {
-        var content = io.read(Editor.pluginConfigDir + "/emmet." + name + ".json");
-        try {
-          data[name] = JSON.parse(content);
-        } catch (err) {
-          // pass
+    userFileList.forEach(function (file) {
+      var userPath = Editor.pluginConfigDir + "/emmet." + file.name + ".json";
+      var defaultPath = PLUGIN_DIR + "/includes/emmet/" + file.name + ".json";
+      
+      if (!path.exists(userPath)) {
+        if (path.exists(defaultPath)) {
+          path.copy(defaultPath, userPath);
+        } else if (file.defaultValue) {
+          io.write(userPath, JSON.stringify(file.defaultValue(), null, "\t"));
         }
-      });
+      }
+      
+      try {
+        data[file.name] = JSON.parse(io.read(userPath));
+      } catch (err) {
+        if (file.mandatory) {
+          alert("Failed to read " + userPath + "\n" + String(err));
+        }
+      }
+    });
     return data;
   }
 
