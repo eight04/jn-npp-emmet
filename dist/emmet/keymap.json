@@ -8,7 +8,7 @@
 	"insert_formatted_line_break_only": null,
 	"insert_formatted_line_break": null,
 	"balance_inward": "Ctrl+Shift+D",
-	"balance_outward": "Ctrl+D",
+	"balance_outward": "Ctrl+Alt+D",
 	"matching_pair": "Ctrl+T",
 	"merge_lines": "Ctrl+Shift+M",
 	"reflect_css_value": "Ctrl+Shift+B",
