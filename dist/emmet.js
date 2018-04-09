@@ -778,6 +778,10 @@ require("includes/emmet/FileStream/FileStream.js");
 	})();
 
 	emmet.file(emmetFile);
+  
+  function cancelAutoComplete() {
+    return (new Scintilla(Editor.currentView.handle)).Call("SCI_AUTOCCANCEL", 0, 0);
+  }
 
 	/**
 	 * Zen Coding manager that runs actions
@@ -785,28 +789,34 @@ require("includes/emmet/FileStream/FileStream.js");
 	 * @return {Boolean} Returns 'true' if action ran successfully
 	 */
 	function runAction(action_name) {
+    function safeRun(arg) {
+      if (action_name === "expand_abbreviation_with_tab" && !emmetEditor.shouldExpand()) {
+        commandInsertTab();
+        return;
+      }
+      
+      // handle emmet error
+      emmet.htmlMatcher.cache(true);
+      try {
+        emmet.run(action_name, emmetEditor, arg);
+      } catch (err) {
+        alert(String(err));
+      }
+      emmet.htmlMatcher.cache(false);
+      
+      // cancel autocomplete dialog
+      cancelAutoComplete();
+    }
+    
 		emmetEditor.setContext(Editor.currentView);
 		if (action_name == 'wrap_with_abbreviation' || action_name == "update_tag") {
 			emmetPrompt("Enter Abbreviation", function(abbr) {
         if (abbr) {
-          emmet.htmlMatcher.cache(true);
-          emmet.run(action_name, emmetEditor, abbr);
-          emmet.htmlMatcher.cache(false);
+          safeRun(abbr);
         }
       });
-		} else if (action_name == "expand_abbreviation_with_tab") {
-			// Emmet's indentation style doesn't match notepad++'s.
-			if (emmetEditor.shouldExpand()) {
-				emmet.htmlMatcher.cache(true);
-				emmet.run(action_name, emmetEditor);
-				emmet.htmlMatcher.cache(false);
-			} else {
-				commandInsertTab();
-			}
 		} else {
-			emmet.htmlMatcher.cache(true);
-			emmet.run(action_name, emmetEditor);
-			emmet.htmlMatcher.cache(false);
+			safeRun();
 		}
 	}
 
@@ -833,7 +843,7 @@ require("includes/emmet/FileStream/FileStream.js");
 		});
 	}
 
-  if (userData.menu && userData.menu.length) {
+  if (userData.menu.length) {
     constructMenu(Editor.addMenu("Emmet"), userData.menu);
   }
 
