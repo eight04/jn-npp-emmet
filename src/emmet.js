@@ -833,7 +833,7 @@ require("includes/emmet/FileStream/FileStream.js");
 		});
 	}
 
-  if (userData.menu && userData.menu.length) {
+  if (userData.menu.length) {
     constructMenu(Editor.addMenu("Emmet"), userData.menu);
   }
 
