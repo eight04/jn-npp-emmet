@@ -895,38 +895,36 @@ require("includes/emmet/FileStream/FileStream.js");
 	};
 
 	// Regist hotkeys.
-  if (userData.keymap) {
-    emmet.actions.getList().forEach(function(action){
-      var userHotkey = userData.keymap[action.name];
-      if (!userHotkey) {
-        return;
+  emmet.actions.getList().forEach(function(action){
+    var userHotkey = userData.keymap[action.name];
+    if (!userHotkey) {
+      return;
+    }
+    var keys = userHotkey.split("+");
+    var cfg = {
+      cmd: function() {
+        runAction(action.name);
       }
-      var keys = userHotkey.split("+");
-      var cfg = {
-        cmd: function() {
-          runAction(action.name);
-        }
-      };
-      var i;
-      for (i = 0; i < keys.length; i++) {
-        var token = keys[i].toLowerCase().split(" ").join("");
+    };
+    var i;
+    for (i = 0; i < keys.length; i++) {
+      var token = keys[i].toLowerCase().split(" ").join("");
 
-        token = keycodeMap[token] || token;
+      token = keycodeMap[token] || token;
 
-        switch (token) {
-          case "ctrl":
-          case "shift":
-          case "alt":
-            cfg[token] = true;
-            break;
+      switch (token) {
+        case "ctrl":
+        case "shift":
+        case "alt":
+          cfg[token] = true;
+          break;
 
-          default:
-            cfg.key = token;
-            break;
-        }
+        default:
+          cfg.key = token;
+          break;
       }
+    }
 
-      Editor.addHotKey(cfg);
-    });
-  }
+    Editor.addHotKey(cfg);
+  });
 })();
