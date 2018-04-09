@@ -4029,7 +4029,11 @@ define(function(require, exports, module) {
 		},
 		
 		_cache: {},
+		useCache: false,
 		cache: function(useCache) {
+			if (this.useCache == useCache) {
+				return;
+			}
 			if (useCache) {
 				this.uncachedFind = this.find;
 				this.find = this.cachedFind;
@@ -4037,6 +4041,7 @@ define(function(require, exports, module) {
 				this.find = this.uncachedFind;
 				this._cache = {};
 			}
+			this.useCache = useCache;
 		},
 		cachedFind: function(text, pos) {
 			var hash = "l" + text.length + "p" + pos;
