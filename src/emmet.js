@@ -806,7 +806,7 @@ require("includes/emmet/FileStream/FileStream.js");
 
 	// Construct menu helper
 	function constructMenu(menu, list) {
-    var keyMap = userData.keymap || {};
+    var keyMap = userData.keymap;
 		list.forEach(function(item){
 			var label = item.label || item.name;
 			if (item.type == "submenu") {
