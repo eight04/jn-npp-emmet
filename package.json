@@ -2,23 +2,25 @@
   "name": "jn-npp-emmet",
   "version": "1.2.2",
   "devDependencies": {
-    "browserify": "^16.1.1",
     "eslint": "^4.18.2",
     "inline-js": "^0.6.0",
-    "npm-build-tools": "^2.2.5"
+    "neodoc": "^2.0.0",
+    "shx": "^0.2.2"
   },
   "dependencies": {
-    "emmet": "github:eight04/emmet#dev-cache"
+    "emmet": "github:eight04/emmet#dev-cache",
+    "jn-npp-cjs-require": "github:eight04/jn-npp-cjs-require"
   },
   "scripts": {
     "test": "eslint src/*.js",
-    "build-emmet": "browserify bundle/emmet-core.js -o dist/emmet/emmet-core.js --bare",
-    "build-src": "inlinejs -o dist/emmet.js src/emmet.js && n-copy -s src/emmet ** -d dist/emmet",
-    "build-asset": "copy /y node_modules\\emmet\\lib\\snippets.json dist\\emmet\\system-snippets.json && copy /y node_modules\\caniuse-db\\data.json dist\\emmet\\caniuse.json",
-    "build-lib": "n-copy -s lib ** -d dist/emmet",
-    "build": "n-clean dist && npm run build-src && npm run build-asset && npm run build-lib && npm run build-emmet",
+    "build-emmet": "shx mkdir -p dist/emmet/emmet-core && shx cp -rf node_modules/emmet/lib/* dist/emmet/emmet-core",
+    "build-src": "inlinejs -o dist/emmet.js src/emmet.js && shx cp -rf src/emmet dist",
+    "build-lib": "shx cp -rf lib/filestream/filestream.js dist/emmet && shx cp -rf node_modules/caniuse-db/data.json dist/emmet/caniuse.json && shx cp -rf node_modules/jn-npp-cjs-require/cjs-require.js dist/emmet",
+    "build": "shx rm -rf dist && npm run build-src && npm run build-lib && npm run build-emmet",
     "preversion": "npm test",
     "version": "npm run build && git add .",
     "postversion": "git push --follow-tags"
-  }
+  },
+  "repository": "eight04/jn-npp-emmet",
+  "license": "MIT"
 }

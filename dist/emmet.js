@@ -6,24 +6,13 @@
  *  Author: eight04 <eight04@gmail.com>
  *  Homepage: https://github.com/eight04/jn-npp-emmet
  */
-
 require("lib/Scintilla.js");
 require("lib/ECMA262.js");
-
-require("includes/emmet/emmet-core.js");
-require("includes/emmet/FileStream/FileStream.js");
+require("includes/emmet/cjs-require.js");
 
 (function(){
+  var require = cjsRequireFactory(Editor.nppDir + "plugins/jN/includes/emmet.js");
 
-	// Fake WScript env
-	if (typeof WScript == "undefined") {
-		WScript = {
-			CreateObject: function(name) {
-				return new ActiveXObject(name);
-			}
-		};
-	}
-  
   // Some string utils
   if (typeof String.prototype.endsWith === "undefined") {
     // https://github.com/emmetio/emmet/blob/8fa340dc4c7d209c3e6836ab9fe2e42d23d2cd40/lib/resolver/css.js#L832
@@ -89,6 +78,7 @@ require("includes/emmet/FileStream/FileStream.js");
 				stream.Close();
 			},
 			readBin: function(filename, size) {
+        var FIleStream = require("./emmet/filestream");
 				var fs = new FileStream(filename),
 					buff,
 					result = "",
@@ -264,9 +254,10 @@ require("includes/emmet/FileStream/FileStream.js");
 		}
 		return holder;
 	}
+  
+  var emmet = require("./emmet/emmet-core/emmet");
 
 	// Default snippets and caniuse
-	emmet.loadSystemSnippets(io.read(PLUGIN_DIR + "/includes/emmet/system-snippets.json"));
 	emmet.loadCIU(io.read(PLUGIN_DIR + "/includes/emmet/caniuse.json"));
 
   // user data

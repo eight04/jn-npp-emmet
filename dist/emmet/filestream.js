@@ -2,7 +2,7 @@
 // coded by inazaki keisuke
 //----------------------------
 function FileStream(){
-  var stream = WScript.CreateObject('ADODB.Stream');
+  var stream = new ActiveXObject('ADODB.Stream');
   this.position = 0;
   this.isLittleEndian = true;
   this.open = function(){
@@ -79,3 +79,4 @@ function FileStream(){
     this.position = stream.Position;
   }
 }
+module.exports = FileStream;
