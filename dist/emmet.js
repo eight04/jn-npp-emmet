@@ -1,5 +1,5 @@
-/* global require WScript: true ActiveXObject FileStream System GlobalSettings */
-/* global Editor emmet Scintilla alert */
+/* global require ActiveXObject System GlobalSettings */
+/* global Editor Scintilla alert cjsRequireFactory */
 /**
  *  jn-npp-emmet v1.2.2
  *  
@@ -11,7 +11,7 @@ require("lib/ECMA262.js");
 require("includes/emmet/cjs-require.js");
 
 (function(){
-  var require = cjsRequireFactory(Editor.nppDir + "plugins/jN/includes/emmet.js");
+  var require = cjsRequireFactory(Editor.nppDir + "/plugins/jN/includes/emmet.js");
 
   // Some string utils
   if (typeof String.prototype.endsWith === "undefined") {
@@ -78,7 +78,7 @@ require("includes/emmet/cjs-require.js");
 				stream.Close();
 			},
 			readBin: function(filename, size) {
-        var FIleStream = require("./emmet/filestream");
+        var FileStream = require("./emmet/filestream");
 				var fs = new FileStream(filename),
 					buff,
 					result = "",
