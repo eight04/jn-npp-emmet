@@ -15,8 +15,8 @@
     "build-emmet": "browserify bundle/emmet-core.js -o dist/emmet/emmet-core.js --bare",
     "build-src": "inlinejs -o dist/emmet.js src/emmet.js && shx cp src/emmet/* dist/emmet/",
     "build-asset": "copy /y node_modules\\emmet\\lib\\snippets.json dist\\emmet\\system-snippets.json && copy /y node_modules\\caniuse-db\\data.json dist\\emmet\\caniuse.json",
-    "build-lib": "shx cp lib/* dist/emmet/",
-    "build": "shx rm -rf dist && npm run build-src && npm run build-asset && npm run build-lib && npm run build-emmet",
+    "build-lib": "shx cp -R lib/* dist/emmet/",
+    "build": "shx rm -rf dist/* && shx mkdir -p dist/emmet && npm run build-src && npm run build-asset && npm run build-lib && npm run build-emmet",
     "preversion": "npm test",
     "version": "npm run build && git add .",
     "postversion": "git push --follow-tags"
