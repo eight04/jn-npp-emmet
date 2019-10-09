@@ -88,7 +88,9 @@ All config files are placed in the config directory: `%appdata%\Notepad++\plugin
 
 FileStream.js
 -------------
-http://hp.vector.co.jp/authors/VA033015/fsjs.html
+~~http://hp.vector.co.jp/authors/VA033015/fsjs.html~~ (offline)
+
+http://ftp.vector.co.jp/46/91/2590/fsjs1081221.zip
 
 I randomly found this with Google.
 
