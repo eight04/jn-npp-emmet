@@ -1,4 +1,4 @@
 {
 	"enableTabExpensionByFileType": true,
-	"enableTabExpensionUnder": ["html", "css"]
+	"enableTabExpensionUnder": ["html", "htm", "css"]
 }
